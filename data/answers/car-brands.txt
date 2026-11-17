@@ -1,0 +1,134 @@
+# car brands
+Toyota
+Ford
+Honda
+Chevrolet | chevy
+BMW
+Mercedes-Benz | mercedes, benz
+Audi
+Volkswagen | vw
+Nissan
+Hyundai
+Kia
+Tesla
+Subaru
+Mazda
+Jeep
+Dodge
+Ram
+GMC
+Cadillac
+Buick
+Lincoln
+Chrysler
+Lexus
+Acura
+Infiniti
+Porsche
+Ferrari
+Lamborghini
+Maserati
+Alfa Romeo | alfa
+Fiat
+Jaguar
+Land Rover
+Range Rover
+Volvo
+Mitsubishi
+Suzuki
+Mini
+Rolls-Royce | rolls royce, rolls
+Bentley
+Aston Martin
+McLaren
+Bugatti
+Lotus
+Peugeot
+Renault
+Citroen
+Skoda
+Seat
+Opel
+Vauxhall
+Genesis
+Polestar
+Rivian
+Lucid
+Pontiac
+Saturn
+Oldsmobile
+Plymouth
+Mercury
+Hummer
+Saab
+Scion
+Daewoo
+Isuzu
+Daihatsu
+Dacia
+Lada
+Tata
+Mahindra
+Maruti
+Proton
+Perodua
+Holden
+BYD
+Geely
+Chery
+Great Wall
+Nio
+Xpeng
+Li Auto
+Hongqi
+Koenigsegg
+Pagani
+Rimac
+Maybach
+Smart
+DeLorean
+Studebaker
+Packard
+AMC | american motors
+DeSoto
+Edsel
+Hudson
+Nash
+Tucker
+Fisker
+Karma
+Lancia
+Abarth
+Cupra
+DS
+Alpine
+Morgan
+Caterham
+TVR
+MG
+Noble
+Spyker
+Zagato
+De Tomaso
+Iso
+Lagonda
+Datsun
+Trabant
+Wartburg
+Moskvitch
+ZAZ
+Tatra
+Hispano-Suiza | hispano suiza
+Duesenberg
+Cord
+Auburn
+Shelby
+Saleen
+SSC
+Hennessey
+Panoz
+Vector
+Scout
+Ineos
+VinFast
+Togg

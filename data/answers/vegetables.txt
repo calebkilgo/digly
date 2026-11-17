@@ -1,0 +1,101 @@
+# vegetables (merged with the GitHub list)
+Potato
+Carrot
+Broccoli
+Onion
+Tomato
+Lettuce
+Cucumber
+Spinach
+Corn | sweetcorn, sweet corn, maize
+Pea | green pea, peas
+Green Bean | string bean, snap bean
+Celery
+Garlic
+Cabbage
+Cauliflower
+Bell Pepper | pepper, capsicum, sweet pepper
+Eggplant | aubergine
+Zucchini | courgette
+Sweet Potato | yam
+Pumpkin
+Squash | butternut squash
+Kale
+Asparagus
+Brussels Sprout | brussel sprout, brussels sprouts, brussel sprouts
+Radish
+Beet | beetroot
+Mushroom
+Artichoke
+Leek
+Turnip
+Parsnip
+Okra
+Arugula | rocket
+Bok Choy | pak choi, pak choy
+Scallion | green onion, spring onion
+Shallot
+Jalapeno | jalapeno pepper
+Chili Pepper | chili, chilli, hot pepper
+Avocado
+Olive
+Kohlrabi
+Rutabaga | swede
+Fennel
+Watercress
+Endive
+Radicchio
+Swiss Chard | chard
+Collard Greens | collards
+Mustard Greens
+Daikon
+Jicama
+Taro
+Cassava | yuca, manioc
+Lotus Root
+Bamboo Shoot
+Bean Sprout
+Edamame
+Chickpea | garbanzo
+Lentil
+Black Bean
+Kidney Bean
+Lima Bean | butter bean
+Fava Bean | broad bean
+Snow Pea | mangetout
+Sugar Snap Pea | snap pea
+Horseradish
+Ginger
+Celeriac
+Salsify
+Sunchoke | jerusalem artichoke
+Romanesco
+Broccolini
+Rapini | broccoli rabe
+Napa Cabbage | chinese cabbage
+Red Cabbage
+Iceberg Lettuce
+Romaine | romaine lettuce, cos
+Microgreens
+Alfalfa Sprout
+Tomatillo
+Plantain
+Water Chestnut
+Burdock
+Chayote
+Bitter Melon | bitter gourd
+Okra
+Wasabi
+Spaghetti Squash
+Acorn Squash
+Delicata Squash
+Kabocha
+Seaweed | kelp, nori
+Purslane
+Sorrel
+Dandelion Greens
+Fiddlehead
+Ramps | wild leek
+Nettle
+Malanga
+Mooli

@@ -1,0 +1,141 @@
+# extra aliases and must-have answers merged into GitHub-sourced categories
+[dinosaurs]
+Tyrannosaurus | t rex, trex, tyrannosaurus rex, t rex
+Velociraptor | raptor
+Brontosaurus
+[cat-breeds]
+Persian
+Siamese
+Maine Coon
+Ragdoll
+Sphynx | sphinx, hairless cat
+Scottish Fold
+Bengal
+Russian Blue
+Norwegian Forest Cat | norwegian forest
+Tabby
+[horse-breeds]
+Arabian | arabian horse
+Thoroughbred
+Quarter Horse | american quarter horse
+Mustang
+Clydesdale
+Appaloosa
+Shetland Pony | shetland
+Friesian
+Morgan | morgan horse
+Paint | paint horse, american paint horse
+Pinto
+Palomino
+Percheron
+Shire
+Andalusian
+Lipizzaner | lipizzan
+Tennessee Walking Horse | tennessee walker
+Standardbred
+Akhal-Teke | akhal teke
+Hanoverian
+Icelandic Horse | icelandic
+Mongolian Horse
+Haflinger
+Belgian | belgian draft
+Miniature Horse | mini horse
+Welsh Pony | welsh
+Connemara | connemara pony
+Fjord | norwegian fjord
+Gypsy Vanner | gypsy horse, vanner
+Paso Fino
+[egyptian-gods]
+Ra | re
+Osiris
+Isis
+Horus
+Anubis
+Set | seth
+Thoth
+Bastet | bast
+Hathor
+Ptah
+Amun | amon, amun ra, amon ra
+Sekhmet
+Sobek
+Nut
+Geb
+Nephthys
+Maat | ma at
+Bes
+Khnum
+Aten
+Atum
+Shu
+Tefnut
+Khonsu
+Mut
+Taweret
+Apep | apophis
+Neith
+Serket | selket
+Wadjet
+Nekhbet
+Hapi
+Min
+Montu
+Khepri
+Heka
+Seshat
+Sopdet | sothis
+Anuket
+Satet
+Meretseger
+Wepwawet
+Imhotep
+Aker
+Babi
+Ammit
+Qebehsenuef
+Duamutef
+Imsety
+[knots]
+Bowline
+Square Knot | reef knot
+Figure Eight | figure 8, figure eight knot
+Clove Hitch
+Half Hitch
+Two Half Hitches
+Sheet Bend
+Slip Knot | slipknot
+Overhand Knot | overhand
+Granny Knot
+Trucker's Hitch | truckers hitch
+Taut-Line Hitch | taut line hitch, tautline
+Timber Hitch
+Prusik | prusik knot
+Hangman's Knot | noose, hangmans knot
+Monkey's Fist | monkeys fist
+Cleat Hitch
+Double Fisherman's | double fishermans knot, grapevine
+Palomar | palomar knot
+Improved Clinch | clinch knot, improved clinch knot
+Windsor | windsor knot, full windsor
+Half Windsor
+Four-in-Hand | four in hand
+Bow Tie | bow
+Shoelace Knot | bow knot
+Constrictor Knot | constrictor
+Rolling Hitch
+Alpine Butterfly | butterfly knot
+Water Knot
+Sheepshank
+Carrick Bend
+Zeppelin Bend
+Highwayman's Hitch | highwaymans hitch
+Cow Hitch | girth hitch, lark's head
+Munter Hitch | italian hitch
+Double Overhand
+Stopper Knot
+Uni Knot | uni
+Blood Knot
+Surgeon's Knot | surgeons knot
+Turk's Head | turks head
+Chain Sinnet | daisy chain
+Eye Splice | splice

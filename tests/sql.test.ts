@@ -1,0 +1,74 @@
+import { readFileSync } from "node:fs";
+import { describe, expect, it } from "vitest";
+import { PGlite } from "@electric-sql/pglite";
+
+const SQL = readFileSync(new URL("../supabase/migrations/0001_digly_core.sql", import.meta.url), "utf8");
+const P = "11111111-1111-4111-8111-111111111111";
+const Q = "22222222-2222-4222-8222-222222222222";
+const A = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+
+describe("supabase migration", () => {
+  it("applies twice and enforces the game rules in the database", async () => {
+    const db = new PGlite();
+    await db.exec(SQL);
+    await db.exec(SQL); // idempotent
+
+    await db.query("insert into players (id, name) values ($1, 'Rocky'), ($2, '')", [P, Q]);
+    const ins = "insert into attempts (id, player_id, day, level, mode, slug, started_at, expires_at) values ($1,$2,29,1,$3,'dog-breeds',0,60000)";
+    await db.query(ins, [A, P, "ranked"]);
+    // a second ranked level 1 for the same day is refused, practice is fine
+    await expect(db.query(ins, ["bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", P, "ranked"])).rejects.toMatchObject({ code: "23505" });
+    await db.query(ins, ["cccccccc-cccc-4ccc-8ccc-cccccccccccc", P, "practice"]);
+
+    await db.query("insert into attempt_answers (attempt_id, answer_id) values ($1, 'd1'), ($1, 'd9')", [A]);
+    await expect(db.query("insert into attempt_answers (attempt_id, answer_id) values ($1, 'd1')", [A])).rejects.toMatchObject({ code: "23505" });
+
+    const bump = await db.query<{ digly_bump_submissions: number }>("select digly_bump_submissions($1)", [A]);
+    expect(bump.rows[0].digly_bump_submissions).toBe(1);
+
+    const f1 = await db.query<{ digly_finish_attempt: boolean }>("select digly_finish_attempt($1, 30000, 150, 150, 2)", [A]);
+    const f2 = await db.query<{ digly_finish_attempt: boolean }>("select digly_finish_attempt($1, 31000, 999, 999, 9)", [A]);
+    expect(f1.rows[0].digly_finish_attempt).toBe(true);
+    expect(f2.rows[0].digly_finish_attempt).toBe(false);
+
+    const board = await db.query<{ player_id: string; name: string; points: number; uniq: number }>("select * from digly_day_board(29, 10)");
+    expect(board.rows).toHaveLength(1);
+    expect(board.rows[0]).toMatchObject({ player_id: P, name: "Rocky" });
+    expect(Number(board.rows[0].points)).toBe(150);
+  });
+});
+
+const SQL2 = readFileSync(new URL("../supabase/migrations/0002_rarity_accounts.sql", import.meta.url), "utf8");
+
+describe("migration 0002", () => {
+  it("adds accounts, sessions, answer stats and reject review", async () => {
+    const db = new PGlite();
+    await db.exec(SQL);
+    await db.exec(SQL2);
+    await db.exec(SQL2);
+    await db.query("insert into players (id) values ($1), ($2)", [P, Q]);
+    await db.query("update players set username = 'Rocky', password_hash = 'h' where id = $1", [P]);
+    await expect(db.query("update players set username = 'rocky' where id = $1", [Q])).rejects.toMatchObject({ code: "23505" });
+
+    const ins = "insert into attempts (id, player_id, day, level, mode, slug, started_at, expires_at, finished_at, points, unique_count) values ($1,$2,$3,1,'ranked','dog-breeds',0,1,1,$4,1)";
+    await db.query(ins, [A, P, 5, 50]);
+    await db.query(ins, ["bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", Q, 5, 70]);
+    await db.query(ins, ["cccccccc-cccc-4ccc-8ccc-cccccccccccc", Q, 9, 10]);
+    await db.query("insert into attempt_answers (attempt_id, answer_id) values ($1,'d:pug'), ($1,'d:mudi'), ($2,'d:pug')", [A, "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"]);
+    await db.query("insert into attempt_rejects (attempt_id, text) values ($1,'Kooiker'), ($2,'kooiker')", [A, "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"]);
+
+    const stats = await db.query<{ s: { plays: number; counts: Record<string, number> } }>("select digly_answer_stats('dog-breeds', 9) as s");
+    expect(stats.rows[0].s).toEqual({ plays: 2, counts: { "d:pug": 2, "d:mudi": 1 } });
+    const none = await db.query<{ s: { plays: number } }>("select digly_answer_stats('dog-breeds', 5) as s");
+    expect(none.rows[0].s).toEqual({ plays: 0, counts: {} });
+
+    const rej = await db.query<{ text: string; n: number }>("select * from digly_top_rejects('dog-breeds', 10)");
+    expect(rej.rows.map((r) => [r.text, Number(r.n)])).toEqual([["kooiker", 2]]);
+
+    // guests (no username) stay off the board
+    const board = await db.query<{ name: string }>("select * from digly_day_board(5, 10)");
+    expect(board.rows.map((r) => r.name)).toEqual(["Rocky"]);
+
+    await db.query("insert into sessions (token_hash, player_id, expires_at) values ('abc', $1, now() + interval '1 day')", [P]);
+  });
+});

@@ -1,0 +1,63 @@
+import type { AttemptMode, LevelNo } from "../service/types";
+
+export interface AttemptRow {
+  id: string;
+  playerId: string;
+  day: number;
+  level: LevelNo;
+  mode: AttemptMode;
+  slug: string;
+  startedAt: number;
+  expiresAt: number;
+  finishedAt: number | null;
+  score: number | null;
+  points: number | null;
+  uniqueCount: number;
+  submissions: number;
+}
+
+export interface PlayerInfo {
+  id: string;
+  username: string | null;
+}
+
+export interface BoardTotal {
+  playerId: string;
+  name: string;
+  points: number;
+  unique: number;
+}
+
+// Persistence for the engine. Supabase in production, memory in tests and
+// dev, localStorage for the offline preview. Every method is async so the
+// engine can't tell them apart.
+export interface Store {
+  ensurePlayer(playerId: string): Promise<void>;
+  getPlayer(playerId: string): Promise<PlayerInfo | null>;
+  // turns a guest into an account; StoreConflict if the username is taken
+  claimAccount(playerId: string, a: { username: string; passwordHash: string; email: string | null }): Promise<void>;
+  findAccount(username: string): Promise<{ playerId: string; username: string; passwordHash: string } | null>;
+  createSession(tokenHash: string, playerId: string, expiresAt: number): Promise<void>;
+  sessionPlayer(tokenHash: string, now: number): Promise<string | null>;
+  deleteSession(tokenHash: string): Promise<void>;
+  // Must throw StoreConflict if a ranked attempt already exists for (player, day, level).
+  insertAttempt(row: AttemptRow): Promise<void>;
+  getAttempt(id: string): Promise<AttemptRow | null>;
+  listAttempts(playerId: string, day: number, mode: AttemptMode): Promise<AttemptRow[]>;
+  bumpSubmissions(id: string): Promise<number>;
+  // false if this answer is already on the attempt
+  addAnswer(attemptId: string, answerId: string): Promise<boolean>;
+  listAnswers(attemptId: string): Promise<string[]>; // answer ids, submission order
+  addReject(attemptId: string, text: string): Promise<void>;
+  listRejects(attemptId: string): Promise<string[]>;
+  // Only finishes an unfinished attempt. Returns false if it was already finished.
+  finishAttempt(id: string, f: { finishedAt: number; score: number; points: number; uniqueCount: number }): Promise<boolean>;
+  // accounts only: guests aren't posted to the board
+  dayBoard(day: number, limit: number): Promise<BoardTotal[]>;
+  // ranked attempts at a category before a day, and how many found each answer
+  answerStats(slug: string, beforeDay: number): Promise<{ plays: number; counts: Record<string, number> }>;
+  // most common inputs that didn't match, for growing the answer lists
+  topRejects(slug: string, limit: number): Promise<{ text: string; n: number }[]>;
+}
+
+export class StoreConflict extends Error {}

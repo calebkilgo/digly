@@ -1,0 +1,93 @@
+# programming languages
+Python
+JavaScript | js
+Java
+C
+C++ | cpp, c plus plus
+C# | c sharp, csharp
+Go | golang
+Rust
+Ruby
+PHP
+Swift
+Kotlin
+TypeScript | ts
+R
+MATLAB
+Perl
+Scala
+Haskell
+Lua
+Dart
+Julia
+Elixir
+Erlang
+Clojure
+F# | f sharp, fsharp
+Objective-C | objective c, objc
+Visual Basic | vb, vb net, visual basic net
+Fortran
+COBOL
+Pascal
+Delphi | object pascal
+Lisp | common lisp
+Scheme
+Racket
+Prolog
+Ada
+Assembly | assembly language, asm
+Bash | shell, shell script
+PowerShell
+SQL
+Groovy
+OCaml
+Elm
+Crystal
+Nim
+Zig
+Smalltalk
+Simula
+ALGOL
+BASIC
+APL
+Forth
+Logo
+Scratch
+Solidity
+Haxe
+Hack
+Tcl
+Awk
+Sed
+D
+V
+Odin
+Carbon
+Mojo
+Gleam
+PureScript
+CoffeeScript
+Elm
+ReScript
+ReasonML | reason
+Raku | perl 6
+Apex
+ABAP
+SAS
+Stata
+Verilog
+VHDL
+Chapel
+Idris
+Agda
+Coq | rocq
+Lean
+Eiffel
+Modula-2 | modula 2
+Oberon
+PL/I | pl i, pl1
+RPG
+Brainfuck | brainf
+LabVIEW
+Ballerina
+Wolfram | mathematica, wolfram language

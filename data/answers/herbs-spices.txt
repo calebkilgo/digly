@@ -1,0 +1,105 @@
+# herbs and spices (merged with the GitHub list)
+Salt
+Black Pepper | pepper, peppercorn
+Basil
+Oregano
+Thyme
+Rosemary
+Parsley
+Cilantro | coriander leaf
+Coriander
+Mint | peppermint, spearmint
+Dill
+Sage
+Chives
+Bay Leaf | bay, bay leaves
+Tarragon
+Cinnamon
+Nutmeg
+Clove | cloves
+Ginger
+Turmeric
+Cumin
+Paprika | smoked paprika
+Cayenne | cayenne pepper
+Chili Powder
+Chili Flakes | red pepper flakes, crushed red pepper
+Saffron
+Cardamom
+Vanilla
+Allspice
+Star Anise
+Anise | aniseed
+Fennel Seed | fennel
+Mustard Seed | mustard
+Sesame | sesame seed
+Poppy Seed
+Caraway
+Fenugreek
+Sumac
+Garlic Powder | garlic
+Onion Powder
+Lemongrass
+Marjoram
+Lavender
+Curry Powder | curry
+Garam Masala
+Za'atar | zaatar
+Ras el Hanout
+Five Spice | chinese five spice
+Herbes de Provence
+Old Bay
+Italian Seasoning
+Chervil
+Lovage
+Savory
+Epazote
+Borage
+Sorrel
+Shiso | perilla
+Kaffir Lime Leaf | makrut lime leaf, lime leaf
+Curry Leaf | curry leaves
+Asafoetida | hing
+Ajwain | carom
+Nigella | kalonji, black cumin
+Mace
+Juniper | juniper berry
+Sichuan Pepper | szechuan pepper
+White Pepper
+Pink Peppercorn
+Long Pepper
+Grains of Paradise
+Galangal
+Wasabi
+Horseradish
+Annatto | achiote
+Amchur | amchoor, mango powder
+Black Lime | loomi
+Mahlab
+Licorice Root | liquorice
+Tamarind
+Celery Seed
+Dill Seed
+Smoked Salt
+Msg | monosodium glutamate
+Togarashi | shichimi
+Berbere
+Harissa
+Chimichurri
+Dukkah
+Baharat
+Advieh
+Panch Phoron
+Chaat Masala
+Tandoori Masala
+Jerk Seasoning | jerk
+Cajun Seasoning | cajun
+Lemon Pepper
+Vanilla Bean
+Cocoa
+Hyssop
+Rue
+Angelica
+Bergamot
+Woodruff
+Stevia

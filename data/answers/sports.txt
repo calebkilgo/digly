@@ -1,0 +1,138 @@
+# sports
+Soccer | football, association football
+American Football | gridiron
+Basketball
+Baseball
+Tennis
+Golf
+Hockey | ice hockey
+Volleyball
+Swimming
+Boxing
+Cricket
+Rugby | rugby union, rugby league
+Track and Field | athletics, track
+Wrestling
+Gymnastics
+Badminton
+Table Tennis | ping pong, pingpong
+Lacrosse
+Softball
+Cycling | bike racing
+Skiing | alpine skiing, downhill skiing
+Snowboarding
+Surfing
+Skateboarding
+Bowling | tenpin bowling, ten pin bowling
+Fencing
+Archery
+Rowing | crew
+Sailing
+Diving
+Water Polo
+Field Hockey
+Handball | team handball
+Judo
+Karate
+Taekwondo
+Mixed Martial Arts | mma
+Figure Skating
+Speed Skating
+Curling
+Bobsled | bobsleigh
+Luge
+Skeleton
+Biathlon
+Triathlon
+Marathon
+Polo
+Equestrian | horse riding, show jumping, dressage
+Horse Racing
+Auto Racing | motorsport, car racing, formula one, f1, nascar
+Motocross
+Rock Climbing | climbing, bouldering, sport climbing
+Squash
+Racquetball
+Pickleball
+Paddle Tennis | padel
+Darts
+Snooker
+Billiards | pool
+Weightlifting | olympic weightlifting
+Powerlifting
+Bodybuilding
+Canoeing | canoe
+Kayaking | kayak
+Rafting | whitewater rafting
+Water Skiing
+Wakeboarding
+Kitesurfing | kiteboarding
+Windsurfing
+Ultimate Frisbee | ultimate, frisbee
+Disc Golf | frisbee golf
+Dodgeball
+Kickball
+Netball
+Australian Rules Football | aussie rules, afl
+Gaelic Football
+Hurling
+Sepak Takraw
+Kabaddi
+Sumo | sumo wrestling
+Kickboxing
+Muay Thai
+Jiu Jitsu | brazilian jiu jitsu, bjj
+Pentathlon | modern pentathlon
+Decathlon
+Heptathlon
+Orienteering
+Paragliding
+Skydiving
+Bungee Jumping
+Mountaineering
+Cross Country Skiing | nordic skiing
+Ski Jumping
+Freestyle Skiing | moguls
+Shooting | sport shooting
+Trap Shooting | clay pigeon shooting
+Bocce
+Petanque | boules
+Croquet
+Cornhole
+Shuffleboard
+Jai Alai | pelota
+Hurdling | hurdles
+Pole Vault
+High Jump
+Long Jump
+Triple Jump
+Javelin
+Shot Put
+Discus
+Hammer Throw
+Synchronized Swimming | artistic swimming
+Roller Derby
+Inline Skating | rollerblading
+BMX
+Mountain Biking
+Parkour
+Fishing | angling
+Esports | competitive gaming
+Chess
+Cheerleading
+Bandy
+Floorball
+Korfball
+Underwater Hockey
+Quidditch | quadball
+Lawn Bowls | bowls
+Rodeo
+Bull Riding
+Canyoning
+Sambo
+Capoeira
+Spearfishing
+Dragon Boat Racing
+Arm Wrestling
+Tug of War
+Caber Toss

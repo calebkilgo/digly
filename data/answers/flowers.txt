@@ -1,0 +1,150 @@
+# flowers
+Rose
+Tulip
+Daisy
+Sunflower
+Lily
+Orchid
+Daffodil
+Carnation
+Lavender
+Lilac
+Peony
+Hydrangea
+Marigold
+Dandelion
+Iris
+Violet
+Poppy
+Hibiscus
+Jasmine
+Magnolia
+Chrysanthemum | mum
+Dahlia
+Azalea
+Begonia
+Petunia
+Pansy
+Geranium
+Gardenia
+Camellia
+Zinnia
+Snapdragon
+Gladiolus
+Aster
+Lotus
+Water Lily
+Lily of the Valley
+Forget-Me-Not | forget me not
+Bluebell
+Buttercup
+Crocus
+Hyacinth
+Freesia
+Foxglove
+Honeysuckle
+Morning Glory
+Primrose
+Rhododendron
+Wisteria
+Bougainvillea
+Cosmos
+Calendula
+Anemone
+Amaryllis
+Ranunculus
+Lisianthus
+Delphinium | larkspur
+Gerbera | gerbera daisy
+Baby's Breath | gypsophila
+Bird of Paradise | strelitzia
+Protea
+Heather
+Edelweiss
+Clematis
+Cornflower | bachelors button
+Snowdrop
+Periwinkle | vinca
+Impatiens
+Verbena
+Salvia
+Lupine | lupin
+Hollyhock
+Sweet Pea
+Nasturtium
+Columbine
+Bleeding Heart
+Black-Eyed Susan | black eyed susan, rudbeckia
+Coneflower | echinacea
+Goldenrod
+Yarrow
+Phlox
+Allium
+Agapanthus
+Alstroemeria | peruvian lily
+Anthurium
+Plumeria | frangipani
+Oleander
+Gardenia
+Camellia
+Cyclamen
+Fuchsia
+Gazania
+Hellebore
+Lantana
+Lobelia
+Marguerite
+Narcissus
+Oxalis
+Passionflower | passion flower
+Scabiosa
+Statice
+Stock
+Sweet William
+Trillium
+Tuberose
+Thistle
+Clover
+Edelweiss
+Orange Blossom
+Cherry Blossom | sakura
+Apple Blossom
+Magnolia
+Saffron Crocus
+Gentian
+Bloodroot
+Lady's Slipper | ladys slipper
+Corpse Flower | rafflesia, titan arum
+Night-Blooming Cereus
+Moonflower
+Jacaranda
+Frangipani
+Kalanchoe
+Calla Lily | calla
+Tiger Lily
+Easter Lily
+Stargazer Lily
+Gloxinia
+African Violet
+Bellflower | campanula
+Celosia
+Ageratum
+Alyssum
+Candytuft
+Coreopsis
+Dianthus
+Echium
+Forsythia
+Gaillardia
+Heliotrope
+Kniphofia | red hot poker
+Liatris
+Monkshood | aconite
+Nemesia
+Osteospermum
+Penstemon
+Rudbeckia
+Sedum
+Tansy
+Tithonia
+Viola
