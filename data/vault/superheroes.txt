@@ -1,0 +1,142 @@
+# title: Comic book superheroes
+# level: 1
+# domain: pop culture
+# noun: superheroes
+# rule: Heroes from comic books, like Marvel or DC.
+# rule: Villains don't count.
+Superman | clark kent, man of steel
+Batman | bruce wayne, dark knight
+Spider-Man | spiderman, peter parker
+Wonder Woman | diana prince
+Iron Man | tony stark
+Captain America | steve rogers
+Hulk | incredible hulk, bruce banner
+Thor
+Wolverine | logan
+Black Panther | tchalla
+The Flash | flash, barry allen
+Aquaman
+Green Lantern | hal jordan
+Black Widow | natasha romanoff
+Deadpool
+Robin | dick grayson
+Captain Marvel | carol danvers
+Doctor Strange | dr strange
+Ant-Man | antman
+Hawkeye | clint barton
+Cyclops
+Storm
+Batgirl | barbara gordon
+Supergirl
+Green Arrow | oliver queen
+Daredevil
+Cyborg
+Wasp
+Scarlet Witch | wanda maximoff
+Vision
+Falcon | sam wilson
+Silver Surfer
+Jean Grey | phoenix
+Rogue
+Gambit
+Beast
+Iceman
+Nightcrawler
+Professor X | professor xavier, charles xavier
+Punisher
+Ghost Rider
+Hellboy
+Shazam
+Star-Lord | starlord
+Groot
+Rocket Raccoon | rocket
+Gamora
+Drax
+Mister Fantastic | mr fantastic, reed richards
+Invisible Woman | sue storm
+Human Torch | johnny storm
+The Thing | thing, ben grimm
+Martian Manhunter
+Static Shock | static
+Blue Beetle
+Nightwing
+Catwoman
+Luke Cage
+Iron Fist
+Jessica Jones
+Ms. Marvel | ms marvel, kamala khan
+She-Hulk | she hulk
+Moon Knight
+Blade
+War Machine
+Winter Soldier | bucky barnes, bucky
+Black Canary
+Hawkman
+Hawkgirl
+Firestorm
+Booster Gold
+Plastic Man
+Zatanna
+Raven
+Starfire
+Beast Boy
+Kid Flash
+Captain Britain
+Spider-Woman | spider woman
+Spider-Gwen | ghost spider, gwen stacy
+Miles Morales
+Nova
+Quicksilver
+Colossus
+Kitty Pryde | shadowcat
+Psylocke
+Cable
+Bishop
+Jubilee
+Havok
+Emma Frost
+Dazzler
+Squirrel Girl
+Shang-Chi | shang chi
+Black Bolt
+Medusa
+Namor
+Wonder Man
+Hercules
+Sentry
+Adam Warlock
+Mantis
+Nebula
+Okoye
+Shuri
+Black Lightning
+Swamp Thing
+Constantine | john constantine
+Spawn
+The Tick | tick
+Teenage Mutant Ninja Turtles | ninja turtles, tmnt
+Invincible
+Atom
+Huntress
+Red Hood
+Static
+Steel
+Vixen
+Captain Atom
+Doctor Fate
+Sandman
+Elongated Man
+Mister Miracle
+Big Barda
+Orion
+Power Girl
+Stargirl
+Wildcat
+Jonah Hex
+The Question | question
+Rorschach
+Nite Owl
+Silk Spectre
+Doctor Manhattan
+Hit-Girl
+Kick-Ass

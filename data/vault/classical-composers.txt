@@ -1,0 +1,168 @@
+# title: Classical music composers
+# level: 3
+# domain: music and art
+# noun: composers
+# rule: Composers of classical music, any era.
+# rule: Last names are enough.
+# surname
+Wolfgang Amadeus Mozart | mozart
+Ludwig van Beethoven | beethoven
+Johann Sebastian Bach | bach, js bach
+Frederic Chopin | chopin
+Pyotr Ilyich Tchaikovsky | tchaikovsky, tschaikowsky, chaikovsky
+Antonio Vivaldi | vivaldi
+Johannes Brahms | brahms
+Franz Schubert | schubert
+George Frideric Handel | handel
+Claude Debussy | debussy
+Richard Wagner | wagner
+Joseph Haydn | haydn
+Franz Liszt | liszt
+Giuseppe Verdi | verdi
+Sergei Rachmaninoff | rachmaninoff, rachmaninov
+Antonin Dvorak | dvorak
+Felix Mendelssohn | mendelssohn
+Robert Schumann | schumann
+Gustav Mahler | mahler
+Igor Stravinsky | stravinsky
+Johann Strauss II | johann strauss, strauss
+Giacomo Puccini | puccini
+Maurice Ravel | ravel
+Edvard Grieg | grieg
+Camille Saint-Saens | saint saens
+Georges Bizet | bizet
+Erik Satie | satie
+Aaron Copland | copland
+George Gershwin | gershwin
+Sergei Prokofiev | prokofiev
+Dmitri Shostakovich | shostakovich
+Nikolai Rimsky-Korsakov | rimsky korsakov
+Modest Mussorgsky | mussorgsky, moussorgsky
+Gioachino Rossini | rossini
+Richard Strauss
+Hector Berlioz | berlioz
+Johann Pachelbel | pachelbel
+Gabriel Faure | faure
+Jean Sibelius | sibelius
+Edward Elgar | elgar
+Gustav Holst | holst
+Claudio Monteverdi | monteverdi
+Henry Purcell | purcell
+Niccolo Paganini | paganini
+Samuel Barber | barber
+Leonard Bernstein | bernstein
+Philip Glass
+John Cage | cage
+Arnold Schoenberg | schoenberg, schonberg
+Bela Bartok | bartok
+Ralph Vaughan Williams | vaughan williams
+Benjamin Britten | britten
+Anton Bruckner | bruckner
+Christoph Willibald Gluck | gluck
+Gaetano Donizetti | donizetti
+Vincenzo Bellini | bellini
+Georg Philipp Telemann | telemann
+Domenico Scarlatti | scarlatti
+Alessandro Scarlatti
+Arcangelo Corelli | corelli
+Jean-Philippe Rameau | rameau
+Jean-Baptiste Lully | lully
+Francois Couperin | couperin
+Tomaso Albinoni | albinoni
+Giovanni Pierluigi da Palestrina | palestrina
+Thomas Tallis | tallis
+William Byrd | byrd
+Josquin des Prez | josquin
+Hildegard of Bingen | hildegard
+Carl Maria von Weber | von weber
+Jacques Offenbach | offenbach
+Charles Gounod | gounod
+Jules Massenet | massenet
+Leo Delibes | delibes
+Cesar Franck | franck
+Alexander Borodin | borodin
+Mikhail Glinka | glinka
+Mily Balakirev | balakirev
+Alexander Scriabin | scriabin, skryabin
+Bedrich Smetana | smetana
+Leos Janacek | janacek
+Carl Nielsen | nielsen
+Manuel de Falla | de falla, falla
+Isaac Albeniz | albeniz
+Enrique Granados | granados
+Joaquin Rodrigo | rodrigo
+Heitor Villa-Lobos | villa lobos
+Astor Piazzolla | piazzolla
+Ottorino Respighi | respighi
+Pietro Mascagni | mascagni
+Ruggero Leoncavallo | leoncavallo
+Francis Poulenc | poulenc
+Darius Milhaud | milhaud
+Arthur Honegger | honegger
+Olivier Messiaen | messiaen
+Pierre Boulez | boulez
+Karlheinz Stockhausen | stockhausen
+Alban Berg | berg
+Anton Webern | webern
+Paul Hindemith | hindemith
+Kurt Weill | weill
+Carl Orff | orff
+Zoltan Kodaly | kodaly
+Gyorgy Ligeti | ligeti
+Krzysztof Penderecki | penderecki
+Henryk Gorecki | gorecki
+Arvo Part | part
+Steve Reich | reich
+John Adams
+Charles Ives | ives
+Scott Joplin | joplin
+John Philip Sousa | sousa
+Edward MacDowell | macdowell
+Amy Beach
+Florence Price
+Clara Schumann
+Fanny Mendelssohn | fanny hensel
+Hugo Wolf
+Max Bruch | bruch
+Engelbert Humperdinck | humperdinck
+Ernest Chausson | chausson
+Emmanuel Chabrier | chabrier
+Edouard Lalo | lalo
+Paul Dukas | dukas
+Vincent d'Indy | dindy
+Ferruccio Busoni | busoni
+Muzio Clementi | clementi
+Carl Czerny | czerny
+Johann Nepomuk Hummel | hummel
+Luigi Boccherini | boccherini
+Carl Philipp Emanuel Bach | cpe bach
+Johann Christian Bach | jc bach
+Antonio Salieri | salieri
+Giovanni Battista Pergolesi | pergolesi
+Giuseppe Tartini | tartini
+Heinrich Schutz | schutz
+Dieterich Buxtehude | buxtehude
+Michael Praetorius | praetorius
+Guillaume de Machaut | machaut
+Orlande de Lassus | lassus, orlando di lasso
+Edgard Varese | varese
+Toru Takemitsu | takemitsu
+Sergei Taneyev
+Alexander Glazunov | glazunov
+Anton Arensky | arensky
+Reinhold Gliere | gliere
+Aram Khachaturian | khachaturian
+Dmitry Kabalevsky | kabalevsky
+Alfred Schnittke | schnittke
+Sofia Gubaidulina | gubaidulina
+Erich Wolfgang Korngold | korngold
+Samuel Coleridge-Taylor | coleridge taylor
+Frederick Delius | delius
+Hubert Parry | parry
+Charles Villiers Stanford | stanford
+William Walton | walton
+Michael Tippett | tippett
+Morten Lauridsen | lauridsen
+Eric Whitacre | whitacre
+John Rutter | rutter
+Ludovico Einaudi | einaudi

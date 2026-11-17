@@ -1,0 +1,129 @@
+# title: Mushrooms
+# level: 3
+# domain: nature
+# noun: mushrooms
+# rule: Kinds of mushroom or fungus, wild or farmed.
+# rule: "Mushroom" on the end is fine.
+# strip: mushroom, mushrooms
+Button Mushroom | white mushroom, white button, champignon
+Portobello | portabella, portabello
+Shiitake | shitake
+Cremini | crimini, baby bella, chestnut mushroom
+Oyster Mushroom | oyster
+Chanterelle | girolle
+Morel
+Truffle | black truffle, white truffle
+Porcini | king bolete, cep, penny bun
+Enoki | enokitake
+Maitake | hen of the woods
+Lion's Mane | lions mane, bearded tooth
+Death Cap
+Fly Agaric | amanita muscaria
+Puffball
+Reishi | lingzhi
+Chicken of the Woods
+King Oyster | king trumpet, eryngii
+Shimeji | beech mushroom
+Cordyceps
+Chaga
+Turkey Tail
+Wood Ear | cloud ear, jelly ear, black fungus
+Matsutake
+Black Trumpet | horn of plenty
+Hedgehog Mushroom | sweet tooth, pied de mouton
+Lobster Mushroom
+Shaggy Mane | shaggy ink cap, lawyers wig
+Inky Cap | ink cap
+Destroying Angel
+Honey Mushroom | honey fungus
+Straw Mushroom | paddy straw
+Nameko
+Giant Puffball
+Jack-o'-lantern Mushroom | jack o lantern
+False Morel
+Blewit | wood blewit
+Parasol Mushroom | parasol
+Pink Oyster
+Golden Oyster
+Blue Oyster
+Pioppino | black poplar mushroom
+Wine Cap | king stropharia
+Meadow Mushroom | field mushroom
+Fairy Ring Mushroom | fairy ring champignon, scotch bonnet mushroom
+Caesar's Mushroom | caesars mushroom
+Panther Cap
+Deadly Webcap
+Funeral Bell
+Earthstar
+Stinkhorn
+Bird's Nest Fungus | birds nest fungus
+Witches' Butter | witches butter
+Amethyst Deceiver
+Scarlet Elf Cup
+Orange Peel Fungus
+Dryad's Saddle | pheasant back
+Artist's Conk | artists conk
+Tinder Fungus | hoof fungus
+Birch Polypore | razor strop
+Snow Fungus | tremella
+Beefsteak Fungus | ox tongue
+Cauliflower Mushroom
+Bear's Head Tooth | bears head
+Saffron Milk Cap
+Candy Cap
+Indigo Milk Cap
+Slippery Jack
+Bay Bolete
+Bitter Bolete
+Birch Bolete
+Russula | sickener
+Velvet Shank
+Chicken Fat Mushroom
+Yellow Stainer
+Sulphur Tuft
+Brick Cap
+Shaggy Parasol
+Tawny Grisette
+Blusher
+Conecap
+Galerina | funeral bell galerina
+Elfin Saddle
+Cramp Ball | king alfreds cakes
+Dead Man's Fingers | dead mans fingers
+Jelly Tooth
+Yellow Brain
+Coral Fungus
+Crown Coral
+Old Man of the Woods
+Ringless Honey Mushroom
+Velvet Bolete
+Devil's Bolete | satans bolete
+Bleeding Tooth
+Lilac Bonnet
+Common Bonnet
+Golden Chanterelle
+Trumpet Chanterelle | yellowfoot, winter chanterelle
+Cinnabar Chanterelle
+Blue Chanterelle
+False Chanterelle
+Wood Hedgehog
+St. George's Mushroom | st georges mushroom
+Miller Mushroom | the miller
+Charcoal Burner
+Weeping Widow
+Magpie Inkcap
+Glistening Inkcap
+Common Puffball
+Pestle Puffball
+Earthball
+Collared Earthstar
+Veiled Lady
+Netted Stinkhorn
+Dog Stinkhorn
+Cage Fungus
+Black Morel
+Yellow Morel
+Half-free Morel
+Snakeskin Grisette
+Spring Amanita
+Warted Amanita

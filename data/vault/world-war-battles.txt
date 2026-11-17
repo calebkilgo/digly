@@ -1,0 +1,139 @@
+# title: Battles of World War I or II
+# level: 3
+# domain: history
+# noun: battles
+# rule: Battles, sieges and landings from either world war.
+# rule: "Battle of" can be left off.
+# prefix: battle of, siege of, battle of the, the battle of
+D-Day | normandy, normandy landings, battle of normandy, operation overlord, omaha beach
+Pearl Harbor | attack on pearl harbor
+Battle of the Bulge | bulge, ardennes offensive
+Battle of Stalingrad | stalingrad
+Battle of Midway | midway
+Battle of Iwo Jima | iwo jima
+Battle of Britain
+Battle of the Somme | somme
+Battle of Verdun | verdun
+Battle of Okinawa | okinawa
+Battle of Gallipoli | gallipoli, dardanelles campaign
+Battle of Berlin | fall of berlin
+Battle of Guadalcanal | guadalcanal
+Battle of El Alamein | el alamein, alamein
+Battle of Dunkirk | dunkirk, dunkirk evacuation
+Battle of Kursk | kursk
+Siege of Leningrad | leningrad
+Battle of Moscow | moscow
+Battle of the Marne | marne, first battle of the marne
+Battle of Passchendaele | passchendaele, third ypres
+Battle of Ypres | ypres
+Battle of the Atlantic
+Battle of Tannenberg | tannenberg
+Battle of Jutland | jutland
+Battle of Leyte Gulf | leyte gulf, leyte
+Battle of the Coral Sea | coral sea
+Battle of Monte Cassino | monte cassino, cassino
+Battle of Anzio | anzio
+Operation Market Garden | market garden, arnhem, battle of arnhem
+Battle of Saipan | saipan
+Battle of Peleliu | peleliu
+Battle of Tarawa | tarawa
+Battle of Bataan | bataan
+Battle of Corregidor | corregidor
+Fall of Singapore | battle of singapore, singapore
+Battle of Hong Kong
+Battle of Manila
+Battle of Belleau Wood | belleau wood
+Battle of Vimy Ridge | vimy ridge, vimy
+Battle of Cambrai | cambrai
+Battle of Amiens | amiens
+Meuse-Argonne Offensive | meuse argonne, argonne
+Battle of Caporetto | caporetto
+Battle of the Isonzo | isonzo
+Battle of Vittorio Veneto | vittorio veneto
+Brusilov Offensive | brusilov
+Battle of Loos | loos
+Battle of Mons | mons
+Battle of the Frontiers
+Battle of Arras | arras
+Second Battle of Ypres
+Spring Offensive | ludendorff offensive, kaiserschlacht
+Hundred Days Offensive
+Battle of Megiddo | megiddo
+Siege of Kut | kut
+Battle of Beersheba | beersheba
+Battle of Gaza
+Battle of Coronel | coronel
+Battle of the Falkland Islands
+Battle of Heligoland Bight | heligoland bight
+Battle of Dogger Bank | dogger bank
+Battle of Messines | messines
+Battle of Aubers Ridge
+Battle of Neuve Chapelle
+Battle of Fromelles | fromelles
+Battle of Masurian Lakes | masurian lakes
+Gorlice-Tarnow Offensive | gorlice tarnow
+Battle of Sarikamish | sarikamish
+Kerensky Offensive
+Battle of Lake Naroch
+Battle of France | fall of france
+Battle of Crete | crete
+Battle of Greece
+Siege of Tobruk | tobruk
+Battle of Gazala | gazala
+Battle of Kasserine Pass | kasserine pass, kasserine
+Battle of Sicily | invasion of sicily, operation husky
+Battle of Salerno | salerno
+Battle of Ortona | ortona
+Battle of Dieppe | dieppe raid, dieppe
+Battle of the Hurtgen Forest | hurtgen forest
+Battle of Aachen | aachen
+Battle of the Scheldt | scheldt
+Battle of Remagen | remagen
+Battle of Bastogne | bastogne, siege of bastogne
+Operation Bagration | bagration
+Battle of Kiev | kiev, kyiv
+Battle of Smolensk | smolensk
+Battle of Kharkov | kharkov, kharkiv
+Battle of Rzhev | rzhev
+Battle of Sevastopol | sevastopol, siege of sevastopol
+Battle of the Caucasus
+Battle of Budapest | siege of budapest
+Battle of Konigsberg | konigsberg
+Battle of the Seelow Heights | seelow heights
+Warsaw Uprising
+Battle of Westerplatte | westerplatte
+Invasion of Poland
+Winter War
+Battle of Narvik | narvik
+Battle of the River Plate | river plate
+Sinking of the Bismarck | bismarck, battle of the denmark strait
+Battle of Taranto | taranto
+Battle of Cape Matapan | cape matapan, matapan
+Battle of the Java Sea | java sea
+Battle of Savo Island | savo island
+Battle of the Philippine Sea | philippine sea
+Battle of Wake Island | wake island
+Battle of Attu | attu
+Battle of Imphal | imphal
+Battle of Kohima | kohima
+Battle of Changsha | changsha
+Battle of Shanghai | shanghai
+Battle of Nanking | nanking, nanjing
+Battle of Wuhan | wuhan
+Battle of Khalkhin Gol | khalkhin gol, nomonhan
+Battle of Buna-Gona | buna gona
+Kokoda Track Campaign | kokoda, kokoda trail
+Battle of Milne Bay | milne bay
+Battle of Luzon | luzon
+Battle of Mindanao
+Battle of Balikpapan
+Battle of Hamburg | operation gomorrah
+Operation Torch | torch
+Operation Dragoon | dragoon
+Operation Cobra
+Battle of Carentan | carentan
+Battle of Caen | caen
+Falaise Pocket | falaise
+Battle of Brest
+Battle of the Ruhr
+Battle of Mortain | mortain

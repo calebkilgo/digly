@@ -1,0 +1,126 @@
+# title: Countries that no longer exist
+# level: 3
+# domain: history
+# noun: countries
+# rule: Nations that broke up, merged or were absorbed.
+# rule: Empires and countries that only changed their name don't count.
+Soviet Union | ussr, union of soviet socialist republics, cccp
+Yugoslavia
+Czechoslovakia
+East Germany | german democratic republic, gdr, ddr
+West Germany | federal republic of germany, frg, brd
+Prussia | kingdom of prussia
+Rhodesia | southern rhodesia
+Gran Colombia
+United Arab Republic
+South Vietnam | republic of vietnam
+North Vietnam | democratic republic of vietnam
+Hawaii | kingdom of hawaii, hawaiian kingdom
+Republic of Texas | texas
+Confederate States | confederacy, confederate states of america, csa
+Kingdom of Sardinia | sardinia, piedmont sardinia
+Kingdom of the Two Sicilies | two sicilies
+Papal States
+Republic of Venice | venice, venetian republic
+Republic of Genoa | genoa
+Bavaria | kingdom of bavaria
+Saxony | kingdom of saxony
+Hanover | kingdom of hanover
+Wurttemberg | kingdom of wurttemberg
+Bohemia | kingdom of bohemia
+Kingdom of Aragon | aragon
+Kingdom of Castile | castile
+Kingdom of Navarre | navarre
+Burgundy | duchy of burgundy
+Brittany | duchy of brittany
+Kingdom of Scotland
+Kingdom of England
+Wessex
+Mercia
+Northumbria
+Kingdom of Ireland
+Polish-Lithuanian Commonwealth | commonwealth of poland
+Grand Duchy of Lithuania
+Livonia
+Novgorod Republic | novgorod
+Kievan Rus | kyivan rus
+Khanate of Crimea | crimean khanate
+Kingdom of Hungary
+Serbia and Montenegro
+Federation of Rhodesia and Nyasaland
+Biafra
+Katanga
+Tanganyika
+Zanzibar | sultanate of zanzibar
+Somaliland | british somaliland
+Italian Somaliland
+South West Africa
+Transvaal | south african republic
+Orange Free State
+Natal
+Kingdom of Kongo | kongo
+Kingdom of Dahomey | dahomey
+Dutch East Indies
+French Indochina
+Manchukuo | manchuria
+Republic of China (1912-1949)
+Kingdom of Ryukyu | ryukyu
+Sikkim
+Hyderabad State | hyderabad
+Bengal Sultanate
+Kingdom of Kandy | kandy
+Champa
+Annam
+Tonkin
+Cochinchina
+New Spain
+New France
+Viceroyalty of Peru
+Federal Republic of Central America | united provinces of central america
+Republic of Yucatan | yucatan
+Republic of the Rio Grande
+Vermont Republic | vermont
+State of Franklin | franklin
+Republic of West Florida | west florida
+California Republic | bear flag republic
+Kingdom of Araucania
+Newfoundland | dominion of newfoundland
+Free State of Fiume | fiume
+Free City of Danzig | danzig
+Saar | saar protectorate
+Memel Territory
+Carpatho-Ukraine
+Slovak Republic (1939-1945)
+Independent State of Croatia
+Vichy France
+Weimar Republic
+Kingdom of Italy
+Republic of Salo | italian social republic
+Ukrainian People's Republic
+Transcaucasian Federation | transcaucasian socialist federative soviet republic
+Tuvan People's Republic | tannu tuva, tuva
+Far Eastern Republic
+Mongolian People's Republic
+Republic of Ezo | ezo
+Kingdom of Jerusalem
+County of Edessa | edessa
+Principality of Antioch | antioch
+County of Tripoli
+Phoenicia
+Sumer
+Urartu
+Lydia
+Phrygia
+Bactria
+Sparta
+Athens | athenian empire
+Etruria | etruscans
+Gaul
+Dacia
+Numidia
+Mauretania
+Kush | kingdom of kush, nubia
+Nabataea | nabataean kingdom
+Palmyra | palmyrene empire
+Volga Bulgaria
+Tiwanaku

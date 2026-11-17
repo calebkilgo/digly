@@ -4,6 +4,7 @@
 // clock starts, and never sees rarity before finish().
 
 import type { QuickCheck } from "../rules/quickCheck";
+import type { TierKey } from "../rules/scoring";
 
 export type AttemptMode = "ranked" | "practice";
 export type LevelNo = 1 | 2 | 3;
@@ -56,12 +57,13 @@ export interface SubmitResult {
   canonical?: string; // display name for accepted and duplicate answers
   corrected?: boolean; // the input was auto-corrected to this answer
   num?: number; // answer number, matching AttemptStart.check
-  acceptedCount: number;
 }
 
 export interface RevealedAnswer {
   name: string;
-  rarity: number;
+  rarity: number; // shown score 1..100
+  tier?: TierKey;
+  z?: number;
   pct?: number; // share of players who find it, 0..100
   est?: boolean; // pct is still an estimate (too few players so far)
 }

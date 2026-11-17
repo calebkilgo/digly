@@ -1,0 +1,129 @@
+# title: Freshwater fish
+# level: 2
+# domain: nature
+# noun: fish
+# rule: Fish that live in lakes and rivers, including pet fish.
+# rule: Fish that swim between rivers and the sea, like salmon, count.
+# strip: fish
+Trout | rainbow trout, brown trout
+Bass | largemouth bass, smallmouth bass, black bass
+Catfish | channel catfish
+Salmon
+Carp | common carp
+Goldfish
+Pike | northern pike
+Perch | yellow perch
+Walleye
+Bluegill
+Crappie
+Tilapia
+Piranha
+Koi
+Sunfish | pumpkinseed
+Guppy
+Betta | siamese fighting fish
+Minnow
+Sturgeon
+Eel
+Muskellunge | muskie, musky
+Gar | longnose gar, alligator gar
+Angelfish
+Tetra | neon tetra
+Bream
+Brook Trout | speckled trout
+Lake Trout
+Arctic Char | char
+Steelhead
+Grayling
+Whitefish
+Shad
+Bowfin
+Paddlefish
+Molly
+Platy
+Swordtail
+Zebrafish | zebra danio, danio
+Oscar
+Discus
+Cichlid
+Gourami
+Pleco | plecostomus
+Loach | clown loach
+Barb | tiger barb
+Rasbora
+Killifish
+Corydoras | cory catfish
+Arowana
+Arapaima | pirarucu
+Snakehead
+Freshwater Drum | sheepshead
+Sauger
+Rock Bass
+Warmouth
+White Bass
+Striped Bass | striper
+Chub
+Dace
+Shiner
+Sucker | white sucker
+Buffalo Fish | bigmouth buffalo
+Burbot
+Zander
+Tench
+Roach
+Rudd
+Ide
+Barbel
+Mahseer
+Nile Perch
+Lungfish
+Bichir
+Peacock Bass
+Pacu
+Rohu
+Catla
+Golden Shiner
+Fathead Minnow
+Mosquitofish
+Sculpin
+Darter
+Stickleback
+Lamprey
+Cutthroat Trout
+Golden Trout
+Dolly Varden
+Kokanee
+Sockeye Salmon | sockeye, red salmon
+Chinook Salmon | king salmon, chinook
+Coho Salmon | silver salmon, coho
+Atlantic Salmon
+Huchen | danube salmon
+Taimen
+Wels Catfish | wels
+Mekong Giant Catfish
+Flathead Catfish
+Blue Catfish
+Bullhead
+Electric Eel
+Silver Dollar
+Hatchetfish
+Rainbowfish
+Archerfish
+Pufferfish | freshwater puffer
+Mudminnow
+Pickerel | chain pickerel
+Cisco
+Mooneye
+Goldeye
+Gudgeon
+Bleak
+Asp
+Vendace
+Chinese Paddlefish
+Grass Carp
+Silver Carp
+Bighead Carp
+Crucian Carp
+Black Ghost Knifefish | knifefish
+Elephantnose Fish
+Endler's Livebearer | endler

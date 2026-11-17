@@ -75,6 +75,7 @@ export const GEM_FILL: Record<Tier["key"], { base: string; shade: string; light:
   copper: { base: "#d9773a", shade: "#9a4a1e", light: "#ffb27a" },
   gold: { base: "#ffc928", shade: "#c98a00", light: "#fff0a0" },
   diamond: { base: "#9ff0ff", shade: "#4fb8d8", light: "#ffffff" },
+  ruby: { base: "#e0304a", shade: "#8e1630", light: "#ff9aa8" },
   platinum: { base: "#e8ecf6", shade: "#9aa2c4", light: "#ffffff" },
 };
 
@@ -113,6 +114,18 @@ export const GEM_ROWS: Record<Tier["key"], string[]> = {
     ".KBBKKBSK.",
     "KBSK..KSSK",
     "KKK....KKK",
+  ],
+  // round cut, like the ruby in the Pixi reveal
+  ruby: [
+    "..KKKKKK..",
+    ".KLLBBBBK.",
+    "KLLLBBBBSK",
+    "KLLBBBBBSK",
+    "KBBBBBBSSK",
+    "KBBBBBSSSK",
+    ".KBBSSSSK.",
+    "..KKKKKK..",
+    "..........",
   ],
   diamond: [
     "..KKKKKK..",

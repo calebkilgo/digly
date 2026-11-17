@@ -1,0 +1,163 @@
+# title: Chess words
+# level: 2
+# domain: sports and games
+# noun: words
+# rule: Pieces, moves, openings and other words from chess.
+King
+Queen
+Rook | castle
+Bishop
+Knight | horse
+Pawn
+Checkmate | mate
+Check
+Stalemate
+Castling | castle kingside, castle queenside
+En Passant
+Promotion | queening, pawn promotion
+Grandmaster | gm
+Board | chessboard
+Opening
+Endgame
+Middlegame
+Gambit
+Queen's Gambit
+Fork
+Pin
+Skewer
+Sacrifice | sac
+Draw
+Resign | resignation
+Blunder
+Tempo
+Zugzwang
+File
+Rank
+Diagonal
+Square
+Clock | chess clock
+Blitz
+Bullet
+Rapid
+Elo | elo rating, rating
+Tournament
+International Master | im
+FIDE Master | fm
+Discovered Check | discovered attack
+Double Check
+Back Rank Mate | back rank
+Scholar's Mate
+Fool's Mate
+Smothered Mate
+Sicilian Defense | sicilian
+French Defense | french
+Caro-Kann | caro kann defense
+Ruy Lopez | spanish opening
+Italian Game | giuoco piano
+King's Indian Defense | kings indian
+Nimzo-Indian Defense | nimzo indian
+Grunfeld Defense | grunfeld
+Slav Defense | slav
+Dutch Defense | dutch
+Pirc Defense | pirc
+Alekhine's Defense | alekhine
+Scandinavian Defense | scandinavian, center counter
+English Opening | english
+London System | london
+King's Gambit
+Evans Gambit
+Danish Gambit
+Benko Gambit
+Budapest Gambit
+Englund Gambit
+Petrov's Defense | petroff, russian game
+Scotch Game | scotch
+Vienna Game | vienna
+Four Knights Game | four knights
+Catalan
+Reti Opening | reti
+Bird's Opening | bird
+Stonewall
+Fianchetto
+Kingside
+Queenside
+Passed Pawn
+Doubled Pawns
+Isolated Pawn | isolani
+Backward Pawn
+Pawn Chain
+Pawn Structure
+Pawn Storm
+Outpost
+Open File
+Half-Open File | semi open file
+Seventh Rank
+Overload | overloading
+Deflection
+Decoy
+Interference
+Zwischenzug | intermezzo
+Desperado
+Windmill
+Perpetual Check | perpetual
+Threefold Repetition | repetition
+Fifty-Move Rule | fifty move rule, 50 move rule
+Touch-Move | touch move
+Adjust | j'adoube, jadoube
+Flag | flag fall
+Time Control
+Increment
+Time Trouble | zeitnot
+Opposition
+Triangulation
+Lucena Position | lucena
+Philidor Position | philidor
+Fortress
+Tablebase
+Exchange
+Exchange Sacrifice
+Minor Piece
+Major Piece
+Material
+Development | develop
+Center | centre
+Initiative
+Prophylaxis
+Combination
+Tactic | tactics
+Strategy
+Hanging Piece | hanging
+Trap
+Swindle
+Hypermodern
+Simul | simultaneous exhibition
+Blindfold Chess | blindfold
+Chess960 | fischer random
+Notation | algebraic notation
+Patzer
+Kibitzer | kibitz
+Woodpusher
+Chess Engine | engine
+Stockfish
+Candidate Moves
+Analysis
+Brilliancy | brilliant move
+Inaccuracy
+Mistake
+Book Move | theory
+Novelty | tn
+Rating Points
+Puzzle
+Opening Repertoire | repertoire
+Underpromotion
+Bad Bishop
+Good Bishop
+Bishop Pair
+Lone King
+Mating Net
+Arabian Mate
+Anastasia's Mate
+Boden's Mate
+Epaulette Mate
+Legal's Mate
+Opera Mate

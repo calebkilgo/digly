@@ -1,0 +1,105 @@
+# title: Dishes made with potatoes
+# level: 1
+# domain: food
+# noun: dishes
+# rule: Foods where potato is the main ingredient.
+# rule: Plain "potato" doesn't count.
+French Fries | fries, chips, freedom fries, pommes frites, hot chips
+Mashed Potatoes | mash, mashed potato
+Baked Potato | jacket potato
+Potato Chips | crisps
+Hash Browns | hashbrowns, hash brown
+Tater Tots | tots
+Potato Salad
+Scalloped Potatoes
+Potatoes au Gratin | au gratin, gratin, au gratin potatoes
+Home Fries
+Potato Wedges | wedges
+Potato Soup
+Loaded Baked Potato | loaded potato
+Twice Baked Potato | twice baked potatoes
+Roast Potatoes | roasted potatoes, roast potato
+Gnocchi
+Latkes | latke, potato pancakes, potato pancake
+Pierogi | pierogies, perogies
+Shepherd's Pie | shepherds pie, cottage pie
+Poutine
+Curly Fries
+Waffle Fries
+Sweet Potato Fries
+Potato Skins
+Hasselback Potatoes | hasselback
+Smashed Potatoes
+Potato Croquettes | croquettes
+Duchess Potatoes
+Rosti | roesti
+Colcannon
+Bubble and Squeak
+Samosa | samosas
+Aloo Gobi
+Vichyssoise
+Patatas Bravas | bravas
+Spanish Omelette | tortilla espanola, spanish tortilla, tortilla de patatas
+Knish | knishes
+Boxty
+Gratin Dauphinois | dauphinoise potatoes, dauphinoise
+Lyonnaise Potatoes
+Pommes Anna | potatoes anna
+Potato Gratin
+Fondant Potatoes
+Hash | corned beef hash
+Potato Bread
+Potato Leek Soup | leek and potato soup
+Shoestring Fries
+Steak Fries
+Crinkle Cut Fries | crinkle fries
+Chili Cheese Fries
+Cheese Fries
+Garlic Mashed Potatoes
+Potato Dumplings
+Kartoffelsalat | german potato salad
+Bauernfruhstuck
+Raggmunk
+Kugel | potato kugel
+Tartiflette
+Aligot
+Pommes Souffle
+Stamppot
+Rumbledethumps
+Stovies
+Champ
+Pasties | cornish pasty, pasty
+Aloo Paratha
+Aloo Tikki
+Vada Pav
+Masala Dosa
+Batata Vada
+Papa Rellena
+Causa | causa limena
+Papas a la Huancaina | papa a la huancaina
+Salchipapas
+Llapingachos
+Brambory
+Draniki
+Kroppkakor
+Cepelinai | zeppelins
+Halusky
+Lefse
+Potato Cakes
+Potato Scones | tattie scones
+Potato Rolls
+Jojos
+Funeral Potatoes
+Tornado Potato | spiral potato
+Potato Pizza
+Potato Curry
+Aloo Matar
+Dum Aloo
+Bombay Potatoes
+Patatas a lo Pobre
+Pommes Dauphine
+Disco Fries
+Potato Puffs
+Potato Casserole
+Truffle Fries
+Animal Style Fries

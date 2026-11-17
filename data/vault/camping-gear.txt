@@ -1,0 +1,106 @@
+# title: Camping gear
+# level: 1
+# domain: everyday objects
+# noun: items
+# rule: Things you'd pack for a camping trip.
+# rule: Food doesn't count.
+Tent
+Sleeping Bag
+Flashlight | torch
+Lantern
+Backpack | rucksack, pack
+Cooler | ice chest
+Sleeping Pad | sleeping mat, camping mat
+Air Mattress | air bed, inflatable mattress
+Camp Stove | stove, camping stove, portable stove
+Tarp | tarpaulin
+Rope | cord, paracord
+Pocket Knife | knife, swiss army knife, multitool, multi tool
+Matches
+Lighter
+Firewood
+Hatchet | axe, ax
+Camp Chair | camping chair, folding chair
+Hammock
+Water Bottle | canteen
+Bug Spray | insect repellent, mosquito repellent
+Sunscreen | sunblock
+First Aid Kit
+Compass
+Map
+Headlamp | head torch
+Pillow | camp pillow
+Blanket
+Cooking Pot | pot
+Frying Pan | skillet
+Mess Kit
+Plates
+Cups | mug, camp mug
+Utensils | spork, cutlery
+Can Opener
+Water Filter | water purifier, purification tablets
+Tent Stakes | pegs, tent pegs
+Mallet | hammer
+Rain Jacket | raincoat, poncho
+Hiking Boots | boots
+Fishing Rod | fishing pole
+Shovel | trowel, camp shovel
+Toilet Paper
+Trash Bags | garbage bags
+Batteries
+Radio
+Binoculars
+Whistle
+Duct Tape
+Bandana
+Hat
+Sunglasses
+Gloves
+Fleece | jacket
+Thermal Underwear | base layer
+Wool Socks | socks
+Camp Table | folding table
+Dutch Oven
+Grill | grate, grill grate
+Marshmallow Sticks | roasting sticks
+Propane | propane tank, fuel canister
+Fire Starter | firestarter, flint, ferro rod
+Kindling
+Saw | folding saw
+Carabiner
+Bear Spray
+Bear Canister | bear bag
+Trekking Poles | hiking poles, walking stick
+Dry Bag
+Stuff Sack
+Bivy Sack | bivouac sack, bivy
+Ground Cloth | footprint, groundsheet
+Mosquito Net
+Solar Charger | power bank
+GPS
+Camp Towel | towel
+Soap | biodegradable soap
+Toothbrush
+Wet Wipes | baby wipes
+Hand Sanitizer
+Cot | camping cot
+Canopy | pop up canopy, gazebo
+Water Jug | water container
+Percolator | coffee maker
+Kettle
+Tongs
+Spatula
+Cutting Board
+Dish Tub | wash basin
+Clothesline
+Zip Ties
+Repair Kit
+Emergency Blanket | space blanket
+Signal Mirror
+Walkie Talkies | two way radio
+Camera
+Playing Cards
+Guitar
+Glow Sticks
+Tent Footprint
+String Lights

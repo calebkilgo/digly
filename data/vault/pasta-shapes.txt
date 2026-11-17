@@ -1,0 +1,122 @@
+# title: Pasta shapes
+# level: 1
+# domain: food
+# noun: pastas
+# rule: Kinds of pasta by shape or name, like penne or ravioli.
+# rule: Noodles count. Dishes like carbonara don't.
+Spaghetti
+Penne
+Macaroni | elbow macaroni, elbows
+Fettuccine | fettucine
+Lasagna | lasagne
+Ravioli
+Linguine
+Rigatoni
+Farfalle | bow tie, bowtie pasta, bow ties
+Rotini
+Fusilli
+Tortellini
+Angel Hair | capellini
+Orzo
+Ziti
+Shells | conchiglie, pasta shells, jumbo shells
+Manicotti
+Cannelloni
+Gnocchi
+Vermicelli
+Tagliatelle
+Pappardelle
+Bucatini
+Orecchiette
+Cavatappi
+Gemelli
+Ditalini
+Radiatori
+Campanelle
+Rotelle | wagon wheels, ruote
+Stelline | stars
+Alphabet Pasta | alphabets, alfabeto
+Acini di Pepe
+Fideo | fideos
+Egg Noodles
+Lo Mein
+Ramen
+Udon
+Soba
+Rice Noodles
+Tortelloni
+Mezzelune
+Agnolotti
+Cappelletti
+Anolini
+Casarecce
+Strozzapreti
+Trofie
+Paccheri
+Mafaldine | mafalda, reginette
+Tagliolini
+Spaghettini
+Fedelini
+Mostaccioli
+Calamarata
+Lumache
+Lumaconi
+Conchiglioni
+Pipe Rigate | pipette
+Gramigna
+Garganelli
+Cavatelli
+Malloreddus
+Pici
+Bigoli
+Busiate
+Lorighittas
+Corzetti
+Cencioni
+Sagnarelli
+Pizzoccheri
+Maltagliati
+Quadretti
+Pastina
+Anelli
+Anelletti
+Tubetti
+Ditali
+Elicoidali
+Mezze Maniche
+Candele
+Tortiglioni
+Sedani
+Creste di Gallo
+Fiori
+Gigli
+Torchio
+Spirali
+Fusilli Bucati
+Lanterne
+Farfalline
+Spätzle | spaetzle
+Kluski
+Couscous
+Fregola
+Israeli Couscous | pearl couscous, ptitim
+Tortellacci
+Sacchetti | beggars purses
+Fagottini
+Caramelle
+Culurgiones
+Pansotti
+Ravioloni
+Stringozzi
+Strangozzi
+Chitarra | spaghetti alla chitarra
+Trenette
+Zitoni
+Bavette
+Ricciolini
+Riccioli
+Scialatielli
+Fileja
+Lagane
+Tajarin
+Testaroli

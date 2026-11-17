@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { normalize, editDistance } from "../src/game/rules/normalize";
 import { AnswerIndex, parseAnswerBlock } from "../src/game/rules/answerIndex";
-import { finalScore, topThree, tierFor, percentile, foundByPct, MAX_SCORE } from "../src/game/rules/scoring";
+import { SCORING, bestN, gameScore, levelScore, tierFor, tierFromZ, tierOf, percentile, foundByPct, type TierKey } from "../src/game/rules/scoring";
+import { liveRarity } from "../src/game/rules/rarity";
 import { rankEntries } from "../src/game/rules/leaderboard";
 import { isAcceptingSubmissions, expiresAt, ROUND_MS, LATE_GRACE_MS } from "../src/game/rules/timer";
 import { dayNumber, nextResetAt, LAUNCH_DAY_UTC } from "../src/game/rules/schedule";
@@ -85,34 +86,39 @@ describe("answer index", () => {
 });
 
 describe("scoring", () => {
-  it("sums the three rarest", () => {
-    const a = [
-      { name: "a", rarity: 10 },
-      { name: "b", rarity: 90 },
-      { name: "c", rarity: 40 },
-      { name: "d", rarity: 70 },
-    ];
-    expect(topThree(a).map((x) => x.name)).toEqual(["b", "d", "c"]);
-    expect(finalScore(a)).toBe(200);
+  const ans = (name: string, tier: TierKey, z: number) => ({ name, rarity: 50, tier, z });
+
+  it("best 3 = most tier points, ties to the higher z", () => {
+    const a = [ans("a", "copper", -2), ans("b", "diamond", 0.5), ans("c", "gold", -0.5), ans("d", "diamond", 1.1), ans("e", "gold", 0)];
+    expect(bestN(a).map((x) => x.name)).toEqual(["d", "b", "e"]);
   });
 
-  it("missing slots count zero", () => {
-    expect(finalScore([{ name: "a", rarity: 55 }])).toBe(55);
-    expect(finalScore([])).toBe(0);
+  it("level score = (best 3 + clean bonus + penalties) x multiplier", () => {
+    const P = SCORING.points;
+    const full = levelScore([ans("a", "ruby", 2), ans("b", "diamond", 1), ans("c", "gold", 0)], 3);
+    expect(full.raw).toBe(P.ruby + P.diamond + P.gold + SCORING.cleanBonus);
+    expect(full.points).toBe(Math.round(full.raw * SCORING.multipliers[3]));
+    const one = levelScore([ans("a", "gold", 0)], 1);
+    expect(one.raw).toBe(P.gold + 2 * SCORING.emptySlot);
+    const none = levelScore([], 2);
+    expect(none.raw).toBe(3 * SCORING.emptySlot + SCORING.caveIn);
+    expect(none.points).toBeLessThan(0);
+    expect(gameScore([-50, -20, 10])).toBe(0);
   });
 
-  it("caps at 300", () => {
-    const a = Array.from({ length: 6 }, (_, i) => ({ name: String(i), rarity: 100 }));
-    expect(finalScore(a)).toBe(MAX_SCORE);
-  });
-
-  it("maps rarity to gem tiers", () => {
-    expect(tierFor(1).key).toBe("copper");
-    expect(tierFor(40).key).toBe("copper");
-    expect(tierFor(60).key).toBe("gold");
-    expect(tierFor(85).key).toBe("gold");
-    expect(tierFor(95).key).toBe("diamond");
+  it("maps z to tiers and display scores to tiers the same way", () => {
+    expect(tierFromZ(-1.2)).toBe("copper");
+    expect(tierFromZ(-1.0)).toBe("gold");
+    expect(tierFromZ(0.24)).toBe("gold");
+    expect(tierFromZ(0.25)).toBe("diamond");
+    expect(tierFromZ(1.5)).toBe("ruby");
+    expect(tierFor(15).key).toBe("copper");
+    expect(tierFor(16).key).toBe("gold");
+    expect(tierFor(60).key).toBe("diamond");
+    expect(tierFor(93).key).toBe("ruby");
     expect(tierFor(100).key).toBe("platinum");
+    // a stored tier always wins over the number
+    expect(tierOf({ name: "x", rarity: 99, tier: "gold" }).key).toBe("gold");
   });
 
   it("compares a score against other players", () => {
@@ -161,25 +167,15 @@ describe("leaderboard", () => {
   });
 });
 
-describe("calibrated rarity", () => {
-  it("every category has exactly one Platinum and only a few Diamonds", () => {
-    for (const s of SEEDS) {
-      const recs = parseAnswerBlock(s.answers, s.slug);
-      expect(recs.filter((r) => r.rarity === 100), s.slug).toHaveLength(1);
-      const diamonds = recs.filter((r) => tierFor(r.rarity).key === "diamond").length;
-      expect(diamonds, s.slug).toBeGreaterThan(0);
-      expect(diamonds / recs.length, s.slug).toBeLessThan(0.07);
-      // rarer curated values never score lower
-      const sorted = [...recs].sort((a, b) => a.curated - b.curated);
-      for (let i = 1; i < sorted.length; i++) expect(sorted[i].rarity).toBeGreaterThanOrEqual(sorted[i - 1].rarity);
+describe("rarity tiers", () => {
+  it("every category has exactly one Platinum, and rating order never flips the score", () => {
+    for (const sd of SEEDS) {
+      const recs = parseAnswerBlock(sd.answers, sd.slug);
+      const m = liveRarity(recs, null);
+      expect([...m.values()].filter((v) => v.tier === "platinum"), sd.slug).toHaveLength(1);
+      const sorted = [...recs].sort((a, b) => m.get(a.id)!.rating - m.get(b.id)!.rating);
+      for (let i = 1; i < sorted.length; i++) expect(m.get(sorted[i].id)!.rarity).toBeGreaterThanOrEqual(m.get(sorted[i - 1].id)!.rarity);
     }
-  });
-
-  it("most answers are common and gold or better is about a quarter", () => {
-    const recs = parseAnswerBlock(SEEDS[0].answers, SEEDS[0].slug);
-    const goldUp = recs.filter((r) => r.rarity >= 56).length / recs.length;
-    expect(goldUp).toBeGreaterThan(0.18);
-    expect(goldUp).toBeLessThan(0.32);
   });
 });
 

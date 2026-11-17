@@ -1,8 +1,7 @@
 import { AnswerIndex, CORRECTED, parseAnswerBlock, type AnswerRecord } from "../rules/answerIndex";
-import { finalScore, topN } from "../rules/scoring";
+import { bestN, levelScore, type Scored } from "../rules/scoring";
 import { liveRarity, type LiveRarity } from "../rules/rarity";
-import { fingerprint, type QuickCheck } from "../rules/quickCheck";
-import { compact } from "../rules/normalize";
+import { buildQuickCheck, type QuickCheck } from "../rules/quickCheck";
 import { dayNumber, dayStart, formatChallengeNumber } from "../rules/schedule";
 import { LEVELS } from "../rules/levels";
 import { SEEDS, type ChallengeSeed } from "../data/seeds";
@@ -232,12 +231,7 @@ export class DigEngine {
 
   private quickCheck(row: AttemptRow): QuickCheck {
     const { index } = this.indexed(row.slug);
-    const salt = row.id;
-    const keys: Record<string, number> = {};
-    index.answers.forEach((a, i) => {
-      for (const form of [a.normalized, ...a.aliases]) keys[fingerprint(salt, compact(form))] = i;
-    });
-    return { salt, keys };
+    return buildQuickCheck(row.id, index.answers.map((a) => [a.normalized, ...a.aliases]));
   }
 
   private async startPayload(row: AttemptRow, ch: PublicChallenge, now: number): Promise<AttemptStart> {
@@ -264,23 +258,22 @@ export class DigEngine {
   }
 
   async submit(playerId: string, attemptId: string, text: string): Promise<SubmitResult> {
+    // runs in the background behind the browser's instant check, so keep it to as few database calls as possible
     const row = await this.own(playerId, attemptId);
-    const count = async () => (await this.store.listAnswers(row.id)).length;
-    if (row.finishedAt !== null || this.expired(row)) return { status: "expired", acceptedCount: await count() };
+    if (row.finishedAt !== null || this.expired(row)) return { status: "expired" };
     const trimmed = String(text ?? "").trim().slice(0, MAX_LEN);
-    if (!trimmed) return { status: "empty", acceptedCount: await count() };
-    if ((await this.store.bumpSubmissions(row.id)) > MAX_SUBMISSIONS) return { status: "rejected", acceptedCount: await count() };
+    if (!trimmed) return { status: "empty" };
+    if ((await this.store.bumpSubmissions(row.id)) > MAX_SUBMISSIONS) return { status: "rejected" };
 
     const match = this.indexed(row.slug).index.lookup(trimmed);
     if (!match) {
       await this.store.addReject(row.id, trimmed);
-      return { status: "rejected", acceptedCount: await count() };
+      return { status: "rejected" };
     }
     const added = await this.store.addAnswer(row.id, match.answer.id);
-    const n = (await this.store.listAnswers(row.id)).length;
     const num = this.indexed(row.slug).num.get(match.answer.id);
-    if (!added) return { status: "duplicate", canonical: match.answer.canonical, num, acceptedCount: n };
-    return { status: "accepted", canonical: match.answer.canonical, num, corrected: CORRECTED.includes(match.kind), acceptedCount: n };
+    if (!added) return { status: "duplicate", canonical: match.answer.canonical, num };
+    return { status: "accepted", canonical: match.answer.canonical, num, corrected: CORRECTED.includes(match.kind) };
   }
 
   async finish(playerId: string, attemptId: string): Promise<AttemptResult> {
@@ -294,14 +287,18 @@ export class DigEngine {
     const { byId } = this.indexed(row.slug);
     const live = await this.rarity(row.slug, row.day);
     const accepted = (await this.store.listAnswers(row.id)).map((id) => byId.get(id)).filter((a): a is AnswerRecord => !!a);
-    const info = LEVELS[row.level - 1];
-    const score = finalScore(accepted.map((a) => ({ name: a.canonical, rarity: live.get(a.id)!.rarity })), info.scored);
+    const s = levelScore(bestN(accepted.map((a) => this.scored(a, live))), row.level);
     await this.store.finishAttempt(row.id, {
       finishedAt: Math.min(this.now(), row.expiresAt),
-      score,
-      points: score * info.mult,
+      score: s.raw,
+      points: s.points,
       uniqueCount: accepted.length,
     });
+  }
+
+  private scored(a: AnswerRecord, live: Map<string, LiveRarity>): Scored {
+    const l = live.get(a.id)!;
+    return { name: a.canonical, rarity: l.rarity, tier: l.tier, z: Math.round(l.z * 1000) / 1000 };
   }
 
   // Rebuilt from the stored answers every time, so finish() is idempotent.
@@ -310,7 +307,7 @@ export class DigEngine {
     const live = await this.rarity(row.slug, row.day);
     const reveal = (a: AnswerRecord) => {
       const l = live.get(a.id)!;
-      return { name: a.canonical, rarity: l.rarity, pct: l.pct, ...(l.estimated ? { est: true } : {}) };
+      return { ...this.scored(a, live), pct: l.pct, ...(l.estimated ? { est: true } : {}) };
     };
     const ids = await this.store.listAnswers(row.id);
     const got = new Set(ids);
@@ -319,12 +316,14 @@ export class DigEngine {
       .filter((a): a is AnswerRecord => !!a)
       .map(reveal);
     const info = LEVELS[row.level - 1];
-    const all = [...index.answers].sort((a, b) => live.get(b.id)!.rarity - live.get(a.id)!.rarity);
-    const missed = all.filter((a) => !got.has(a.id) && live.get(a.id)!.rarity >= 56).slice(0, 12);
+    const all = [...index.answers].sort((a, b) => live.get(b.id)!.rating - live.get(a.id)!.rating);
+    const niche = new Set(["diamond", "ruby", "platinum"]);
+    const missed = all.filter((a) => !got.has(a.id) && niche.has(live.get(a.id)!.tier)).slice(0, 12);
     // rotate through the rare pool so it isn't always the same few
     const offset = accepted.length % Math.max(1, missed.length);
     const pick = [...missed.slice(offset), ...missed.slice(0, offset)].slice(0, 4);
-    const score = row.score ?? finalScore(accepted, info.scored);
+    const top = bestN(accepted);
+    const s = levelScore(top, row.level);
     return {
       attemptId: row.id,
       challengeId: `${row.day}:${row.level}:${row.slug}`,
@@ -332,9 +331,9 @@ export class DigEngine {
       mode: row.mode,
       level: row.level,
       multiplier: info.mult,
-      score,
-      points: row.points ?? score * info.mult,
-      top: topN(accepted, info.scored),
+      score: row.score ?? s.raw,
+      points: row.points ?? s.points,
+      top,
       accepted,
       rejected: await this.store.listRejects(row.id),
       missed: pick.map(reveal),

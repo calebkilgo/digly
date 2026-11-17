@@ -2,7 +2,7 @@
 // nothing to load. Kept deliberately simple: soft blips and bell-ish chimes.
 // The context is created on the first user gesture (autoplay rules).
 
-type Tier = "copper" | "gold" | "diamond" | "platinum";
+type Tier = "copper" | "gold" | "diamond" | "ruby" | "platinum";
 
 // C major pentatonic, so any run of chimes sounds pleasant together
 const PENTA = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.66, 1318.51, 1567.98, 1760];
@@ -353,9 +353,18 @@ class Sfx {
       this.noise(t, 0.2, "lowpass", 400, 1, 0.3);
       return;
     }
-    const roots: Record<Tier, number> = { copper: 523, gold: 659, diamond: 880, platinum: 1046.5 };
+    const roots: Record<Tier, number> = { copper: 523, gold: 659, diamond: 880, ruby: 987.8, platinum: 1046.5 };
     const r = roots[tier];
-    const chord = tier === "platinum" ? [1, 1.25, 1.5, 2, 2.5, 3, 4] : tier === "diamond" ? [1, 1.25, 1.5, 2, 2.5] : tier === "gold" ? [1, 1.25, 1.5, 2] : [1, 1.5, 2];
+    const chord =
+      tier === "platinum"
+        ? [1, 1.25, 1.5, 2, 2.5, 3, 4]
+        : tier === "ruby"
+          ? [1, 1.2, 1.5, 2, 2.4, 3]
+          : tier === "diamond"
+            ? [1, 1.25, 1.5, 2, 2.5]
+            : tier === "gold"
+              ? [1, 1.25, 1.5, 2]
+              : [1, 1.5, 2];
     chord.forEach((m, i) => this.tone(t + i * 0.045, "sine", r * m, r * m, 0.7 + i * 0.1, 0.12, 0.004));
     this.tone(t, "triangle", r * 4, r * 4, 0.25, 0.05);
   }
@@ -369,7 +378,7 @@ class Sfx {
   final(score: number) {
     if (!this.ready) return;
     const t = this.ctx!.currentTime;
-    const base = score >= 240 ? 392 : score >= 160 ? 349 : 294;
+    const base = score >= 500 ? 392 : score >= 250 ? 349 : 294;
     [1, 1.25, 1.5, 2].forEach((m, i) => this.tone(t + i * 0.07, "triangle", base * m, base * m, 0.5, 0.11));
   }
 

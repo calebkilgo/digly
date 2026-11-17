@@ -1,0 +1,119 @@
+# title: Empires in history
+# level: 2
+# domain: history
+# noun: empires
+# rule: Empires, caliphates and imperial dynasties.
+# rule: "Empire" on the end is fine.
+# strip: empire, dynasty, caliphate, sultanate
+Roman Empire | romans, rome
+British Empire | british, england
+Ottoman Empire | ottomans, ottoman turks
+Mongol Empire | mongols, mongolian empire
+Persian Empire | persia, achaemenid empire, achaemenid
+Byzantine Empire | eastern roman empire, byzantium
+Aztec Empire | aztecs
+Inca Empire | incas, inka
+Holy Roman Empire
+Russian Empire | tsarist russia, imperial russia
+Spanish Empire
+French Empire | napoleonic empire, first french empire
+Egyptian Empire | ancient egypt, new kingdom
+Mughal Empire | mughals, moghul empire
+Japanese Empire | empire of japan, imperial japan
+German Empire | german reich, second reich, kaiserreich
+Austro-Hungarian Empire | austria hungary
+Chinese Empire | imperial china
+Macedonian Empire | alexander the great, macedonia
+Portuguese Empire
+Babylonian Empire | babylon, babylonians, neo babylonian empire
+Assyrian Empire | assyria, assyrians, neo assyrian empire
+Carthaginian Empire | carthage
+Mali Empire | mali
+Han Dynasty | han
+Ming Dynasty | ming
+Qing Dynasty | qing, manchu
+Tang Dynasty | tang
+Qin Dynasty | qin
+Song Dynasty | song
+Yuan Dynasty | yuan
+Dutch Empire
+Austrian Empire | habsburg empire, hapsburg
+Maurya Empire | mauryan empire
+Gupta Empire
+Songhai Empire | songhay
+Ghana Empire | wagadu
+Akkadian Empire | akkad
+Hittite Empire | hittites
+Khmer Empire | angkor
+Seleucid Empire | seleucids
+Parthian Empire | parthia
+Sasanian Empire | sassanid empire, sasanids
+Umayyad Caliphate | umayyads
+Abbasid Caliphate | abbasids
+Fatimid Caliphate | fatimids
+Rashidun Caliphate
+Seljuk Empire | seljuks, seljuq
+Timurid Empire | timurids, tamerlane
+Safavid Empire | safavids
+Golden Horde
+Swedish Empire
+Danish Empire | danish colonial empire
+Italian Empire
+Belgian Empire | belgian colonial empire
+Brazilian Empire | empire of brazil
+Mexican Empire | first mexican empire
+Ethiopian Empire | abyssinia
+Aksumite Empire | aksum, axum
+Korean Empire
+Tibetan Empire
+Hunnic Empire | huns, attila
+Carolingian Empire | frankish empire, charlemagne
+Bulgarian Empire
+Serbian Empire
+Latin Empire
+Empire of Trebizond | trebizond
+Empire of Nicaea | nicaea
+Angevin Empire
+Ashanti Empire | asante
+Benin Empire | kingdom of benin
+Kanem-Bornu Empire | kanem empire, bornu empire
+Zulu Empire | zulu kingdom
+Oyo Empire
+Chola Empire | chola dynasty
+Maratha Empire | marathas
+Sikh Empire
+Vijayanagara Empire
+Majapahit Empire | majapahit
+Srivijaya Empire | srivijaya
+Durrani Empire | afghan empire
+Kushan Empire | kushans
+Median Empire | medes
+Neo-Sumerian Empire | ur iii, third dynasty of ur
+Elamite Empire | elam
+Mitanni
+Delhi Sultanate
+Ghaznavid Empire | ghaznavids
+Khwarazmian Empire | khwarazm
+Ayyubid Sultanate | ayyubids
+Mamluk Sultanate | mamluks
+Almoravid Empire | almoravids
+Almohad Caliphate | almohads
+Wari Empire | huari
+Tiwanaku Empire | tiahuanaco
+Toltec Empire | toltecs
+Liao Dynasty | khitan empire
+Jin Dynasty | jurchen
+Sui Dynasty
+Zhou Dynasty | zhou
+Shang Dynasty | shang
+Hephthalite Empire | hephthalites, white huns
+Gokturk Khaganate | gokturks
+Uyghur Khaganate
+Rouran Khaganate
+Xiongnu
+Avar Khaganate | avars
+Khazar Khaganate | khazars
+Polish-Lithuanian Commonwealth
+Haitian Empire | empire of haiti
+Second French Empire
+Central African Empire

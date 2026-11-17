@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { DiglyScene, RockAnchor } from "@/scene/DiglyScene";
 import type { AttemptResult, RevealedAnswer } from "@/game/service/types";
-import { foundLabel, tierFor } from "@/game/rules/scoring";
+import { SCORING, foundLabel, tierOf } from "@/game/rules/scoring";
 import { LEVELS } from "@/game/rules/levels";
 import { hash } from "@/scene/rng";
 import { sfx } from "@/audio/sfx";
@@ -97,19 +97,19 @@ export function RevealScreen(props: {
       setShown((s) => s.map((v, j) => (j === i ? true : v)));
       const a = slots[i];
       sfx.crack();
-      const tk = a ? tierFor(a.rarity).key : null;
+      const tk = a ? tierOf(a).key : null;
       sfx.gem(tk);
       if (tk === "platinum") {
         setPlat(true);
         setTimeout(() => sfx.fanfare(), 250);
         setTimeout(() => setPlat(false), 1700);
       }
-      say(a ? `${a.name}: ${a.rarity}, ${tierFor(a.rarity).label}.` : "Empty rock.");
+      say(a ? `${a.name}: ${a.rarity}, ${tierOf(a).label}.` : "Empty rock.");
     };
 
     if (scene) {
       scene.startReveal(
-        slots.map((a) => ({ tier: a ? tierFor(a.rarity).key : null })),
+        slots.map((a) => ({ tier: a ? tierOf(a).key : null })),
         hash(result.score, result.accepted.length, run.dig.day, ch.level),
         { onLand: () => sfx.thud(), onCrackStart: () => sfx.crackle(), onGem, onDone: countUp },
       );
@@ -168,7 +168,7 @@ export function RevealScreen(props: {
               <div className="name px">No find</div>
             </div>
           );
-        const t = tierFor(a.rarity);
+        const t = tierOf(a);
         return (
           <div className={`rock-label ${t.key === "platinum" ? "platinum" : ""}`} style={pos} key={i}>
             <div className="big-num pts" style={{ color: GEM_FILL[t.key].base }}>
@@ -196,7 +196,8 @@ export function RevealScreen(props: {
       <div className="results-dock px dark lv-dock" ref={dockRef} style={{ visibility: done ? "visible" : "hidden" }}>
         <div className="sub">
           <span>
-            {result.accepted.length} find{result.accepted.length === 1 ? "" : "s"} · top {ch.scored} counted
+            {result.accepted.length} find{result.accepted.length === 1 ? "" : "s"} · best {ch.scored} counted
+            {bonusNote(result.top.length)}
           </span>
           <span className="label" style={{ color: "#8a7fa6" }}>
             {last ? "Last level" : `Next: level ${ch.level + 1} · ${LEVELS[ch.level].seconds}s · x${LEVELS[ch.level].mult}`}
@@ -219,4 +220,11 @@ export function RevealScreen(props: {
       {sheet && <AnswersSheet levels={[ch]} results={[result]} onClose={() => setSheet(false)} />}
     </div>
   );
+}
+
+// the clean-dig bonus or the empty-slot penalty, in a few words
+function bonusNote(found: number) {
+  if (found >= SCORING.best) return ` · +${SCORING.cleanBonus} clean dig`;
+  if (found === 0) return ` · cave-in ${SCORING.best * SCORING.emptySlot + SCORING.caveIn}`;
+  return ` · ${(SCORING.best - found) * SCORING.emptySlot} empty`;
 }

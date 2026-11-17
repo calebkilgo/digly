@@ -1,0 +1,104 @@
+# title: Oceans and seas
+# level: 1
+# domain: geography
+# noun: seas
+# rule: Named oceans and seas. Gulfs and bays don't count.
+# rule: "Ocean" or "Sea" on the end is fine.
+# strip: ocean, sea
+# prefix: sea of, sea of the
+Pacific Ocean
+Atlantic Ocean
+Indian Ocean
+Arctic Ocean
+Southern Ocean | antarctic ocean
+Mediterranean Sea
+Caribbean Sea
+Red Sea
+Dead Sea
+Black Sea
+Caspian Sea
+North Sea
+Baltic Sea
+Arabian Sea
+South China Sea
+East China Sea
+Yellow Sea
+Sea of Japan | east sea
+Bering Sea
+Coral Sea
+Sea of Galilee | lake tiberias, kinneret
+Aegean Sea
+Adriatic Sea
+Irish Sea
+Sargasso Sea
+Ionian Sea
+Tyrrhenian Sea
+Tasman Sea
+Philippine Sea
+Ligurian Sea
+Balearic Sea
+Alboran Sea
+Norwegian Sea
+Greenland Sea
+Barents Sea
+White Sea
+Kara Sea
+Laptev Sea
+East Siberian Sea
+Chukchi Sea
+Beaufort Sea
+Labrador Sea
+Weddell Sea
+Amundsen Sea
+Bellingshausen Sea
+Scotia Sea
+Sulu Sea
+Celebes Sea | sulawesi sea
+Java Sea
+Banda Sea
+Flores Sea
+Timor Sea
+Arafura Sea
+Andaman Sea
+Bismarck Sea
+Solomon Sea
+Sea of Okhotsk | okhotsk
+Sea of Marmara | marmara
+Sea of Azov | azov
+Salton Sea
+Wadden Sea
+Bohai Sea
+Molucca Sea
+Halmahera Sea
+Savu Sea
+Bali Sea
+Seram Sea
+Sibuyan Sea
+Visayan Sea
+Camotes Sea
+Bohol Sea | mindanao sea
+Sea of Crete | cretan sea
+Libyan Sea
+Levantine Sea
+Thracian Sea
+Myrtoan Sea
+Icarian Sea
+Sea of the Hebrides
+Lincoln Sea
+Wandel Sea
+Pechora Sea
+Riiser-Larsen Sea
+Cosmonauts Sea
+Mawson Sea
+Davis Sea
+Somov Sea
+Lazarev Sea
+King Haakon VII Sea
+Dumont d'Urville Sea
+Koro Sea
+New Guinea Sea
+Inland Sea | seto inland sea
+Aral Sea
+Sea of Chiloe | chiloe
+Argentine Sea
+Cantabrian Sea

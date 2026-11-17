@@ -1,0 +1,163 @@
+# title: Canadian cities and provinces
+# level: 2
+# domain: geography
+# noun: places
+# rule: Provinces, territories and cities or towns in Canada.
+Toronto
+Vancouver
+Montreal
+Ottawa
+Quebec | province of quebec
+Ontario
+British Columbia | bc
+Alberta
+Calgary
+Edmonton
+Quebec City | ville de quebec
+Winnipeg
+Nova Scotia
+Manitoba
+Saskatchewan
+Halifax
+Newfoundland and Labrador | newfoundland, labrador
+New Brunswick
+Prince Edward Island | pei
+Yukon
+Nunavut
+Northwest Territories
+Victoria
+Regina
+Saskatoon
+Hamilton
+Niagara Falls
+Banff
+Whistler
+Kelowna
+London
+Windsor
+Kingston
+Mississauga
+Brampton
+Markham
+Vaughan
+Oakville
+Burlington
+Laval
+Gatineau
+Longueuil
+Sherbrooke
+Trois-Rivieres | trois rivieres
+Saguenay
+Levis
+St. John's | saint johns
+Charlottetown
+Fredericton
+Moncton
+Saint John
+Yellowknife
+Whitehorse
+Iqaluit
+Surrey
+Burnaby
+Richmond
+Abbotsford
+Kamloops
+Nanaimo
+Prince George
+Red Deer
+Lethbridge
+Medicine Hat
+Fort McMurray
+Grande Prairie
+Jasper
+Canmore
+Brandon
+Thunder Bay
+Sudbury | greater sudbury
+Sault Ste. Marie | sault ste marie, sault saint marie
+North Bay
+Barrie
+Guelph
+Kitchener
+Waterloo
+Cambridge
+Oshawa
+Peterborough
+Belleville
+Cornwall
+Sarnia
+St. Catharines | saint catharines
+Brantford
+Timmins
+Kenora
+Dartmouth
+Sydney
+Truro
+Lunenburg
+Yarmouth
+Corner Brook
+Gander
+Churchill
+Thompson
+Flin Flon
+Moose Jaw
+Prince Albert
+Swift Current
+Dawson City
+Inuvik
+Tofino
+Penticton
+Vernon
+Squamish
+Chilliwack
+Coquitlam
+Delta
+Langley
+North Vancouver
+West Vancouver
+Saanich
+Terrace
+Prince Rupert
+Cranbrook
+Nelson
+Revelstoke
+Airdrie
+St. Albert | saint albert
+Sherwood Park
+Lloydminster
+Drumheller
+Rimouski
+Chicoutimi
+Drummondville
+Granby
+Saint-Jerome | saint jerome
+Terrebonne
+Repentigny
+Rouyn-Noranda | rouyn noranda
+Val-d'Or | val dor
+Sept-Iles | sept iles
+Gaspe
+Tadoussac
+Mont-Tremblant | mont tremblant
+Stratford
+Collingwood
+Orillia
+Owen Sound
+Huntsville
+Pickering
+Ajax
+Whitby
+Richmond Hill
+Newmarket
+Niagara-on-the-Lake | niagara on the lake
+Welland
+Chatham
+Woodstock
+Bathurst
+Miramichi
+Edmundston
+Summerside
+Labrador City
+Happy Valley-Goose Bay | goose bay
+Rankin Inlet
+Hay River

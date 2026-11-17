@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { DiglyScene } from "@/scene/DiglyScene";
 import type { DigResult } from "@/game/service/types";
-import { percentile, tierFor } from "@/game/rules/scoring";
+import { SCORING, percentile, tierOf } from "@/game/rules/scoring";
 import type { ChallengeService } from "@/game/service/types";
 import { sfx } from "@/audio/sfx";
 import { track } from "@/lib/track";
@@ -147,12 +147,12 @@ export function SummaryScreen(props: {
               <span className="bd-cat">
                 {lv.title}
                 <small>
-                  {lv.levelName} · x{lv.multiplier}
+                  {lv.levelName} · x{lv.multiplier} · {breakdownNote(l.top.length)}
                 </small>
               </span>
               <span className="bd-gems">
                 {l.top.map((t, j) => (
-                  <GemIcon key={j} tier={tierFor(t.rarity).key} size={3} />
+                  <GemIcon key={j} tier={tierOf(t).key} size={3} />
                 ))}
               </span>
               <span className="bd-pts">
@@ -184,4 +184,10 @@ export function SummaryScreen(props: {
       {sheet === "share" && <ShareSheet number={run.dig.number} result={result} beat={beat} onClose={() => setSheet("none")} />}
     </div>
   );
+}
+
+function breakdownNote(found: number) {
+  if (found >= SCORING.best) return `+${SCORING.cleanBonus} clean dig`;
+  if (found === 0) return "cave-in";
+  return `${SCORING.best - found} empty`;
 }

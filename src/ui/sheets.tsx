@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { AttemptResult, DigResult, PublicChallenge, RevealedAnswer } from "@/game/service/types";
-import { foundLabel, tierFor } from "@/game/rules/scoring";
+import { foundLabel, tierOf } from "@/game/rules/scoring";
 import { sfx } from "@/audio/sfx";
 import { GemIcon } from "./art";
 import { GemLadder } from "./GemLadder";
@@ -33,7 +33,7 @@ export function Sheet({ title, onClose, children }: { title: string; onClose: ()
 }
 
 function Row({ a, cls }: { a: RevealedAnswer; cls?: string }) {
-  const t = tierFor(a.rarity);
+  const t = tierOf(a);
   return (
     <li className={cls}>
       <GemIcon tier={t.key} size={2} />
@@ -129,7 +129,7 @@ export function ShareSheet({ number, result, beat, onClose }: { number: string; 
           <span key={i} style={{ display: "flex", gap: 6, justifyContent: "center", alignItems: "center" }}>
             <span className="label" style={{ width: 28 }}>L{l.level}</span>
             {l.top.map((t, j) => (
-              <GemIcon key={j} tier={tierFor(t.rarity).key} size={3} />
+              <GemIcon key={j} tier={tierOf(t).key} size={3} />
             ))}
             <span className="label" style={{ marginLeft: 6 }}>{l.points.toLocaleString()}</span>
           </span>

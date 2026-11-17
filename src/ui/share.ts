@@ -1,10 +1,10 @@
 import type { DigResult } from "@/game/service/types";
-import { tierFor, type Tier } from "@/game/rules/scoring";
+import { tierOf, type Tier } from "@/game/rules/scoring";
 import { GEM_FILL, GEM_ROWS } from "./art";
 
 // Spoiler-free: points and gems, never answer names.
 
-const EMOJI: Record<Tier["key"], string> = { copper: "🟫", gold: "🟨", diamond: "💎", platinum: "⭐" };
+const EMOJI: Record<Tier["key"], string> = { copper: "🟫", gold: "🟨", diamond: "💎", ruby: "🟥", platinum: "⭐" };
 
 // the address printed on the share text and card
 export function siteName() {
@@ -12,8 +12,8 @@ export function siteName() {
 }
 
 function bestGem(r: DigResult): Tier["key"] | null {
-  const order: Tier["key"][] = ["platinum", "diamond", "gold", "copper"];
-  const all = r.levels.flatMap((l) => l.top.map((t) => tierFor(t.rarity).key));
+  const order: Tier["key"][] = ["platinum", "ruby", "diamond", "gold", "copper"];
+  const all = r.levels.flatMap((l) => l.top.map((t) => tierOf(t).key));
   return order.find((k) => all.includes(k)) ?? null;
 }
 
@@ -21,8 +21,8 @@ function bestGem(r: DigResult): Tier["key"] | null {
 export function subline(r: DigResult, beat: number | null) {
   if (beat !== null) return `Rarer than ${beat}% of diggers`;
   const c: Record<string, number> = {};
-  for (const l of r.levels) for (const t of l.top) c[tierFor(t.rarity).key] = (c[tierFor(t.rarity).key] ?? 0) + 1;
-  const parts = (["platinum", "diamond", "gold"] as const).filter((k) => c[k]).map((k) => `${c[k]} ${k}`);
+  for (const l of r.levels) for (const t of l.top) c[tierOf(t).key] = (c[tierOf(t).key] ?? 0) + 1;
+  const parts = (["platinum", "ruby", "diamond", "gold"] as const).filter((k) => c[k]).map((k) => `${c[k]} ${k}`);
   if (parts.length) return parts.join(" · ");
   const finds = r.levels.reduce((n, l) => n + l.accepted.length, 0);
   return finds ? `${finds} find${finds === 1 ? "" : "s"}` : "Back tomorrow";
@@ -30,7 +30,7 @@ export function subline(r: DigResult, beat: number | null) {
 
 export function shareText(number: string, r: DigResult, beat: number | null, site = siteName()) {
   const head = `Digly ${number} ⛏️ ${r.total.toLocaleString()}${r.mode === "practice" ? " (practice)" : ""}`;
-  const rows = r.levels.map((l) => `L${l.level} ${l.top.map((t) => EMOJI[tierFor(t.rarity).key]).join("") || "▫️"}`);
+  const rows = r.levels.map((l) => `L${l.level} ${l.top.map((t) => EMOJI[tierOf(t).key]).join("") || "▫️"}`);
   const best = bestGem(r);
   const brag = beat !== null ? `Rarer than ${beat}% of diggers` : best === "platinum" ? "Found the Platinum" : null;
   return [head, ...(brag ? [brag] : []), ...rows, site].join("\n");
@@ -113,7 +113,7 @@ export async function shareImage(number: string, r: DigResult, beat: number | nu
       return;
     }
     l.top.forEach((t, i) => {
-      const key = tierFor(t.rarity).key;
+      const key = tierOf(t).key;
       const col = GEM_FILL[key];
       const ox = Math.round(gemsX + i * step);
       GEM_ROWS[key].forEach((line, y) =>

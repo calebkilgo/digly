@@ -1,0 +1,108 @@
+# title: Computer parts
+# level: 1
+# domain: technology
+# noun: parts
+# rule: Parts inside a computer or plugged into it.
+# rule: Short forms like CPU or RAM are fine.
+Keyboard
+Mouse
+Monitor | screen, display
+Processor | cpu, central processing unit, chip
+Memory | ram, random access memory
+Hard Drive | hard disk, hdd, hard disk drive
+Motherboard | mainboard, logic board
+Graphics Card | gpu, video card, graphics processing unit
+Power Supply | psu, power supply unit
+Fan | cooling fan, case fan
+Case | tower, computer case, chassis
+Solid State Drive | ssd
+Speakers | speaker
+Webcam | camera
+Microphone | mic
+Headphones | headset
+USB Port | usb
+Printer
+Battery
+Charger | power adapter, power cord
+Cable | cables, cord
+Touchpad | trackpad
+Heat Sink | heatsink
+CD Drive | dvd drive, optical drive, disc drive, cd rom
+Sound Card | audio card
+Network Card | nic, ethernet card, network adapter
+Wi-Fi Card | wifi card, wireless card, wifi adapter
+Modem
+Router
+Flash Drive | thumb drive, usb stick, usb drive, memory stick, jump drive
+External Hard Drive | external drive
+Scanner
+Joystick
+Game Controller | gamepad, controller
+Mouse Pad | mousepad, mouse mat
+Docking Station | dock
+Hub | usb hub
+HDMI Port | hdmi
+Ethernet Port | ethernet, network port
+Cooling System | liquid cooling, water cooling, cooler, cpu cooler, aio
+Thermal Paste | thermal compound
+BIOS | bios chip, firmware chip, uefi
+CMOS Battery | cmos
+Expansion Slot | pcie slot, pci slot, slot
+RAM Slot | dimm slot, memory slot
+Chipset
+Cache
+Capacitor
+Transistor
+Resistor
+Circuit Board | pcb, printed circuit board
+Bus
+SATA Cable | sata
+Ribbon Cable
+Power Button
+Reset Button
+Hinge
+Bezel
+Card Reader | sd card reader
+SD Card | memory card
+Floppy Drive | floppy disk drive, floppy
+Zip Drive
+Tape Drive
+Stylus | pen
+Drawing Tablet | graphics tablet, pen tablet
+Trackball
+Touchscreen
+KVM Switch | kvm
+Surge Protector | power strip
+UPS | uninterruptible power supply
+Riser Card | riser
+Backplate
+Front Panel
+Drive Bay
+Heat Pipe
+Voltage Regulator | vrm
+NVMe Drive | nvme, m 2 drive, m2
+Optane
+TPM Chip | tpm
+Thunderbolt Port | thunderbolt
+DisplayPort
+VGA Port | vga
+DVI Port | dvi
+Audio Jack | headphone jack
+Serial Port
+Parallel Port
+PS/2 Port | ps2 port
+Antenna
+Bluetooth Adapter | bluetooth
+Capture Card
+TV Tuner Card
+RGB Lighting | rgb strip, led strip
+Fan Controller
+Dust Filter
+Standoffs
+Screws
+Keycaps
+Switches | key switches
+Wrist Rest
+Laptop Stand
+Monitor Arm
+Projector

@@ -1,0 +1,11 @@
+# Vault games. Each line: game number: level 1 prompt, level 2 prompt, level 3 prompt
+1: trees, empires, classical-composers
+2: superheroes, freshwater-fish, world-war-battles
+3: units-of-measurement, canadian-places, wine-grapes
+4: potato-dishes, tech-companies, phobias
+5: camping-gear, pokemon, moons
+6: pasta-shapes, mythical-creatures, high-mountains
+7: card-games, courtroom-terms, named-laws
+8: rhymes-with-cat, hats, lost-countries
+9: oceans-and-seas, painters, soccer-clubs
+10: computer-parts, chess-terms, mushrooms

@@ -1,0 +1,154 @@
+# title: Mythical creatures
+# level: 2
+# domain: pop culture
+# noun: creatures
+# rule: Creatures from myths, legends and folklore.
+# rule: Gods like Zeus or Thor don't count.
+Dragon
+Unicorn
+Mermaid | merman, merfolk
+Vampire
+Werewolf
+Phoenix
+Griffin | gryphon, griffon
+Centaur
+Pegasus
+Fairy | faerie
+Elf | elves
+Troll
+Goblin
+Ogre
+Giant
+Yeti | abominable snowman
+Bigfoot | sasquatch
+Loch Ness Monster | nessie
+Minotaur
+Cyclops
+Medusa | gorgon
+Hydra
+Kraken
+Leprechaun
+Gnome
+Dwarf
+Zombie
+Ghost
+Banshee
+Sphinx
+Chimera
+Siren
+Harpy
+Basilisk
+Cerberus
+Satyr | faun
+Chupacabra
+Kitsune
+Nymph
+Golem
+Genie | djinn, jinn
+Pixie
+Sprite
+Imp
+Hobgoblin
+Gargoyle
+Wendigo
+Thunderbird
+Kelpie
+Selkie
+Changeling
+Succubus
+Incubus
+Manticore
+Cockatrice
+Wyvern
+Leviathan
+Behemoth
+Roc
+Hippogriff
+Mothman
+Jersey Devil
+Jackalope
+Kappa
+Tengu
+Oni
+Qilin | kirin
+Chinese Dragon | eastern dragon
+Naga
+Garuda
+Rakshasa
+Bunyip
+Yowie
+Dryad
+Naiad
+Nereid
+Valkyrie
+Draugr
+Jotunn | frost giant
+Fenrir
+Jormungandr | midgard serpent
+Sleipnir
+Kobold
+Brownie
+Boggart
+Bogeyman | boogeyman
+Will-o'-the-wisp | will o the wisp
+Hellhound | black dog
+Barghest
+Grim
+Nuckelavee
+Each-uisge
+Púca | pooka
+Dullahan
+Headless Horseman
+Lamia
+Empusa
+Echidna
+Typhon
+Scylla
+Charybdis
+Ladon
+Python
+Hippocampus
+Ichthyocentaur
+Alicorn
+Simurgh
+Huma
+Bake-kitsune
+Nue
+Baku
+Tanuki
+Yuki-onna
+Bai Ze
+Pixiu
+Fenghuang | chinese phoenix
+Nian
+Jiangshi
+Aswang
+Manananggal
+Tikbalang
+Duende
+La Llorona
+Cadejo
+Nahual | nagual
+Ahuizotl
+Wampus Cat
+Skinwalker
+Pukwudgie
+Piasa
+Ogopogo
+Champ
+Mokele-mbembe
+Tokoloshe
+Impundulu
+Ammit
+Bennu
+Taniwha
+Patupaiarehe
+Hodag
+Shapeshifter
+Doppelganger
+Poltergeist
+Wraith
+Lich
+Ghoul
+Revenant
+Mummy

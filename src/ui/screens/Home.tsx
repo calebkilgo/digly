@@ -99,15 +99,15 @@ export function HomeScreen(props: {
             <li key={l.level} className={`chip-lv lv${l.level}`}>
               <span className="lv-n">Level {l.level}</span>
               <span className="lv-line">{status?.ranked[l.level - 1]?.challenge.title ?? `${l.seconds} sec`}</span>
-              <span className="lv-line">Top {l.scored} count</span>
+              <span className="lv-line">Best {l.scored} count</span>
               <span className="lv-x">x{l.multiplier}</span>
             </li>
           ))}
         </ol>
         <ul className="facts">
-          <li>3 secret categories. Each level digs deeper.</li>
+          <li>Name as many as you can. Your best 3 count.</li>
           <li>
-            <b>Rare answers score big.</b>
+            <b>Rare answers score big.</b> Each level is harder and worth more.
           </li>
         </ul>
         {done ? (

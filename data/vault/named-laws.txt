@@ -1,0 +1,153 @@
+# title: Laws or equations named after a person
+# level: 3
+# domain: science
+# noun: laws
+# rule: Laws, rules, principles, theorems or equations with a person's name.
+# rule: The name alone is enough, like "Ohm" for Ohm's law.
+# strip: law, laws, equation, equations, principle, theorem, rule, formula, razor, constant
+Newton's Laws | newtons laws of motion, laws of motion, newton
+Murphy's Law
+Ohm's Law
+Pythagorean Theorem | pythagoras, pythagoras theorem
+Moore's Law
+Boyle's Law
+Hooke's Law
+Einstein's Mass-Energy Equation | e mc2, emc2, einstein, mass energy equivalence
+Kepler's Laws | kepler
+Charles's Law | charles law
+Archimedes' Principle | archimedes
+Bernoulli's Principle | bernoulli
+Pascal's Law | pascal
+Coulomb's Law | coulomb
+Faraday's Law | faraday
+Occam's Razor | ockhams razor, occam
+Parkinson's Law
+Godwin's Law
+Avogadro's Law | avogadro
+Dalton's Law | dalton
+Snell's Law | snell
+Mendel's Laws | mendel
+Hubble's Law | hubble
+Maxwell's Equations | maxwell
+Schrodinger Equation | schrodinger
+Heisenberg Uncertainty Principle | uncertainty principle, heisenberg
+Pauli Exclusion Principle | pauli, exclusion principle
+Planck's Law | planck
+Gay-Lussac's Law | gay lussac
+Henry's Law
+Lenz's Law | lenz
+Gauss's Law | gauss
+Ampere's Law | ampere
+Kirchhoff's Laws | kirchhoff
+Joule's Law | joule
+Bayes' Theorem | bayes
+Fermat's Last Theorem | fermat
+Euler's Formula | euler, eulers identity
+Pareto Principle | pareto, 80 20 rule
+Peter Principle
+Le Chatelier's Principle | le chatelier
+Hess's Law | hess
+Graham's Law | graham
+Raoult's Law | raoult
+Fick's Laws | fick
+Stokes' Law | stokes
+Navier-Stokes Equations | navier stokes
+Dirac Equation | dirac
+Einstein Field Equations
+Wien's Law | wien
+Stefan-Boltzmann Law | stefan boltzmann
+Biot-Savart Law | biot savart
+Darcy's Law | darcy
+Zipf's Law | zipf
+Benford's Law | benford
+Metcalfe's Law | metcalfe
+Amdahl's Law | amdahl
+Brooks's Law | brooks law
+Conway's Law | conway
+Hofstadter's Law | hofstadter
+Sturgeon's Law | sturgeon
+Hick's Law | hick
+Fitts's Law | fitts
+Weber-Fechner Law | weber fechner, webers law
+Say's Law
+Gresham's Law | gresham
+Okun's Law | okun
+Engel's Law | engel
+Wagner's Law
+Drake Equation | drake
+Arrhenius Equation | arrhenius
+Nernst Equation | nernst
+Henderson-Hasselbalch Equation | henderson hasselbalch
+Michaelis-Menten Equation | michaelis menten
+Hardy-Weinberg Principle | hardy weinberg
+Lotka-Volterra Equations | lotka volterra
+Black-Scholes Equation | black scholes
+Bragg's Law | bragg
+Beer-Lambert Law | beer lambert, beers law
+Curie's Law | curie
+Moseley's Law | moseley
+Titius-Bode Law | titius bode, bodes law
+Bergmann's Rule | bergmann
+Allen's Rule
+Dollo's Law | dollo
+Hund's Rule | hund
+Fermat's Principle
+Huygens' Principle | huygens
+Mach's Principle | mach
+Hamilton's Equations | hamilton
+Euler-Lagrange Equation | lagrange, euler lagrange
+Laplace's Equation | laplace
+Poisson's Equation | poisson
+Bessel's Equation | bessel
+Cauchy-Riemann Equations | cauchy riemann
+Fourier's Law | fourier
+Torricelli's Law | torricelli
+Poiseuille's Law | poiseuille, hagen poiseuille
+Frank-Starling Law | starlings law, frank starling
+Wiedemann-Franz Law | wiedemann franz
+Dulong-Petit Law | dulong petit
+Rydberg Formula | rydberg
+Lorentz Force Law | lorentz
+Clausius-Clapeyron Equation | clausius clapeyron
+Van der Waals Equation | van der waals
+Gibbs-Helmholtz Equation | gibbs helmholtz
+Bell's Theorem | bell
+Noether's Theorem | noether
+Godel's Incompleteness Theorems | godel, incompleteness theorem
+Pick's Theorem | pick
+Green's Theorem | green
+Rolle's Theorem | rolle
+Taylor's Theorem | taylor series, taylor
+L'Hopital's Rule | lhopital, lhospital
+Cramer's Rule | cramer
+Simpson's Rule | simpson
+Descartes' Rule of Signs | descartes
+Heron's Formula | heron
+Brahmagupta's Formula | brahmagupta
+Stirling's Formula | stirling
+De Moivre's Theorem | de moivre
+Fermat's Little Theorem
+Wilson's Theorem | wilson
+Lagrange's Theorem
+Ramsey's Theorem | ramsey
+Kleiber's Law | kleiber
+Linus's Law | linus
+Wirth's Law | wirth
+Kryder's Law | kryder
+Koomey's Law | koomey
+Reed's Law
+Little's Law
+Goodhart's Law | goodhart
+Campbell's Law
+Hanlon's Razor | hanlon
+Poe's Law | poe
+Betteridge's Law | betteridge
+Cunningham's Law | cunningham
+Heaps' Law | heaps
+Rayleigh-Jeans Law | rayleigh jeans
+Steno's Laws | steno
+Walther's Law | walther
+Haeckel's Law | recapitulation theory, haeckel
+Liebig's Law of the Minimum | liebig
+Cope's Rule | cope
+Gloger's Rule | gloger

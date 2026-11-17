@@ -1,0 +1,182 @@
+# title: Tech companies
+# level: 2
+# domain: technology
+# noun: companies
+# rule: Companies whose main business is software, computers, chips or the internet.
+# rule: Old names like Facebook still count.
+# strip: inc, corporation, corp, technologies, company
+Apple
+Google | alphabet
+Microsoft
+Amazon
+Meta | facebook
+Netflix
+Tesla
+Samsung
+IBM | international business machines
+Intel
+Nvidia
+Dell
+HP | hewlett packard, hewlett-packard
+Oracle
+Adobe
+Cisco
+Sony
+Twitter | x
+Uber
+Lyft
+Airbnb
+Snapchat | snap
+TikTok | bytedance
+Spotify
+LinkedIn
+Yahoo
+eBay
+PayPal
+Zoom
+Salesforce
+OpenAI
+Anthropic
+SpaceX
+AMD | advanced micro devices
+Qualcomm
+Lenovo
+Asus
+Acer
+Huawei
+Xiaomi
+Alibaba
+Tencent
+Baidu
+Nintendo
+Pinterest
+Reddit
+Dropbox
+Slack
+Shopify
+Square | block
+Stripe
+Palantir
+Snowflake
+Workday
+ServiceNow
+Intuit
+Autodesk
+VMware
+SAP
+Atlassian
+GitHub
+GitLab
+Mozilla
+Wikipedia | wikimedia
+Yelp
+Etsy
+Zillow
+DoorDash
+Instacart
+Robinhood
+Coinbase
+Discord
+Twitch
+Roblox
+Electronic Arts | ea
+Activision Blizzard | activision, blizzard
+Epic Games | epic
+Valve
+Ubisoft
+Unity
+Texas Instruments
+Micron
+Broadcom
+ARM
+TSMC | taiwan semiconductor
+Western Digital
+Seagate
+Logitech
+Motorola
+Nokia
+Ericsson
+BlackBerry | rim
+Palm
+Kodak
+Xerox
+Compaq
+Gateway
+Sun Microsystems | sun
+Silicon Graphics | sgi
+Novell
+Netscape
+AOL | america online
+MySpace
+Friendster
+Groupon
+Fitbit
+GoPro
+Garmin
+Canon
+Nikon
+Panasonic
+Toshiba
+Hitachi
+Fujitsu
+NEC
+Sharp
+LG
+Philips
+Siemens
+Foxconn | hon hai
+Infosys
+Wipro
+Tata Consultancy Services | tcs
+Accenture
+Rakuten
+Naver
+Kakao
+Sea Limited | shopee
+Grab
+Gojek
+Mercado Libre
+Booking.com | booking holdings
+Expedia
+TripAdvisor
+Zynga
+Riot Games
+Sega
+Atari
+Commodore
+Red Hat
+Canonical
+Cloudflare
+Akamai
+Twilio
+Okta
+CrowdStrike
+Palo Alto Networks
+Fortinet
+Symantec | norton, nortonlifelock
+McAfee
+Kaspersky
+Duolingo
+Grammarly
+Canva
+Figma
+Notion
+Asana
+Squarespace
+Wix
+WordPress | automattic
+Tumblr
+Quora
+WhatsApp
+Instagram
+YouTube
+Waymo
+DeepMind
+Rivian
+Peloton
+Ring
+Nest
+Roku
+Sonos
+Bose
+Dyson

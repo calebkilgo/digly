@@ -1,0 +1,157 @@
+# title: Courtroom words
+# level: 2
+# domain: language
+# noun: words
+# rule: Words and phrases used in a court of law.
+Judge
+Jury
+Lawyer | attorney
+Objection
+Guilty
+Not Guilty | innocent
+Verdict
+Witness
+Defendant
+Plaintiff
+Prosecutor | district attorney, da, prosecution
+Defense | defence, defense attorney
+Bailiff
+Gavel
+Sentence
+Trial
+Evidence
+Testimony
+Oath | sworn in, under oath
+Appeal
+Bail
+Subpoena
+Perjury
+Overruled
+Sustained
+Order in the Court | order
+Plea | plea bargain, plea deal
+Acquittal | acquit, acquitted
+Conviction | convicted
+Mistrial
+Hung Jury
+Deliberation | deliberate
+Closing Argument | closing statement
+Opening Statement
+Cross-Examination | cross examination, cross examine
+Direct Examination
+Exhibit
+Docket
+Hearing
+Lawsuit | suit
+Case
+Court Reporter | stenographer
+Clerk
+Juror
+Jury Box
+Witness Stand | stand
+Bench
+Courtroom
+Counsel
+Contempt of Court | contempt
+Indictment | indict
+Arraignment
+Motion
+Settlement
+Damages
+Injunction
+Affidavit
+Deposition
+Hearsay
+Cross
+Recess
+Adjourned | adjourn
+Precedent
+Statute
+Burden of Proof
+Beyond a Reasonable Doubt | reasonable doubt
+Presumption of Innocence
+Due Process
+Habeas Corpus
+Probation
+Parole
+Felony
+Misdemeanor
+Restitution
+Sequester | sequestered
+Voir Dire
+Grand Jury
+Petit Jury
+Summons
+Warrant
+Prima Facie
+Pro Bono
+Pro Se
+Amicus Curiae | amicus brief
+Brief
+Pleading
+Complaint
+Counterclaim
+Discovery
+Interrogatory | interrogatories
+Stipulation | stipulate
+Leading the Witness | leading
+Badgering the Witness | badgering
+Strike That | strike from the record
+Sidebar | approach the bench
+Gag Order
+Ruling
+Judgment | judgement
+Default Judgment
+Summary Judgment
+Dismissal | dismissed, case dismissed
+With Prejudice
+Without Prejudice
+Allocution
+Remand
+Venue | change of venue
+Jurisdiction
+Appellate | appellate court
+Supreme Court
+Magistrate
+Justice
+Public Defender
+Paralegal
+Court Order
+Restraining Order
+Writ
+Certiorari
+Mandamus
+Tort
+Litigation | litigant
+Arbitration
+Mediation
+Testify
+Plead the Fifth | the fifth, fifth amendment
+Miranda Rights | miranda
+Exculpatory
+Inadmissible | admissible
+Chain of Custody
+Expert Witness
+Character Witness
+Hostile Witness
+Alibi
+Motive
+Accused
+Accomplice
+Co-Defendant | codefendant
+Defense Rests | the defense rests
+All Rise
+Your Honor
+Ladies and Gentlemen of the Jury
+Bar | the bar, bar exam
+Esquire
+Retainer
+Legal Aid
+Court Date
+Fine
+Sentencing
+Life Sentence
+Community Service
+House Arrest
+Plea of No Contest | no contest, nolo contendere
+Recusal | recuse

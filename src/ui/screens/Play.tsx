@@ -8,6 +8,7 @@ import { DEPTH_MAX_M, LEVELS } from "@/game/rules/levels";
 import { sfx } from "@/audio/sfx";
 import { reportError, track } from "@/lib/track";
 import { quickMatch } from "@/game/rules/quickCheck";
+import { logCleared, markKey } from "@/lib/perf";
 import { useSceneInsets } from "../SceneHost";
 import { CheckMark, Icon, OreIcon } from "../art";
 import type { Run } from "../GameShell";
@@ -95,7 +96,7 @@ export function PlayScreen(props: {
               }
               void scene?.rev();
               sfx.music("dig", ch.level);
-              say(`Go! Level ${ch.level}. ${a.challenge.prompt} ${ch.seconds} seconds. Top ${ch.scored} count.`);
+              say(`Go! Level ${ch.level}. ${a.challenge.prompt} ${ch.seconds} seconds. Your best ${ch.scored} count.`);
               setTimeout(() => setCount3(null), 450);
             })
             .catch((e) => {
@@ -228,75 +229,82 @@ export function PlayScreen(props: {
     say(`Already found ${name}.`);
   };
 
-  const submit = async (e: React.FormEvent) => {
+  const reject = (text: string) => {
+    fbKey.current++;
+    comboRef.current = 0;
+    setCombo(0);
+    setFeedback({ status: "rejected", text, key: fbKey.current });
+    scene?.invalid();
+    sfx.invalid();
+    say("No match.");
+  };
+
+  // Enter: clear and refocus first, then decide locally and show feedback in the
+  // same frame. Nothing here waits on the network; each answer is sent to the
+  // server in the background, and the server's verdict only ever corrects.
+  const submit = (e: React.FormEvent) => {
     e.preventDefault();
     const el = input.current;
     if (!el) return;
     const text = el.value;
     el.value = "";
     el.focus({ preventScroll: true });
-    if (!attempt || over || !text.trim()) return;
+    if (!attempt || over || !text.trim()) return logCleared("empty");
+    const shown = tidy(text);
+    const hit = attempt.check ? quickMatch(attempt.check, text) : null;
 
-    // Instant path: the fingerprint check knows it's an answer, so show it now
-    // and let the server confirm (and supply the proper name) in the background.
-    const num = attempt.check ? quickMatch(attempt.check, text) : null;
-    if (num !== null) {
-      const shown = tidy(text);
-      if (found.current.has(num)) return duplicate(shown);
-      found.current.add(num);
-      celebrate(shown);
-      const job = service.submit(attempt.attemptId, text).then(
-        (r) => {
-          if (r.status === "accepted" || r.status === "duplicate") {
-            if (r.canonical && r.canonical !== shown) {
-              setRecent((x) => x.map((w) => (w === shown ? r.canonical! : w)));
-              setFeedback((f) => (f && f.text === shown ? { ...f, text: r.canonical!, corrected: r.corrected } : f));
-            }
-          } else if (r.status === "rejected") {
-            // shouldn't happen; trust the server
-            found.current.delete(num);
+    if (hit && found.current.has(hit.num)) {
+      duplicate(shown);
+      return logCleared("duplicate");
+    }
+    if (hit) {
+      found.current.add(hit.num);
+      celebrate(shown, hit.corrected);
+    } else {
+      reject(text.trim());
+    }
+    logCleared(hit ? "found" : "miss");
+
+    const job = service.submit(attempt.attemptId, text).then(
+      (r) => {
+        if (r.status === "expired" && !ended.current) return void finish();
+        const ok = r.status === "accepted" || r.status === "duplicate";
+        if (hit) {
+          if (!ok) {
+            // the server didn't take it after all: undo the find
+            found.current.delete(hit.num);
             setCount(found.current.size);
             setRecent((x) => x.filter((w) => w !== shown));
+            return;
           }
-        },
-        () => {},
-      );
-      pending.current.add(job);
-      void job.finally(() => pending.current.delete(job));
-      return;
-    }
-
-    // Slow path: typos, sound-alikes and misses need the server's matcher.
-    let r;
-    const job = service.submit(attempt.attemptId, text);
+          if (r.num !== undefined && r.num !== hit.num) {
+            // matched a different answer than we guessed
+            found.current.delete(hit.num);
+            if (found.current.has(r.num)) {
+              setCount(found.current.size);
+              setRecent((x) => x.filter((w) => w !== shown));
+              return;
+            }
+            found.current.add(r.num);
+          }
+          if (r.canonical && r.canonical !== shown) {
+            setRecent((x) => x.map((w) => (w === shown ? r.canonical! : w)));
+            setFeedback((f) => (f && f.text === shown ? { ...f, text: r.canonical!, corrected: r.corrected || f.corrected } : f));
+          }
+        } else if (r.status === "accepted" && !ended.current) {
+          // a spelling only the server's fuller matcher catches: count it late
+          const n = r.num ?? -1 - found.current.size;
+          if (found.current.has(n)) return;
+          found.current.add(n);
+          celebrate(r.canonical!, true);
+        }
+      },
+      () => {
+        if (hit) return; // keep the instant result; finish() re-scores on the server anyway
+      },
+    );
     pending.current.add(job);
-    try {
-      r = await job;
-    } catch {
-      fbKey.current++;
-      setFeedback({ status: "rejected", text: "connection blip, try again", key: fbKey.current });
-      return;
-    } finally {
-      pending.current.delete(job);
-    }
-    if (ended.current && r.status !== "accepted") return;
-    if (r.status === "accepted") {
-      if (r.num !== undefined) found.current.add(r.num);
-      else found.current.add(-1 - found.current.size);
-      celebrate(r.canonical!, r.corrected);
-    } else if (r.status === "duplicate") {
-      duplicate(r.canonical!);
-    } else if (r.status === "rejected") {
-      fbKey.current++;
-      comboRef.current = 0;
-      setCombo(0);
-      setFeedback({ status: "rejected", text: text.trim(), key: fbKey.current });
-      scene?.invalid();
-      sfx.invalid();
-      say("No match.");
-    } else if (r.status === "expired") {
-      void finish();
-    }
+    void job.finally(() => pending.current.delete(job));
   };
 
   useEffect(() => {
@@ -406,6 +414,9 @@ export function PlayScreen(props: {
               autoCapitalize="off"
               spellCheck={false}
               maxLength={60}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") markKey();
+              }}
               placeholder={over ? "Time!" : attempt ? `name ${attempt.challenge.noun}…` : "get ready…"}
               disabled={over}
               onBlur={() => {
@@ -415,7 +426,16 @@ export function PlayScreen(props: {
               }}
             />
           </label>
-          <button type="submit" className="btn btn-go dig-btn" disabled={over} onPointerDown={(e) => e.preventDefault()}>
+          <button
+            type="submit"
+            className="btn btn-go dig-btn"
+            disabled={over}
+            onPointerDown={(e) => {
+              // keep the keyboard up on phones
+              e.preventDefault();
+              markKey();
+            }}
+          >
             DIG
           </button>
         </div>
@@ -446,7 +466,7 @@ export function PlayScreen(props: {
               Level {ch.level} · {ch.levelName}
             </div>
             <div className="lv-mult">
-              {ch.seconds}s · top {ch.scored} count · x{ch.multiplier}
+              {ch.seconds}s · best {ch.scored} count · x{ch.multiplier}
             </div>
           </div>
           <span className="big-num" key={count3}>

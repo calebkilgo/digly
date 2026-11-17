@@ -1,0 +1,132 @@
+# title: Units of measurement
+# level: 1
+# domain: science
+# noun: units
+# rule: Units for length, weight, time, volume, heat and so on.
+# rule: Full names, not symbols like kg or ft.
+Inch | inches
+Foot | feet
+Mile
+Meter | metre
+Centimeter | centimetre
+Kilometer | kilometre, klick
+Pound | lb
+Ounce
+Gram | gramme
+Kilogram | kilo, kilogramme
+Gallon
+Liter | litre
+Cup
+Second
+Minute
+Hour
+Day
+Week
+Year
+Yard
+Millimeter | millimetre
+Ton | tonne, metric ton
+Pint
+Quart
+Teaspoon
+Tablespoon
+Degree | degrees
+Celsius | degree celsius, centigrade
+Fahrenheit | degree fahrenheit
+Kelvin
+Volt
+Watt
+Amp | ampere
+Calorie
+Acre
+Milliliter | millilitre
+Milligram
+Month
+Decade
+Century
+Millisecond
+Byte
+Kilobyte
+Megabyte
+Gigabyte
+Terabyte
+Bit
+Hertz
+Miles per hour | mile per hour, mph
+Joule
+Newton
+Ohm
+Pascal
+Horsepower
+Knot
+Nautical Mile
+Light Year | lightyear
+Fluid Ounce
+Stone
+Hectare
+Decibel
+Kilowatt
+Kilowatt Hour
+Megahertz
+Gigahertz
+Square Foot
+Cubic Foot
+Cubic Meter | cubic metre
+Square Mile
+Mach
+Revolutions per minute | rpm
+Megawatt
+Fathom
+Furlong
+League
+Carat | karat
+Microsecond
+Nanosecond
+Nanometer | nanometre
+Micrometer | micron
+Angstrom
+Parsec
+Astronomical Unit
+Mole
+Candela
+Lumen
+Lux
+Coulomb
+Farad
+Henry
+Tesla
+Weber
+Siemens
+Becquerel
+Gray
+Sievert
+Radian
+Steradian
+Bar
+Atmosphere
+Torr
+Erg
+Dyne
+British Thermal Unit | btu
+Therm
+Barrel
+Bushel
+Peck
+Gill
+Dram
+Grain
+Hand
+Cubit
+Rod
+Chain
+Link
+Span
+Hundredweight
+Gauss
+Rankine
+Electronvolt | electron volt
+Millennium
+Fortnight
+Kilocalorie
+Pinch
+Dash

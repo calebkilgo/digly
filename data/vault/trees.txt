@@ -1,0 +1,126 @@
+# title: Trees
+# level: 1
+# domain: nature
+# noun: trees
+# rule: Kinds of tree, like oak or sugar maple.
+# rule: "Tree" on the end is fine.
+# strip: tree, trees
+Oak | oak tree
+Pine
+Maple
+Birch
+Palm | palm tree
+Willow | weeping willow
+Apple
+Cherry | cherry blossom
+Redwood | coast redwood
+Elm
+Spruce
+Fir
+Cedar
+Ash
+Sequoia | giant sequoia
+Aspen
+Beech
+Cypress
+Poplar
+Walnut
+Magnolia
+Sycamore
+Dogwood
+Hickory
+Chestnut
+Cottonwood
+Hemlock
+Banana
+Orange
+Lemon
+Peach
+Pear
+Coconut | coconut palm
+Olive
+Juniper
+Eucalyptus | gum tree
+Baobab
+Bamboo
+Larch
+Mahogany
+Teak
+Ebony
+Linden | lime tree, basswood
+Alder
+Hazel | hazelnut
+Holly
+Yew
+Acacia
+Mango
+Fig
+Plum
+Pecan
+Almond
+Avocado
+Joshua Tree
+Sassafras
+Mulberry
+Tulip Tree | tulip poplar
+Locust | black locust, honey locust
+Sweetgum | sweet gum
+Buckeye | horse chestnut
+Catalpa
+Rowan | mountain ash
+Hawthorn
+Elder | elderberry
+Sumac
+Boxwood
+Redbud
+Ginkgo | ginkgo biloba
+Banyan
+Mangrove
+Jacaranda
+Douglas Fir
+Bristlecone Pine
+Sugar Maple
+Red Maple
+Japanese Maple
+Silver Birch | paper birch, white birch
+Live Oak
+Weeping Cherry
+Persimmon
+Pawpaw
+Apricot
+Nectarine
+Lime
+Grapefruit
+Cacao | cocoa
+Coffee
+Rubber Tree
+Cork Oak
+Balsa
+Kapok
+Monkey Puzzle
+Tamarind
+Neem
+Sandalwood
+Rosewood
+Ironwood
+Hornbeam
+Tupelo
+Osage Orange
+Date Palm
+Dragon Tree
+Wollemi Pine
+Kauri
+Cinnamon
+Eastern White Pine
+Lodgepole Pine
+Ponderosa Pine
+Norfolk Island Pine
+Blue Spruce
+Mesquite
+Palo Verde
+Paperbark
+Wattle
+Jarrah
+Cassia
+Frangipani | plumeria
+Flame Tree | royal poinciana

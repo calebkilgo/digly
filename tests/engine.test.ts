@@ -6,6 +6,7 @@ import { dayStart } from "../src/game/rules/schedule";
 import { digTotal } from "../src/game/rules/levels";
 import { SEEDS } from "../src/game/data/seeds";
 import { GameError } from "../src/game/service/types";
+import { SCORING, levelScore } from "../src/game/rules/scoring";
 
 const DAY = 29;
 let clock = dayStart(DAY) + 3_600_000;
@@ -40,9 +41,9 @@ describe("dig slots", () => {
   it("never carry a category", () => {
     const d = digSlots(DAY);
     expect(d.levels.map((l) => [l.level, l.multiplier, l.scored, l.seconds])).toEqual([
-      [1, 1, 5, 60],
-      [2, 2, 3, 40],
-      [3, 8, 1, 20],
+      [1, SCORING.multipliers[1], 3, 40],
+      [2, SCORING.multipliers[2], 3, 40],
+      [3, SCORING.multipliers[3], 3, 40],
     ]);
     expect(JSON.stringify(d)).not.toMatch(/title|prompt|slug/);
   });
@@ -58,7 +59,7 @@ describe("ranked attempts", () => {
     expect(JSON.stringify(s)).not.toMatch(/prompt/);
     const st = await eng.start("p", DAY, 1, "ranked");
     expect(st.challenge.prompt.length).toBeGreaterThan(3);
-    expect(st.expiresAt - st.startedAt).toBe(60_000);
+    expect(st.expiresAt - st.startedAt).toBe(40_000);
     const slug = seedFor(DAY, 1).slug;
     const first = SEEDS.find((x) => x.slug === slug)!.answers.trim().split("\n")[0].split(/[|=]/)[0].trim();
     const r = await eng.submit("p", st.attemptId, first);
@@ -97,7 +98,7 @@ describe("ranked attempts", () => {
 
   it("close themselves once the clock runs out", async () => {
     const st = await eng.start("p", DAY, 1, "ranked");
-    clock += 60_000 + SERVER_GRACE_MS - 1;
+    clock += 40_000 + SERVER_GRACE_MS - 1;
     expect((await eng.submit("p", st.attemptId, "zzzz")).status).toBe("rejected");
     clock += 2;
     expect((await eng.submit("p", st.attemptId, "pug")).status).toBe("expired");
@@ -125,10 +126,12 @@ describe("scoring on the server", () => {
     expect((await eng.submit("p", st.attemptId, "lab")).status).toBe("duplicate");
     for (const t of ["pug", "beagle", "mudi", "azawakh", "nonsense dog", "poodle", "boxer", "basenji"]) await eng.submit("p", st.attemptId, t);
     const r = await eng.finish("p", st.attemptId);
-    expect(r.top).toHaveLength(5);
-    expect(r.top[0]).toMatchObject({ name: "Mudi", rarity: 100 });
-    expect(r.score).toBe(r.top.reduce((s, t) => s + t.rarity, 0));
-    expect(r.points).toBe(r.score);
+    expect(r.top).toHaveLength(3);
+    expect(r.top[0]).toMatchObject({ name: "Mudi", rarity: 100, tier: "platinum" });
+    const s = levelScore(r.top, 1);
+    expect(r.score).toBe(s.raw);
+    expect(r.score).toBe(r.top.reduce((n, t) => n + SCORING.points[t.tier!], 0) + SCORING.cleanBonus);
+    expect(r.points).toBe(r.score); // level 1 is x1
     expect(r.rejected).toEqual(["nonsense dog"]);
     expect(r.challenge.level).toBe(1);
     clock += 5000;
@@ -140,9 +143,10 @@ describe("scoring on the server", () => {
     await play("p", 1, []);
     await play("p", 2, []);
     const r = await play("p", 3, ["hydrogen", "oganesson", "thulium", "gold", "english", "femur", "zeus"]);
-    expect(r.points).toBe(r.score * 8);
-    expect(r.top.length).toBeLessThanOrEqual(1);
-    expect(digTotal([100, 2 * 80, 3 * 50])).toBe(410);
+    expect(r.points).toBe(Math.round(r.score * SCORING.multipliers[3]));
+    expect(r.top.length).toBeLessThanOrEqual(3);
+    expect(digTotal([100, 160, 150])).toBe(410);
+    expect(digTotal([-40, -30, 20])).toBe(0);
   });
 
   it("caps submissions per attempt", async () => {
@@ -238,25 +242,43 @@ describe("real rarity", () => {
 import { quickMatch } from "../src/game/rules/quickCheck";
 
 describe("instant answer check", () => {
-  it("knows answers, aliases and plurals at once, agrees with the server, and leaks no names", async () => {
+  it("knows answers, aliases, plurals, typos and sound-alikes at once, agrees with the server, and leaks no names", async () => {
     clock = dayStart(1) + 1000; // dog breeds
     eng = new DigEngine(store, { now: () => clock });
     const st = await eng.start("p", 1, 1, "ranked");
     const check = st.check!;
-    const lab = quickMatch(check, "Labrador");
+    const num = (t: string) => quickMatch(check, t)?.num ?? null;
+    const lab = num("Labrador");
     expect(lab).not.toBeNull();
-    expect(quickMatch(check, "lab")).toBe(lab);
-    expect(quickMatch(check, "labradors")).toBe(lab);
-    expect(quickMatch(check, "pugs")).not.toBeNull();
-    expect(quickMatch(check, "labrdor")).toBeNull(); // typos go to the server
-    expect(quickMatch(check, "zzzz")).toBeNull();
-    const r = await eng.submit("p", st.attemptId, "Labrador");
-    expect(r.num).toBe(lab);
+    expect(num("lab")).toBe(lab);
+    expect(num("labradors")).toBe(lab);
+    expect(num("pugs")).not.toBeNull();
+    expect(quickMatch(check, "labrdor")).toEqual({ num: lab, corrected: true }); // missing letter
+    expect(quickMatch(check, "beegle")?.corrected).toBe(true); // wrong letter
+    expect(num("beegle")).toBe(num("beagle"));
+    expect(num("chiwawa")).toBe(num("chihuahua")); // sounds like
+    expect(num("zzzz")).toBeNull();
+    // the server agrees on every instant match
+    for (const t of ["Labrador", "beegle", "chiwawa", "pugs"]) {
+      const r = await eng.submit("p", st.attemptId, t);
+      expect(r.num, t).toBe(num(t));
+    }
     const json = JSON.stringify(check);
-    expect(json).not.toMatch(/labrador|poodle|mudi/i);
+    expect(json).not.toMatch(/labrador|poodle|mudi|beagle/i);
     // resuming hands back the found numbers
     const again = await eng.start("p", 1, 1, "ranked");
-    expect(again.found).toEqual([lab]);
+    expect(again.found).toContain(lab);
+  });
+
+  it("is fast: thousands of lookups per millisecond-scale budget", async () => {
+    clock = dayStart(1) + 1000;
+    eng = new DigEngine(store, { now: () => clock });
+    const st = await eng.start("p", 1, 1, "ranked");
+    const words = ["labrador", "beegle", "chiwawa", "zzzzzz", "kooikerhondje", "notadogatall"];
+    const t0 = performance.now();
+    for (let i = 0; i < 1000; i++) quickMatch(st.check!, words[i % words.length]);
+    const per = (performance.now() - t0) / 1000;
+    expect(per).toBeLessThan(1); // well under a millisecond each
   });
 });
 

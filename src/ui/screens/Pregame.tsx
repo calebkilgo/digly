@@ -52,7 +52,7 @@ export function PregameScreen(props: { scene: DiglyScene | null; run: Run; onBac
             <li key={l.level} className={`chip-lv lv${l.level}`}>
               <span className="lv-n">Level {l.level}</span>
               <span className="lv-line">{l.level <= run.results.length ? "Dug" : `${l.seconds} sec`}</span>
-              <span className="lv-line">Top {l.scored} count</span>
+              <span className="lv-line">Best {l.scored} count</span>
               <span className="lv-x">x{l.multiplier}</span>
             </li>
           ))}
@@ -60,7 +60,7 @@ export function PregameScreen(props: { scene: DiglyScene | null; run: Run; onBac
         <ul className="rules">
           <li>
             <span className="pip px">?</span>
-            <span>Each category stays secret until its clock starts. Levels get shorter as you go deeper.</span>
+            <span>Each category stays secret until its 40-second clock starts.</span>
           </li>
           <li>
             <span className="pip px">!</span>
@@ -69,8 +69,10 @@ export function PregameScreen(props: { scene: DiglyScene | null; run: Run; onBac
             </span>
           </li>
           <li>
-            <span className="pip px">5</span>
-            <span>Your rarest answers count: top 5, then top 3, then just 1. Deeper levels multiply them.</span>
+            <span className="pip px">3</span>
+            <span>
+              Name as many as you can. <b>Your best 3 count.</b> Fill all 3 for a bonus; an empty level costs you.
+            </span>
           </li>
           <li>
             <span className="pip px">0</span>
