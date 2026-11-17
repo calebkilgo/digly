@@ -30,7 +30,7 @@ import { VaultScreen } from "./screens/Vault";
 import { LogbookScreen } from "./screens/Logbook";
 import { SettingsScreen } from "./screens/Settings";
 import { AccountSheet } from "./sheets";
-import { identify, track } from "@/lib/track";
+import { identify, resetIdentity, track } from "@/lib/track";
 
 export type Screen = "home" | "pregame" | "play" | "reveal" | "summary" | "board" | "vault" | "logbook" | "settings";
 
@@ -109,7 +109,7 @@ export function GameShell() {
       void service.account().then(
         (a) => {
           setUsername(a.username);
-          identify(a.username);
+          if (a.playerId) identify(a.playerId, a.username);
         },
         () => {},
       );
@@ -119,7 +119,7 @@ export function GameShell() {
     async (u: string, p: string, e?: string) => {
       const a = await service!.signUp(u, p, e);
       setUsername(a.username);
-      identify(a.username);
+      if (a.playerId) identify(a.playerId, a.username);
       track("account_created");
       await refresh();
     },
@@ -129,7 +129,7 @@ export function GameShell() {
     async (u: string, p: string) => {
       const a = await service!.logIn(u, p);
       setUsername(a.username);
-      identify(a.username);
+      if (a.playerId) identify(a.playerId, a.username);
       track("logged_in");
       await refresh();
     },
@@ -137,9 +137,9 @@ export function GameShell() {
   );
   const logOut = useCallback(async () => {
     await service?.logOut();
-    setUsername(null);
-    identify(null);
     track("logged_out");
+    setUsername(null);
+    resetIdentity();
     await refresh();
   }, [service, refresh]);
 
@@ -394,6 +394,7 @@ export function GameShell() {
             else {
               await service?.reset();
               setUsername(null);
+              resetIdentity();
             }
             const p = { ...progress, ranked: { ...progress.ranked } };
             delete p.ranked[today];
@@ -403,6 +404,7 @@ export function GameShell() {
           onResetAll={async () => {
             await service?.reset();
             setUsername(null);
+            resetIdentity();
             commit(EMPTY_PROGRESS);
             await refresh();
           }}

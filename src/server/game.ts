@@ -1,12 +1,14 @@
 import "server-only";
 import { cookies, headers } from "next/headers";
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
+import { SeverityNumber } from "@opentelemetry/api-logs";
 import { DigEngine } from "@/game/engine/engine";
 import { MemoryStore } from "@/game/engine/memoryStore";
 import { GameError } from "@/game/service/types";
 import { SupabaseStore } from "./supabaseStore";
 import { newToken, tokenHash } from "./auth";
+import { flushPostHogLogs, logGameEvent } from "./posthogLogs";
 
 export type Backend = "supabase" | "memory";
 
@@ -27,6 +29,7 @@ export function getEngine() {
       engine = new DigEngine(new MemoryStore());
       backend = "memory";
     }
+    logGameEvent("game engine initialized", SeverityNumber.INFO, { backend });
   }
   return { engine, backend };
 }
@@ -125,7 +128,10 @@ export async function handle(fn: () => Promise<unknown>) {
     if (e instanceof GameError) return NextResponse.json({ error: e.code, message: e.message }, { status: STATUS[e.code] });
     console.error(e);
     Sentry.captureException(e);
+    logGameEvent("game API request failed", SeverityNumber.ERROR, { outcome: "unexpected_error" });
     return NextResponse.json({ error: "server", message: "Something broke underground" }, { status: 500 });
+  } finally {
+    after(() => flushPostHogLogs().catch(() => {}));
   }
 }
 

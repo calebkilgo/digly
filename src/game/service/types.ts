@@ -122,7 +122,8 @@ export interface ChallengeService {
 }
 
 export interface Account {
-  username: string | null; // null while playing as a guest
+  playerId: string | null; // stable primary key, null while playing as a guest
+  username: string | null;
 }
 
 export class GameError extends Error {

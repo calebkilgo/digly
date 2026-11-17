@@ -24,13 +24,18 @@ export function track(event: TrackEvent, props?: Record<string, string | number 
   }
 }
 
-export function identify(username: string | null) {
+export function identify(playerId: string, username: string | null = null) {
   try {
-    if (!posthog.__loaded) return;
-    if (username) posthog.identify(username);
-    else posthog.reset();
+    if (posthog.__loaded) posthog.identify(playerId, username ? { username } : undefined);
   } catch {}
-  Sentry.setUser(username ? { username } : null);
+  Sentry.setUser({ id: playerId, username: username ?? undefined });
+}
+
+export function resetIdentity() {
+  try {
+    if (posthog.__loaded) posthog.reset();
+  } catch {}
+  Sentry.setUser(null);
 }
 
 export function reportError(e: unknown, where: string) {
