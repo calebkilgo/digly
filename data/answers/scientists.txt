@@ -1,0 +1,100 @@
+# scientists (merged with the GitHub list; last names work when unique)
+Albert Einstein | einstein
+Isaac Newton | newton
+Marie Curie | curie
+Charles Darwin | darwin
+Galileo Galilei | galileo
+Nikola Tesla | tesla
+Stephen Hawking | hawking
+Thomas Edison | edison
+Louis Pasteur | pasteur
+Aristotle
+Archimedes
+Pythagoras
+Johannes Kepler | kepler
+Nicolaus Copernicus | copernicus
+Gregor Mendel | mendel
+Alexander Fleming | fleming
+Rosalind Franklin
+Niels Bohr
+Max Planck | planck
+Richard Feynman | feynman
+Carl Sagan | sagan
+Neil deGrasse Tyson | neil degrasse tyson, tyson
+Alan Turing | turing
+Ada Lovelace | lovelace
+Michael Faraday | faraday
+James Clerk Maxwell | maxwell
+Dmitri Mendeleev | mendeleev
+Robert Oppenheimer | oppenheimer
+Enrico Fermi | fermi
+Werner Heisenberg | heisenberg
+Erwin Schrodinger | schrodinger
+Edwin Hubble | hubble
+Jane Goodall | goodall
+Benjamin Franklin | franklin
+Leonardo da Vinci | da vinci, leonardo
+Rachel Carson
+Antoine Lavoisier | lavoisier
+Robert Hooke | hooke
+Robert Boyle | boyle
+Alfred Nobel | nobel
+Jonas Salk | salk
+Edward Jenner | jenner
+Tim Berners-Lee | tim berners lee, berners-lee
+Grace Hopper | hopper
+Katherine Johnson
+Euclid
+Hippocrates
+Ptolemy
+Tycho Brahe | brahe
+Blaise Pascal | pascal
+Rene Descartes | descartes
+Gottfried Leibniz | leibniz
+Leonhard Euler | euler
+Carl Friedrich Gauss | gauss
+Alessandro Volta | volta
+Andre-Marie Ampere | ampere
+Georg Ohm | ohm
+James Watt
+Ernest Rutherford | rutherford
+J. J. Thomson | jj thomson
+James Watson
+Francis Crick | crick
+Linus Pauling | pauling
+Lise Meitner | meitner
+Emmy Noether | noether
+Srinivasa Ramanujan | ramanujan
+Chien-Shiung Wu
+Barbara McClintock | mcclintock
+Wernher von Braun | von braun
+Hedy Lamarr | lamarr
+George Washington Carver | carver
+Ibn al-Haytham | alhazen
+Avicenna | ibn sina
+Al-Khwarizmi
+Paul Dirac | dirac
+Peter Higgs | higgs
+Subrahmanyan Chandrasekhar | chandrasekhar
+Vera Rubin
+Jennifer Doudna | doudna
+Mae Jemison
+Sally Ride
+John von Neumann | von neumann
+Claude Shannon | shannon
+Henrietta Swan Leavitt | leavitt
+Caroline Herschel
+William Herschel
+Christiaan Huygens | huygens
+Antonie van Leeuwenhoek | van leeuwenhoek, leeuwenhoek
+Carl Linnaeus | linnaeus
+Alfred Russel Wallace
+Ivan Pavlov | pavlov
+Sigmund Freud | freud
+Wilhelm Rontgen | roentgen, rontgen
+Heinrich Hertz | hertz
+Joseph Lister | lister
+Robert Koch | koch
+Amedeo Avogadro | avogadro
+John Dalton | dalton
+Hans Christian Orsted | oersted

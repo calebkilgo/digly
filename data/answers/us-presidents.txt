@@ -1,0 +1,46 @@
+# US presidents (last name works where it's unique)
+George Washington | washington
+John Adams
+Thomas Jefferson | jefferson
+James Madison | madison
+James Monroe | monroe
+John Quincy Adams | jqa
+Andrew Jackson | jackson
+Martin Van Buren | van buren
+William Henry Harrison
+John Tyler | tyler
+James K. Polk | james polk, polk
+Zachary Taylor | taylor
+Millard Fillmore | fillmore
+Franklin Pierce | pierce
+James Buchanan | buchanan
+Abraham Lincoln | lincoln, abe lincoln
+Andrew Johnson
+Ulysses S. Grant | ulysses grant, grant
+Rutherford B. Hayes | rutherford hayes, hayes
+James A. Garfield | james garfield, garfield
+Chester A. Arthur | chester arthur, arthur
+Grover Cleveland | cleveland
+Benjamin Harrison
+William McKinley | mckinley
+Theodore Roosevelt | teddy roosevelt, teddy
+William Howard Taft | taft
+Woodrow Wilson | wilson
+Warren G. Harding | warren harding, harding
+Calvin Coolidge | coolidge
+Herbert Hoover | hoover
+Franklin D. Roosevelt | franklin roosevelt, fdr
+Harry S. Truman | harry truman, truman
+Dwight D. Eisenhower | dwight eisenhower, eisenhower, ike
+John F. Kennedy | john kennedy, jfk, kennedy
+Lyndon B. Johnson | lyndon johnson, lbj
+Richard Nixon | nixon
+Gerald Ford | ford
+Jimmy Carter | carter
+Ronald Reagan | reagan
+George H. W. Bush | george hw bush, bush senior, george bush sr
+Bill Clinton | clinton
+George W. Bush | george bush jr, dubya, bush junior
+Barack Obama | obama
+Donald Trump | trump
+Joe Biden | biden

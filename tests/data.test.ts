@@ -5,10 +5,10 @@ import { AnswerIndex, parseAnswerBlock } from "../src/game/rules/answerIndex";
 const idx = (slug: string) => new AnswerIndex(parseAnswerBlock(SEEDS.find((s) => s.slug === slug)!.answers, slug));
 
 describe("generated answer data", () => {
-  it("has 29 categories split across the three levels", () => {
-    expect(SEEDS).toHaveLength(29);
+  it("has 45 categories split across the three levels", () => {
+    expect(SEEDS).toHaveLength(45);
     const per = [1, 2, 3].map((l) => SEEDS.filter((s) => s.level === l).length);
-    expect(per).toEqual([9, 11, 9]);
+    expect(per).toEqual([13, 18, 14]);
     for (const s of SEEDS) expect(s.answers.length, s.slug).toBeGreaterThan(100);
   });
 
@@ -32,6 +32,28 @@ describe("generated answer data", () => {
       ["cocktails", "pina colada", "Pina Colada"],
       ["egyptian-gods", "amon ra", "Amun"],
       ["gemstones", "diamonds", "Diamond"],
+      ["countries", "usa", "United States"],
+      ["countries", "holland", "Netherlands"],
+      ["world-capitals", "washington dc", "Washington, D.C."],
+      ["nba-teams", "lakers", "Los Angeles Lakers"],
+      ["mlb-teams", "yankees", "New York Yankees"],
+      ["us-presidents", "jfk", "John F. Kennedy"],
+      ["us-presidents", "lincoln", "Abraham Lincoln"],
+      ["us-presidents", "adams", ""],
+      ["scientists", "einstein", "Albert Einstein"],
+      ["norse-myth", "thor", "Thor"],
+      ["animals", "puppy", "Dog"],
+      ["jobs", "cop", "Police Officer"],
+      ["body-parts", "teeth", "Tooth"],
+      ["music-genres", "hip hop", "Hip Hop"],
+      ["board-games", "settlers of catan", "Catan"],
+      ["cheeses", "gouda", "Gouda"],
+      ["birds", "bald eagle", "Eagle"],
+      ["birds", "snowy owl", "Owl"],
+      ["birds", "northern cardinal", "Northern Cardinal"],
+      ["scientists", "brown", ""],
+      ["bones", "anvil", "Incus"],
+      ["languages", "farsi", "Persian"],
     ];
     for (const [slug, input, want] of cases) {
       const m = idx(slug).lookup(input);

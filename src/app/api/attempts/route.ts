@@ -1,4 +1,4 @@
-import { getEngine, handle, intParam, limit, playerId, readJson } from "@/server/game";
+import { getEngine, handle, intParam, limit, playerId, readJson, requireAdmin } from "@/server/game";
 import { GameError, type AttemptMode, type LevelNo } from "@/game/service/types";
 
 // POST /api/attempts {day, level, mode} -> starts (or resumes) a level and
@@ -11,6 +11,12 @@ export async function POST(req: Request) {
     const { engine } = getEngine();
     const mode = body.mode === "practice" ? "practice" : body.mode === "ranked" ? "ranked" : null;
     if (!mode) throw new GameError("bad_request", "Bad mode");
-    return engine.start(pid, intParam(body.day), intParam(body.level) as LevelNo, mode as AttemptMode);
+    // a chosen category is the admin demo dig
+    let slug: string | undefined;
+    if (body.slug !== undefined) {
+      await requireAdmin();
+      slug = String(body.slug);
+    }
+    return engine.start(pid, intParam(body.day), intParam(body.level) as LevelNo, mode as AttemptMode, slug);
   });
 }

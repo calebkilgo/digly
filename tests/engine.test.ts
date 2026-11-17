@@ -295,3 +295,22 @@ describe("password reset and account deletion in the store", () => {
     expect(await store.findAccount("rocky")).toBeNull();
   });
 });
+
+describe("demo dig", () => {
+  it("plays a chosen category as unranked practice, even before today's ranked dig", async () => {
+    const st = await eng.start("p", DAY, 2, "practice", "nba-teams");
+    expect(st.challenge.title).toBe("NBA teams");
+    expect((await eng.submit("p", st.attemptId, "lakers")).status).toBe("accepted");
+    const r = await eng.finish("p", st.attemptId);
+    expect(r.mode).toBe("practice");
+    expect(r.challenge.title).toBe("NBA teams");
+    expect((await eng.status("p", DAY)).next).toBe(1); // ranked dig untouched
+    expect(await eng.board("p", DAY)).toEqual([]);
+  });
+
+  it("refuses ranked mode, unknown categories and the wrong level", async () => {
+    expect(await code(eng.start("p", DAY, 2, "ranked", "nba-teams"))).toBe("bad_request");
+    expect(await code(eng.start("p", DAY, 2, "practice", "nope"))).toBe("bad_request");
+    expect(await code(eng.start("p", DAY, 1, "practice", "nba-teams"))).toBe("bad_request");
+  });
+});

@@ -1,0 +1,133 @@
+# rivers (merged with the GitHub list)
+Nile
+Amazon
+Mississippi
+Missouri
+Thames
+Danube
+Yangtze
+Yellow River | huang he
+Ganges | ganga
+Rhine
+Colorado
+Seine
+Volga
+Mekong
+Hudson
+Tigris
+Euphrates
+Indus
+Congo
+Niger
+Zambezi
+Orinoco
+Parana
+Rio Grande
+Ohio
+Columbia
+Snake
+Arkansas
+Tennessee
+Red River
+Potomac
+Delaware
+Susquehanna
+Yukon
+Mackenzie
+St. Lawrence | saint lawrence
+Fraser
+Ob
+Yenisei
+Lena
+Amur
+Dnieper
+Don
+Elbe
+Oder
+Vistula
+Loire
+Rhone
+Po
+Tiber
+Arno
+Ebro
+Tagus | tejo
+Douro
+Shannon
+Severn
+Trent
+Jordan
+Brahmaputra
+Irrawaddy
+Salween
+Chao Phraya
+Murray
+Darling
+Mur
+Limpopo
+Orange
+Okavango
+Senegal
+Blue Nile
+White Nile
+Sacramento
+San Joaquin
+Platte
+Rio de la Plata | river plate
+Sao Francisco
+Magdalena
+Amu Darya
+Syr Darya
+Ural
+Kama
+Pechora
+Dvina
+Neva
+Daugava
+Neman
+Inn
+Main
+Moselle
+Meuse | maas
+Scheldt
+Garonne
+Dordogne
+Guadalquivir
+Clyde
+Tyne
+Tay
+Liffey
+Charles
+Merrimack
+Connecticut
+Chattahoochee
+Savannah
+Suwannee
+Pecos
+Gila
+Willamette
+Kansas
+Minnesota
+Wabash
+Cumberland
+Alabama
+Tombigbee
+Yazoo
+Brazos
+Trinity
+Sabine
+Shenandoah
+James
+Rappahannock
+Hooghly
+Yamuna
+Godavari
+Krishna
+Kaveri | cauvery
+Narmada
+Pearl River | zhujiang
+Han
+Mekong Delta
+Sepik
+Fly
+Waikato

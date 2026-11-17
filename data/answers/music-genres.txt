@@ -1,0 +1,103 @@
+# music genres (merged with the GitHub list)
+Rock
+Pop
+Jazz
+Hip Hop | hiphop
+Rap
+Country
+Blues
+Classical
+Metal | heavy metal
+R&B | rnb, rhythm and blues
+Reggae
+Electronic | electronica
+EDM
+Punk | punk rock
+Folk
+Soul
+Disco
+Funk
+Gospel
+Techno
+House
+Dubstep
+Trap
+Indie | indie rock
+Alternative | alt rock, alternative rock
+Grunge
+K-Pop | kpop
+Latin
+Reggaeton
+Salsa
+Ska
+Opera
+Bluegrass
+Swing
+Ambient
+Lo-fi | lofi
+Drum and Bass | dnb, drum n bass
+Trance
+Emo
+Hard Rock
+Soft Rock
+Psychedelic Rock | psychedelia
+Progressive Rock | prog rock, prog
+Synthwave | synthpop
+New Wave
+Motown
+Afrobeats | afrobeat
+Dancehall
+Drill
+Grime
+Garage
+Bossa Nova
+Flamenco
+Mariachi
+Zydeco
+Polka
+Bebop
+Hyperpop
+Shoegaze
+Post-Rock
+Death Metal
+Black Metal
+Thrash Metal
+Hardcore
+Screamo
+Rockabilly
+Doo-wop | doo wop
+Barbershop
+A Cappella
+Chiptune
+Phonk
+Cumbia
+Bachata
+Merengue
+Tango
+Samba
+Fado
+Klezmer
+Celtic
+Calypso
+Soca
+J-Pop | jpop
+Vaporwave
+Industrial
+Noise
+Trip Hop
+Boom Bap
+Gangsta Rap
+Neo Soul
+Smooth Jazz
+Big Band
+Ragtime
+Dixieland
+Western Swing
+Outlaw Country
+Americana
+Singer-Songwriter
+Musical Theatre | broadway, show tunes
+Soundtrack | film score
+Christian | ccm
+Worship
+Lullaby

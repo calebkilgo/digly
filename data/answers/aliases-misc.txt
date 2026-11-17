@@ -139,3 +139,242 @@ Surgeon's Knot | surgeons knot
 Turk's Head | turks head
 Chain Sinnet | daisy chain
 Eye Splice | splice
+[bones]
+Scaphoid
+Lunate
+Triquetrum
+Pisiform
+Trapezium
+Trapezoid
+Capitate
+Hamate
+Talus | astragalus
+Calcaneus | heel bone
+Navicular
+Cuboid
+Medial Cuneiform
+Intermediate Cuneiform
+Lateral Cuneiform
+Frontal Bone | frontal
+Parietal Bone | parietal
+Temporal Bone | temporal
+Occipital Bone | occipital
+Sphenoid
+Ethmoid
+Nasal Bone | nasal
+Lacrimal Bone | lacrimal
+Zygomatic Bone | zygomatic, cheekbone
+Maxilla | upper jaw
+Mandible | jawbone, lower jaw
+Vomer
+Palatine Bone | palatine
+Inferior Nasal Concha | turbinate
+Malleus | hammer
+Incus | anvil
+Stapes | stirrup
+Hyoid
+Atlas
+Axis
+Cervical Vertebrae | cervical
+Thoracic Vertebrae | thoracic
+Lumbar Vertebrae | lumbar
+Ilium
+Ischium
+Pubis | pubic bone
+Sesamoid
+Manubrium
+Xiphoid Process | xiphoid
+Floating Rib | floating ribs
+True Rib
+False Rib
+Distal Phalanx
+Proximal Phalanx
+Middle Phalanx
+[languages]
+Afrikaans
+Albanian
+Amharic
+Armenian
+Azerbaijani
+Basque
+Belarusian
+Bengali | bangla
+Bosnian
+Bulgarian
+Burmese
+Catalan
+Cebuano
+Cherokee
+Croatian
+Czech
+Danish
+Esperanto
+Estonian
+Faroese
+Fijian
+Filipino | tagalog
+Finnish
+Galician
+Georgian
+Gujarati
+Haitian Creole
+Hausa
+Hawaiian
+Hmong
+Hungarian
+Icelandic
+Igbo
+Indonesian
+Irish | gaelic, irish gaelic
+Kannada
+Kazakh
+Khmer
+Kinyarwanda
+Kurdish
+Kyrgyz
+Lao
+Latin
+Latvian
+Lithuanian
+Luxembourgish
+Macedonian
+Malagasy
+Malay
+Malayalam
+Maltese
+Maori
+Marathi
+Mongolian
+Navajo
+Nepali
+Norwegian
+Odia
+Pashto
+Persian | farsi
+Polish
+Punjabi
+Quechua
+Romanian
+Samoan
+Sanskrit
+Scots Gaelic | scottish gaelic
+Serbian
+Sesotho
+Shona
+Sindhi
+Sinhala
+Slovak
+Slovenian
+Somali
+Swahili
+Tajik
+Tamil
+Tatar
+Telugu
+Thai
+Tibetan
+Tigrinya
+Tongan
+Turkmen
+Ukrainian
+Urdu
+Uyghur
+Uzbek
+Vietnamese
+Welsh
+Xhosa
+Yiddish
+Yoruba
+Zulu
+Klingon
+Elvish | quenya, sindarin
+Sign Language | asl, american sign language
+[dances]
+Ballet
+Breakdancing | breaking, b-boying
+Bachata
+Belly Dance
+Bolero
+Bhangra
+Can-Can | can can
+Capoeira
+Charleston
+Contemporary
+Conga
+Clogging
+Cumbia
+Flamenco
+Foxtrot
+Hula
+Irish Dance | irish step dance, riverdance
+Jive
+Jitterbug
+Kathak
+Krumping
+Lambada
+Limbo
+Lindy Hop
+Line Dancing
+Macarena
+Mambo
+Merengue
+Moonwalk
+Paso Doble
+Polka
+Popping
+Quickstep
+Rumba
+Samba
+Square Dance
+Swing
+Tango
+Tap
+Twerking | twerk
+Twist
+Vogue | voguing
+Waltz
+Zumba
+Haka
+Kizomba
+Zouk
+Hustle
+Electric Slide
+Cha Cha Slide
+Floss
+Dougie
+Worm
+Robot
+Shuffle
+Two-Step | two step, texas two step
+Bharatanatyam
+Odissi
+Kabuki
+Butoh
+Morris Dance
+Ceili
+Highland Dance | highland fling
+Tarantella
+Polonaise
+Mazurka
+Minuet
+Gavotte
+Pavane
+Hora
+Sirtaki | zorba
+Kalinka
+Hopak
+Dabke
+Gumboot
+Pantsula
+Azonto
+Shaku Shaku
+Moonwalk
+Sardana
+Jota
+Sevillanas
+Fandango
+Tinikling
+Barong
+Lion Dance
+Dragon Dance
+Bon Odori

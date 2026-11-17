@@ -1,0 +1,100 @@
+# breads and pastries (merged with the GitHub list)
+Bagel
+Baguette
+Croissant
+Donut | doughnut
+Muffin
+Sourdough
+Brioche
+Ciabatta
+Focaccia
+Pita
+Naan
+Tortilla
+Rye | rye bread
+Pumpernickel
+Challah
+Pretzel
+English Muffin
+Biscuit
+Scone
+Danish
+Cinnamon Roll | cinnamon bun
+Eclair
+Cream Puff | profiterole
+Strudel
+Baklava
+Cannoli
+Churro
+Beignet
+Turnover
+Pain au Chocolat | chocolate croissant
+Puff Pastry
+Pie
+Tart
+Quiche
+Cornbread
+Banana Bread
+Soda Bread
+Flatbread
+Matzo | matzah
+Roti
+Chapati
+Paratha
+Lavash
+Injera
+Arepa
+Bao | steamed bun
+Brioche Bun
+Hamburger Bun
+Hot Dog Bun
+Dinner Roll
+Kaiser Roll
+Sandwich Bread | white bread
+Whole Wheat | wheat bread
+Multigrain
+Garlic Bread
+Monkey Bread
+Zucchini Bread
+Babka
+Panettone
+Stollen
+Kouign-amann | kouign amann
+Palmier
+Macaron
+Madeleine
+Cronut
+Kolache
+Empanada
+Samosa
+Pierogi
+Bear Claw
+Fritter | apple fritter
+Crumpet
+Popover
+Hushpuppy | hush puppy
+Johnnycake
+Bialy
+Grissini | breadstick
+Crispbread
+Pan Dulce | concha
+Bolillo
+Pandesal
+Melonpan
+Mantou
+Simit
+Khachapuri
+Lefse
+Hardtack
+Brown Bread
+Potato Bread
+Milk Bread
+Sweet Roll
+Galette
+Kringle
+Rugelach
+Hamantaschen
+Sfogliatella
+Mille-feuille | napoleon
+Choux
+Phyllo | filo

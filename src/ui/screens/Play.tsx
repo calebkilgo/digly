@@ -81,7 +81,7 @@ export function PlayScreen(props: {
           setWaiting(true);
           const t0 = Date.now();
           service
-            .start(run.dig.day, ch.level, run.mode)
+            .start(run.dig.day, ch.level, run.mode, run.demo?.[run.level])
             .then((a) => {
               // run the clock on server time: offset by the skew, assuming the reply took half the round trip
               const skew = a.serverNow - (t0 + Date.now()) / 2;

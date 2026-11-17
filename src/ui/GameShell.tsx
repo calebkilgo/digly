@@ -39,6 +39,7 @@ export interface Run {
   dig: Dig;
   level: number; // 0..2
   results: AttemptResult[];
+  demo?: string[]; // admin demo dig: the category slug for each level
 }
 
 const MENU_SCREENS: Screen[] = ["home", "board", "vault", "logbook", "settings"];
@@ -210,6 +211,11 @@ export function GameShell() {
 
   const todayDig = useMemo(() => digSlots(today), [today]);
 
+  // keep the tab title on today's dig if the page stays open past midnight UTC
+  useEffect(() => {
+    document.title = `Digly ${todayDig.number} · Dig deep.`;
+  }, [todayDig.number]);
+
   const commit = useCallback((p: Progress) => {
     setProgress(p);
     saveProgress(p);
@@ -267,6 +273,9 @@ export function GameShell() {
           commit(next);
           const prev = stats(p0);
           setRewards({ newBest: prev.played > 0 && total > prev.best, first: prev.played === 0, streak: currentStreak(next, run.dig.day) });
+        } else if (run.demo) {
+          // demo digs don't touch progress or the Vault
+          setRewards({ newBest: false, first: false, streak: 0 });
         } else {
           const prevBest = p0.practiceBest[run.dig.day] ?? 0;
           commit(recordPractice(p0, run.dig.day, total, results.map((x) => x.challenge.title)));
@@ -405,6 +414,13 @@ export function GameShell() {
           systemRm={systemRm}
           onBack={() => go("home")}
           admin={admin}
+          loadCategories={() => service!.categories()}
+          onDemo={(slugs) => {
+            setRun({ mode: "practice", dig: digSlots(today), level: 0, results: [], demo: slugs });
+            setDigResult(null);
+            scene?.prepareLevel(0);
+            go("pregame");
+          }}
           email={email}
           onDelete={async (pw) => {
             await service!.deleteAccount(pw);

@@ -1,0 +1,105 @@
+# jobs (merged with the GitHub list)
+Teacher
+Doctor | physician
+Nurse
+Lawyer | attorney
+Firefighter | fireman
+Police Officer | cop, policeman
+Engineer
+Chef | cook
+Farmer
+Pilot
+Dentist
+Accountant
+Scientist
+Artist
+Plumber
+Electrician
+Carpenter
+Mechanic
+Programmer | software developer, software engineer, coder
+Architect
+Veterinarian | vet
+Pharmacist
+Surgeon
+Professor
+Librarian
+Cashier
+Waiter | waitress, server
+Bartender
+Barber
+Hairdresser | hairstylist
+Mail Carrier | mailman, postman
+Truck Driver | trucker
+Taxi Driver | cab driver
+Soldier
+Sailor
+Astronaut
+Actor | actress
+Singer
+Musician
+Dancer
+Writer | author
+Journalist | reporter
+Photographer
+Designer | graphic designer
+Painter
+Judge
+Banker
+Economist
+Psychologist
+Therapist
+Janitor | custodian
+Construction Worker
+Welder
+Baker
+Butcher
+Fisherman
+Lifeguard
+Coach
+Athlete
+Secretary
+Receptionist
+Manager
+Salesperson | sales rep
+Real Estate Agent | realtor
+Paramedic | emt
+Flight Attendant | stewardess
+Detective
+Security Guard
+Gardener | landscaper
+Tailor
+Zookeeper
+Social Worker
+Translator | interpreter
+Influencer
+Youtuber | content creator
+Streamer
+Data Scientist
+Chemist
+Biologist
+Physicist
+Mathematician
+Geologist
+Astronomer
+Optometrist
+Chiropractor
+Dietitian | nutritionist
+Midwife
+Firefighter
+Locksmith
+Roofer
+Miner
+Lumberjack
+Rancher
+Florist
+Jeweler
+Mayor
+Senator
+President
+Diplomat
+Comedian
+Magician
+Clown
+Model
+DJ

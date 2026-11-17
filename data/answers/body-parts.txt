@@ -1,0 +1,123 @@
+# body parts (merged with the GitHub list)
+Head
+Face
+Eye | eyes
+Ear | ears
+Nose
+Mouth
+Lip | lips
+Tongue
+Tooth | teeth
+Chin
+Cheek
+Forehead
+Eyebrow
+Eyelash
+Eyelid
+Neck
+Throat
+Shoulder
+Arm
+Elbow
+Wrist
+Hand
+Palm
+Finger
+Thumb
+Fingernail | nail
+Knuckle
+Chest
+Back
+Stomach | belly, tummy
+Belly Button | navel
+Waist
+Hip
+Leg
+Thigh
+Knee
+Shin
+Calf
+Ankle
+Foot | feet
+Heel
+Toe
+Toenail
+Skin
+Hair
+Scalp
+Brain
+Heart
+Lung | lungs
+Liver
+Kidney | kidneys
+Spleen
+Pancreas
+Gallbladder
+Bladder
+Intestine | intestines, small intestine, large intestine, colon, bowel
+Appendix
+Esophagus
+Stomach Lining
+Skeleton
+Skull
+Rib | ribs
+Spine | backbone
+Pelvis
+Muscle
+Bicep | biceps
+Tricep | triceps
+Abs | abdominals
+Pecs | pectorals
+Glutes | buttocks, butt
+Hamstring
+Quadriceps | quads
+Achilles Tendon | achilles
+Tendon
+Ligament
+Cartilage
+Vein
+Artery
+Blood
+Nerve
+Spinal Cord
+Armpit
+Elbow Pit
+Jaw
+Gums
+Tonsils
+Uvula
+Larynx | voice box
+Trachea | windpipe
+Diaphragm
+Thyroid
+Ovary | ovaries
+Uterus | womb
+Prostate
+Retina
+Iris
+Pupil
+Cornea
+Eardrum
+Cochlea
+Nostril
+Temple
+Adam's Apple
+Collarbone
+Shoulder Blade
+Kneecap
+Sole
+Arch
+Instep
+Pinky
+Index Finger
+Ring Finger
+Middle Finger
+Wisdom Tooth
+Molar
+Incisor
+Canine
+Bone Marrow
+Lymph Node
+Sinus | sinuses
+Dimple
+Freckle

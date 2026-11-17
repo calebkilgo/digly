@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { CategoryInfo } from "@/game/service/types";
 import { sfx } from "@/audio/sfx";
 import type { MotionPref, Settings } from "../settings";
 import { ScreenFrame } from "./ScreenFrame";
@@ -13,6 +14,8 @@ export function SettingsScreen(props: {
   onResetToday: () => Promise<void>;
   onResetAll: () => Promise<void>;
   admin: boolean;
+  loadCategories: () => Promise<CategoryInfo[]>;
+  onDemo: (slugs: string[]) => void;
   email: string | null;
   onEmail: (email: string) => Promise<void>;
   onDelete: (password: string) => Promise<void>;
@@ -180,8 +183,50 @@ export function SettingsScreen(props: {
         <div role="status" style={{ fontSize: 13, minHeight: 16 }}>
           {msg}
         </div>
+        <DemoPicker load={props.loadCategories} onPlay={props.onDemo} />
       </div>
       )}
     </ScreenFrame>
+  );
+}
+
+// Admin demo dig: pick a category for each level and play it unranked.
+function DemoPicker({ load, onPlay }: { load: () => Promise<CategoryInfo[]>; onPlay: (slugs: string[]) => void }) {
+  const [cats, setCats] = useState<CategoryInfo[] | null>(null);
+  const [pick, setPick] = useState<string[]>(["", "", ""]);
+  const [err, setErr] = useState("");
+  // load once when the box opens (the prop is a fresh function each render)
+  useEffect(() => {
+    load().then(setCats, () => setErr("Couldn't load categories."));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  if (err) return <div style={{ fontSize: 13 }}>{err}</div>;
+  if (!cats) return null;
+  const byLevel = [1, 2, 3].map((l) => cats.filter((c) => c.level === l).sort((a, b) => a.title.localeCompare(b.title)));
+  const sel = { fontSize: 15, padding: "6px 8px", border: "3px solid #24160f", borderRadius: 6, fontFamily: "inherit", fontWeight: 700, minWidth: 0, flex: "1 1 160px" } as const;
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8, borderTop: "2px solid #5a4470", paddingTop: 10 }}>
+      <div className="t" style={{ fontSize: 16 }}>Demo dig</div>
+      <div className="d" style={{ color: "#cdb68b" }}>Pick a category for each level (or leave it random). Plays unranked and isn&apos;t saved.</div>
+      {byLevel.map((list, i) => (
+        <label key={i} style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+          <span className="label" style={{ width: 28 }}>L{i + 1}</span>
+          <select style={sel} value={pick[i]} onChange={(e) => setPick((p) => p.map((v, j) => (j === i ? e.target.value : v)))}>
+            <option value="">Random ({list.length})</option>
+            {list.map((c) => (
+              <option key={c.slug} value={c.slug}>
+                {c.title}
+              </option>
+            ))}
+          </select>
+        </label>
+      ))}
+      <button
+        className="btn btn-sm btn-y"
+        onClick={() => onPlay(pick.map((p, i) => p || byLevel[i][Math.floor(Math.random() * byLevel[i].length)].slug))}
+      >
+        Play demo dig
+      </button>
+    </div>
   );
 }

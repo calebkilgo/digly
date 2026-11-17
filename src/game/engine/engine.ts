@@ -164,13 +164,19 @@ export class DigEngine {
     };
   }
 
-  async start(playerId: string, day: number, level: LevelNo, mode: AttemptMode): Promise<AttemptStart> {
+  // `slug` picks a specific category (the admin demo dig). The caller checks
+  // the player is allowed; here it's only ever an unranked practice run.
+  async start(playerId: string, day: number, level: LevelNo, mode: AttemptMode, slug?: string): Promise<AttemptStart> {
     if (![1, 2, 3].includes(level)) throw new GameError("bad_request", "Bad level");
     if (mode !== "ranked" && mode !== "practice") throw new GameError("bad_request", "Bad mode");
     this.checkDay(day);
     await this.store.ensurePlayer(playerId);
     const now = this.now();
-    const ch = this.challenge(day, level);
+    if (slug !== undefined) {
+      const seed = this.seeds().find((s) => s.slug === slug);
+      if (mode !== "practice" || !seed || seed.level !== level) throw new GameError("bad_request", "Bad demo category");
+    }
+    const ch = this.challenge(day, level, slug);
     const seconds = LEVELS[level - 1].seconds;
 
     if (mode === "ranked") {
@@ -185,7 +191,7 @@ export class DigEngine {
       for (let l = 1; l < level; l++) {
         if (!rows.some((r) => r.level === l && r.finishedAt !== null)) throw new GameError("locked", `Finish level ${l} first`);
       }
-    } else {
+    } else if (slug === undefined) {
       const ranked = day === this.today() ? await this.rankedRows(playerId, day) : [];
       const doneToday = ranked.filter((r) => r.finishedAt !== null).length === 3;
       if (day === this.today() && !doneToday) throw new GameError("locked", "Practice opens after the day's ranked dig");
@@ -197,7 +203,7 @@ export class DigEngine {
       day,
       level,
       mode,
-      slug: seedFor(day, level, this.seeds()).slug,
+      slug: slug ?? seedFor(day, level, this.seeds()).slug,
       startedAt: now,
       expiresAt: now + seconds * 1000,
       finishedAt: null,

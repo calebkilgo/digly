@@ -101,7 +101,7 @@ When a level starts, the server sends salted fingerprints of every accepted spel
 
 ## Answer data
 
-29 categories, 5,400+ answers. Level 1 has 9 categories, level 2 has 11 and level 3 has 9.
+45 categories, 12,000+ answers. Level 1 has 13 categories, level 2 has 18 and level 3 has 14.
 
 - `data/answers/<slug>.txt` holds the hand-curated answers: `Name | alias, alias = rarity`. The rarity is optional.
 - `scripts/build_answers.py` merges those with public lists from github.com/dariusk/corpora (dogs, dinosaurs, horses, gems, knots and more). It fills missing rarity from word frequency, drops anything that clashes with an existing name or alias, and writes `src/game/data/answers.generated.ts`.
@@ -136,9 +136,15 @@ npm run answers -- /tmp/corpora
 
 `/privacy` and `/terms`, linked from sign-up and Options. Set `NEXT_PUBLIC_CONTACT_EMAIL` for the contact address shown on both. Keep them in step with what the app collects. If you add a service or a new kind of data, update `/privacy`.
 
+## Link previews and home-screen app
+
+- `public/og.png` (1200x630) is the link preview. The page title carries today's dig number ("Digly #031 · Dig deep.") and the page rebuilds every 5 minutes so shared links stay current.
+- `src/app/manifest.ts` plus `public/icons/*` let phones add Digly to the home screen and open it full screen. `src/app/icon.png` and `apple-icon.png` are the tab and iPhone icons.
+- All of these are drawn from the game's sprite data by `scripts/make_brand.py` (`pip install pillow fonttools`). Rerun it if the miner or gems change.
+
 ## Admin tools
 
-Options shows an Admin tools box (reset today's dig, clear all progress) only to accounts with `players.is_admin = true`. Set it in Supabase SQL:
+Options shows an Admin tools box (reset today's dig, clear all progress, and a demo dig where you pick the category for each level) only to accounts with `players.is_admin = true`. Set it in Supabase SQL:
 
 ```sql
 update public.players set is_admin = true where lower(username) = lower('YOUR_USERNAME');

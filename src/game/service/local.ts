@@ -1,7 +1,7 @@
 import { DigEngine } from "../engine/engine";
 import { BrowserStore } from "../engine/memoryStore";
 import { demoBoard } from "../demoBoard";
-import { GameError, type Account, type AttemptMode, type Board, type ChallengeService, type LevelNo } from "./types";
+import { GameError, type Account, type CategoryInfo, type AttemptMode, type Board, type ChallengeService, type LevelNo } from "./types";
 
 const ME = "local";
 
@@ -16,8 +16,12 @@ export class LocalService implements ChallengeService {
   status(day: number) {
     return this.engine.status(ME, day);
   }
-  start(day: number, level: LevelNo, mode: AttemptMode) {
-    return this.engine.start(ME, day, level, mode);
+  start(day: number, level: LevelNo, mode: AttemptMode, slug?: string) {
+    return this.engine.start(ME, day, level, mode, slug);
+  }
+  async categories(): Promise<CategoryInfo[]> {
+    const { SEEDS } = await import("../data/seeds");
+    return SEEDS.map((s) => ({ slug: s.slug, title: s.title, level: s.level }));
   }
   submit(attemptId: string, text: string) {
     return this.engine.submit(ME, attemptId, text);

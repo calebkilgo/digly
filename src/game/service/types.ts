@@ -117,7 +117,7 @@ export interface Board {
 export interface ChallengeService {
   readonly kind: "remote" | "local";
   status(day: number): Promise<DayStatus>;
-  start(day: number, level: LevelNo, mode: AttemptMode): Promise<AttemptStart>;
+  start(day: number, level: LevelNo, mode: AttemptMode, slug?: string): Promise<AttemptStart>;
   submit(attemptId: string, text: string): Promise<SubmitResult>;
   finish(attemptId: string): Promise<AttemptResult>;
   board(day: number): Promise<Board>;
@@ -129,6 +129,13 @@ export interface ChallengeService {
   resetPassword(token: string, password: string): Promise<Account>;
   setEmail(email: string): Promise<Account>;
   deleteAccount(password: string): Promise<void>;
+  categories(): Promise<CategoryInfo[]>; // admin demo dig
+}
+
+export interface CategoryInfo {
+  slug: string;
+  title: string;
+  level: LevelNo;
 }
 
 export interface Account {

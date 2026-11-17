@@ -67,7 +67,9 @@ def corpora(path, key=None, field=None):
     for k in keys:
         v = d[k]
         if isinstance(v, dict):
-            v = list(v.keys())
+            vals = list(v.values())
+            # {"gods": [...], "goddesses": [...]} -> all the names; otherwise the keys are the names
+            v = [x for sub in vals for x in sub] if vals and all(isinstance(x, list) for x in vals) else list(v.keys())
         for x in v:
             out.append(x[field] if field else x)
     return out
@@ -90,6 +92,37 @@ def strip_suffix(words):
 
 def nfl(name):
     return name, [name.split(" ")[-1]]
+
+
+_surnames = None
+
+
+def surname(name):
+    """Last name as an alias, but only when no other scientist shares it."""
+    global _surnames
+    if _surnames is None:
+        names = corpora("humans/scientists.json") + [it["name"] for it in parse((SRC / "scientists.txt").read_text(encoding="utf8"))]
+        _surnames = {}
+        for n in set(names):
+            last = n.split(" ")[-1].lower()
+            _surnames[last] = _surnames.get(last, 0) + 1
+    parts = name.split(" ")
+    last = parts[-1]
+    ok = len(parts) > 1 and len(last) >= 4 and _surnames.get(last.lower(), 0) == 1
+    return name, [last] if ok else []
+
+
+def birds():
+    """North American species plus the bird types they belong to ("Grebe", "Warbler")."""
+    d = json.loads((CORPORA / "animals/birds_north_america.json").read_text(encoding="utf8"))
+    out = []
+    for fam in d["birds"]:
+        for m in fam["members"]:
+            out.append(m)
+            last = re.split(r"[ -]", m)[-1]
+            if len(last) > 3:
+                out.append(last)
+    return out
 
 
 # slug -> (extra GitHub lists, transform, commons: most-said answers in order)
@@ -129,16 +162,51 @@ CATS = {
         ["Orion", "Ursa Major", "Leo", "Scorpius", "Taurus", "Gemini", "Cassiopeia", "Ursa Minor", "Aries", "Cancer", "Virgo", "Libra", "Sagittarius", "Pisces", "Aquarius", "Capricornus", "Draco", "Pegasus", "Andromeda"]),
     "egyptian-gods": ([("mythology/egyptian_gods.json",)], None,
         ["Ra", "Anubis", "Osiris", "Isis", "Horus", "Set", "Thoth", "Bastet", "Hathor", "Amun", "Sobek", "Ptah", "Sekhmet", "Nut", "Geb"]),
+    "animals": ([("animals/common.json",)], None,
+        ["Dog", "Cat", "Lion", "Elephant", "Tiger", "Giraffe", "Horse", "Cow", "Monkey", "Bear", "Zebra", "Pig", "Rabbit", "Wolf", "Fox"]),
+    "countries": ([("geography/countries.json",)], None,
+        ["United States", "Canada", "Mexico", "China", "Russia", "France", "Germany", "Japan", "Brazil", "India", "Italy", "Spain", "United Kingdom", "Australia", "Egypt"]),
+    "jobs": ([("humans/occupations.json",)], None,
+        ["Teacher", "Doctor", "Nurse", "Lawyer", "Firefighter", "Police Officer", "Engineer", "Chef", "Farmer", "Pilot", "Dentist", "Accountant", "Scientist", "Artist", "Plumber"]),
+    "body-parts": ([("humans/bodyParts.json",)], None,
+        ["Head", "Arm", "Leg", "Hand", "Foot", "Eye", "Nose", "Mouth", "Ear", "Finger", "Toe", "Heart", "Brain", "Knee", "Elbow"]),
+    "world-capitals": ([("geography/countries_with_capitals.json", "countries", "capital")], None,
+        ["London", "Paris", "Tokyo", "Washington, D.C.", "Beijing", "Moscow", "Rome", "Berlin", "Madrid", "Ottawa", "Canberra", "Cairo", "Mexico City", "Athens", "Dublin"]),
+    "nba-teams": ([("sports/nba_teams.json", "nba_teams", "name")], nfl,
+        ["Los Angeles Lakers", "Boston Celtics", "Golden State Warriors", "Chicago Bulls", "Miami Heat", "New York Knicks", "San Antonio Spurs", "Dallas Mavericks"]),
+    "mlb-teams": ([("sports/mlb_teams.json", "mlb_teams", "name")], nfl,
+        ["New York Yankees", "Boston Red Sox", "Los Angeles Dodgers", "Chicago Cubs", "San Francisco Giants", "St. Louis Cardinals", "Atlanta Braves", "New York Mets"]),
+    "us-presidents": ([], None,
+        ["George Washington", "Abraham Lincoln", "Barack Obama", "Donald Trump", "Joe Biden", "John F. Kennedy", "Ronald Reagan", "Thomas Jefferson", "Bill Clinton", "George W. Bush", "Franklin D. Roosevelt", "Richard Nixon", "Theodore Roosevelt", "Jimmy Carter", "John Adams"]),
+    "music-genres": ([("music/genres.json",)], None,
+        ["Rock", "Pop", "Jazz", "Hip Hop", "Country", "Rap", "Blues", "Classical", "Metal", "R&B", "Reggae", "Electronic", "Punk", "Folk", "Soul"]),
+    "board-games": ([("games/board_games.json",)], None,
+        ["Monopoly", "Chess", "Checkers", "Scrabble", "Clue", "Risk", "Candy Land", "Sorry!", "Battleship", "Catan", "Connect Four", "Trouble", "The Game of Life", "Backgammon", "Chutes and Ladders"]),
+    "breads-pastries": ([("foods/breads_and_pastries.json", ["breads", "pastries"])], None,
+        ["Bagel", "Croissant", "Baguette", "Donut", "Muffin", "Sourdough", "Biscuit", "Pretzel", "Tortilla", "Pita", "Brioche", "Cinnamon Roll", "Scone", "Naan", "Ciabatta"]),
+    "rivers": ([("geography/rivers.json", "rivers", "name")], None,
+        ["Nile", "Amazon", "Mississippi", "Thames", "Danube", "Yangtze", "Ganges", "Rhine", "Missouri", "Colorado", "Seine", "Volga", "Mekong", "Hudson", "Tigris"]),
+    "scientists": ([("humans/scientists.json",)], surname,
+        ["Albert Einstein", "Isaac Newton", "Marie Curie", "Charles Darwin", "Galileo Galilei", "Nikola Tesla", "Stephen Hawking", "Thomas Edison", "Louis Pasteur", "Aristotle", "Johannes Kepler", "Gregor Mendel", "Alexander Fleming", "Nicolaus Copernicus", "Archimedes"]),
+    "norse-myth": ([("mythology/norse_gods.json",)], None,
+        ["Odin", "Thor", "Loki", "Freya", "Frigg", "Valhalla", "Valkyrie", "Asgard", "Ragnarok", "Mjolnir", "Yggdrasil", "Fenrir", "Baldr", "Heimdallr", "Tyr"]),
+    "art-movements": ([("art/isms.json",)], None,
+        ["Renaissance", "Impressionism", "Cubism", "Surrealism", "Pop Art", "Baroque", "Romanticism", "Realism", "Expressionism", "Modernism", "Abstract Expressionism", "Dada", "Art Deco", "Art Nouveau", "Minimalism"]),
+    "roman-gods": ([("mythology/roman_deities.json",)], None,
+        ["Jupiter", "Juno", "Neptune", "Pluto", "Mars", "Venus", "Minerva", "Apollo", "Diana", "Mercury", "Vulcan", "Cupid", "Saturn", "Bacchus", "Ceres"]),
 }
 # junk in the public lists
 BLOCK = {
     "dinosaurs": {"Mollusc", "Fish", "Birds", "Fossil", "Turtle", "Dinosaur", "Crocodile", "Mammal", "Pterosaur", "Theropod", "Ichthyosaur", "Cetacea", "Plesiosaur"},
     "gemstones": {"Bone", "Synthetic Diamond"},
+    "rivers": {"White", "Red", "Green", "Black", "Blue", "Yellow"},
 }
 
 # categories that keep their hand file as-is
-for slug in ["african-countries", "birds", "bones", "cheeses", "dances", "elements", "european-countries", "greek-myth", "languages", "us-states"]:
+for slug in ["african-countries", "bones", "dances", "elements", "european-countries", "greek-myth", "languages", "us-states"]:
     CATS[slug] = ([], None, [])
+CATS["cheeses"] = ([("foods/curds.json",)], None, [])
+CATS["birds"] = ([(birds,)], None, [])
 
 
 LINE = re.compile(r"^(.+?)(?:\|(.+?))?(?:=\s*([\d.]+))?\s*$")
@@ -229,7 +297,8 @@ def estimate(items, commons):
             z = zipf(it["name"])
             near = sorted(hand, key=lambda h: abs(h[0] - z))[:5]
             base = sorted(c for _, c in near)[len(near) // 2]
-            it["curated"] = min(99, base + (i / n) * 0.9)
+            # only the hand-picked commons can be copper (see below)
+            it["curated"] = max(40, min(99, base + (i / n) * 0.9))
         else:
             # Word frequency is a rough guide (names like "Ash" or "Coral" are
             # also everyday words), so only the hand-picked commons can be copper.
@@ -249,7 +318,7 @@ def build(slug, misc):
         for it in parse(misc[slug]):
             bag.add(it)
     for spec in extras:
-        for raw in corpora(*spec):
+        for raw in (spec[0]() if callable(spec[0]) else corpora(*spec)):
             name = title(str(raw).strip())
             if name in BLOCK.get(slug, ()):
                 continue
