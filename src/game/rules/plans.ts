@@ -11,6 +11,13 @@ export const UNLIMITED = {
   label: "$5",
 };
 
+// Vault games 1..FREE_VAULT_GAMES are free; the rest need Digly Unlimited.
+export const FREE_VAULT_GAMES = 3;
+
+export function vaultGameOpen(game: number, unlimited: boolean) {
+  return unlimited || game <= FREE_VAULT_GAMES;
+}
+
 export function vaultOpen(day: number, today: number, unlimited: boolean) {
   return unlimited || day >= today - FREE_VAULT_DAYS;
 }

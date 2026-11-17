@@ -50,6 +50,12 @@ export class DiglyScene {
   private shakeAmp = 0;
   private reduced = false;
   private focusX = 0.5;
+  // Home zooms out to show the sky, the surface and the dig below; anything
+  // else zooms back in on the miner. While zoomed out (or moving) the canvas
+  // renders at 2 screen px per pixel so the shrunken art stays crisp.
+  private zoom = 1;
+  private zoomTarget = 1;
+  private res = 0;
 
   private depth = 0;
   private depthTarget = 0;
@@ -99,7 +105,7 @@ export class DiglyScene {
     this.particles = new Particles(this.app.renderer);
     this.miner.onStrike = (x, y, power) => this.strike(x, y, power);
 
-    this.worldC.addChild(this.world.strata, this.world.tunnel);
+    this.worldC.addChild(this.world.strata, this.world.tunnel, this.world.sky);
     this.root.addChild(this.worldC, this.world.back, this.dark);
     this.worldC2.addChild(this.world.tunnelMask, this.world.ruler, this.world.lantern, this.miner.root, this.particles.layer);
     this.root.addChild(this.worldC2, this.vignette, this.reveal.root);
@@ -161,6 +167,11 @@ export class DiglyScene {
       this.app.renderer.resize(this.W, this.H, 1 / px);
     }
     this.k = PX / 4;
+    if (this.mode === "home") {
+      this.zoomTarget = this.homeZoom();
+      if (!this.res) this.zoom = this.zoomTarget; // first layout: start zoomed out
+    }
+    this.res = 0; // renderer was resized; pick the resolution again next frame
     this.world.resize(this.W, this.focusX);
     this.world.setScale(this.k);
     this.layoutReveal();
@@ -208,10 +219,20 @@ export class DiglyScene {
 
   // ---- mode changes -------------------------------------------------------
 
+  // zoomed out, each art pixel is a whole number of screen pixels (2 or 3)
+  private homePX() {
+    return Math.min(PX, Math.max(2, Math.round(PX * 0.7)));
+  }
+
+  private homeZoom() {
+    return this.homePX() / PX;
+  }
+
   setMode(m: SceneMode) {
     if (m === this.mode) return;
     const prev = this.mode;
     this.mode = m;
+    this.zoomTarget = m === "home" ? this.homeZoom() : 1;
     if (m === "home" || m === "pregame") {
       this.level = 1;
       this.reveal.clear();
@@ -381,7 +402,8 @@ export class DiglyScene {
 
     if (this.mode === "home" || this.mode === "pregame") {
       this.camTarget = 0;
-      anchorY = top + h * (this.mode === "home" ? 0.55 : 0.48);
+      // zoomed out, he sits lower so more sky shows above the surface
+      anchorY = top + h * (this.mode === "home" ? 0.55 + (1 - this.zoom) * 0.25 : 0.48);
     } else if (this.mode === "play") {
       const creep = (this.drilling ? (this.urgent ? 14 : 6) : 0) * k;
       this.depthTarget += creep * dt;
@@ -407,9 +429,26 @@ export class DiglyScene {
       sy = Math.round((Math.random() - 0.5) * this.shakeAmp * 2);
       this.shakeAmp = approach(this.shakeAmp, 0, 9, dt);
     }
-    this.worldC.position.set(sx, worldY + sy);
-    this.worldC2.position.set(sx, worldY + sy);
-    this.world.back.position.set(sx, Math.round(anchorY - this.camY * 0.5) + sy);
+    // zoom toward the target, scaling the world around the miner
+    this.zoom = this.reduced ? this.zoomTarget : approach(this.zoom, this.zoomTarget, 3.2, dt);
+    if (Math.abs(this.zoom - this.zoomTarget) < 0.002) this.zoom = this.zoomTarget;
+    const z = this.zoom;
+    const wantRes = z < 1 || this.zoomTarget < 1 ? 1 / this.homePX() : 1 / PX;
+    if (wantRes !== this.res) {
+      this.res = wantRes;
+      this.app.renderer.resize(this.W, this.H, wantRes);
+    }
+    const fx = this.world.homeX + sx;
+    const fy = worldY + sy + floorY - SPR_H * PX * 0.5;
+    const place = (c: Container, x: number, y: number) => {
+      c.scale.set(z);
+      c.position.set(fx + (x - fx) * z, fy + (y - fy) * z);
+    };
+    place(this.worldC, sx, worldY + sy);
+    place(this.worldC2, sx, worldY + sy);
+    place(this.world.back, sx, Math.round(anchorY - this.camY * 0.5) + sy);
+    // the depth ruler only makes sense zoomed in
+    this.world.ruler.visible = z > 0.97;
     this.world.near.position.set(0, Math.round(anchorY - this.camY * 1.35));
     const darkA = Math.max(0, Math.min(0.5, (this.getDepthM() - 25) / 260));
     this.dark.clear();
@@ -441,8 +480,9 @@ export class DiglyScene {
       this.particles.emit({ kind: "dust", x: m.x + (Math.random() - 0.5) * 260 * k, y: m.y - Math.random() * 200 * k, count: 1, color: pal.fleck, speed: [4, 14], angle: [-Math.PI, 0], gravity: -3, life: [2.5, 4], size: [0.8, 1], endScale: 1, drag: 0.2 });
     }
 
-    const camTop = this.camY - anchorY;
-    this.world.ensure(camTop, camTop + this.H, this.camY);
+    // world rows on screen, allowing for the zoom
+    const camTop = (0 - this.worldC.position.y) / z;
+    this.world.ensure(camTop, camTop + this.H / z, this.camY);
     this.world.updateLantern(dt, this.mode === "home" || this.mode === "pregame");
 
     this.reveal.update(

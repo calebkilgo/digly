@@ -1,0 +1,109 @@
+# title: Currencies no longer used
+# level: 3
+# domain: history
+# noun: currencies
+# rule: Money a country or empire once used but has since retired.
+# rule: Give the country with names many places used, like "French franc".
+French Franc | franc
+Deutsche Mark | mark, german mark, d mark
+Italian Lira | lira
+Spanish Peseta | peseta
+Greek Drachma | drachma
+Dutch Guilder | guilder, gulden
+Portuguese Escudo | escudo
+Austrian Schilling | schilling
+Irish Pound | punt
+Finnish Markka | markka
+Belgian Franc
+Soviet Ruble | soviet rouble
+Doubloon
+Denarius
+Sestertius
+Ducat
+Florin
+Piece of Eight | pieces of eight, spanish dollar
+Farthing
+Groat
+Guinea
+Ha'penny | halfpenny, hapenny
+Shilling | british shilling
+Half Crown
+Thaler | taler
+Reichsmark
+Rentenmark
+Papiermark
+East German Mark | ostmark
+Zimbabwean Dollar | zimbabwe dollar
+Confederate Dollar
+Continental Currency | continental
+Zaire
+Cruzeiro
+Cruzado
+Austral
+Inti
+Sucre
+Salvadoran Colon
+Luxembourg Franc
+Slovenian Tolar | tolar
+Cypriot Pound
+Maltese Lira
+Slovak Koruna
+Estonian Kroon | kroon
+Latvian Lats | lats
+Lithuanian Litas | litas
+Croatian Kuna | kuna
+Czechoslovak Koruna
+Yugoslav Dinar
+Rhodesian Dollar
+Ottoman Lira
+Kreuzer
+Pfennig
+Heller
+Aureus
+Solidus | bezant
+Obol
+Talent
+Stater
+Livre | french livre
+Ecu | european currency unit
+Sou
+Louis d'Or | louis dor
+Napoleon | napoleon d or
+Maravedi
+Portuguese Real | reis
+Karbovanets
+Russian Imperial Ruble
+Noble
+Angel
+Crown
+Rigsdaler
+Riksdaler
+Daalder
+Stuiver
+Grosz
+Pengo | pengő
+Korona | austro hungarian krone, krone
+New Zealand Pound
+Australian Pound
+South African Pound
+Newfoundland Dollar
+Nova Scotia Pound
+British West African Pound
+East African Shilling
+Indian Anna | anna
+Pice
+Mohur
+Pagoda
+Tael
+Cash Coin
+Mon
+Ryo
+Wen
+Biafran Pound
+Katangese Franc
+Straits Dollar
+Malayan Dollar
+Wampum
+Cowrie Shells | cowrie
+Manilla
+Rai Stones | rai stone

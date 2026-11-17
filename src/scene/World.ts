@@ -51,6 +51,7 @@ export class World {
   readonly back = new Container(); // parallax 0.5
   readonly near = new Container(); // parallax 1.35
   readonly lantern = new Graphics();
+  readonly sky = new Graphics(); // world space, drawn over the strata above the surface
   readonly ruler = new Container(); // world space: depth ticks and level lines
   private rulerTiles = new Map<number, Container>();
 
@@ -92,6 +93,69 @@ export class World {
     this.rulerTiles.clear();
     // keep the path's horizontal shape proportional to the new width
     this.redrawTunnel();
+    this.redrawSky();
+  }
+
+  // ground level, in world pixels (the home chamber floor is at 96k)
+  get surfaceY() {
+    return Math.round(-150 * this.k);
+  }
+
+  // Night sky, grass and the mine's entrance, seen when the home screen
+  // zooms out. Drawn three screens wide so it still fills the view zoomed out.
+  private redrawSky() {
+    const g = this.sky.clear();
+    const u = PX;
+    const w = this.width;
+    const x0 = -w;
+    const x1 = 2 * w;
+    const sy = this.surfaceY;
+    const top = sy - 3000;
+    // stepped bands, lighter toward the horizon
+    const bands = [0x10162b, 0x151c38, 0x1b2347, 0x232b56, 0x2c3466];
+    const bh = 26 * u;
+    g.rect(x0, top, x1 - x0, sy - top).fill(bands[0]);
+    bands.forEach((c, i) => g.rect(x0, sy - (bands.length - i) * bh, x1 - x0, bh).fill(c));
+    // stars
+    const r = mulberry32(hash(this.seed, 5));
+    for (let i = 0; i < 160; i++) {
+      const x = Math.round((x0 + r() * (x1 - x0)) / u) * u;
+      const y = Math.round((sy - 14 * u - r() * 900) / u) * u;
+      const s = r() < 0.15 ? 2 : 1;
+      g.rect(x, y, s * u, s * u).fill({ color: 0xf6ebd9, alpha: 0.35 + r() * 0.55 });
+    }
+    // moon
+    const mx = Math.round((this.homeX + Math.min(w * 0.3, 160 * this.k)) / u) * u;
+    const my = Math.round((sy - 110 * this.k) / u) * u;
+    const moon = ["..MMM..", ".MMMMm.", "MMMMMmm", "MMMMMmm", "MMMMMmm", ".MMMmm.", "..mmm.."];
+    moon.forEach((row, j) =>
+      [...row].forEach((ch, i) => {
+        if (ch !== ".") g.rect(mx + i * 2 * u, my + j * 2 * u, 2 * u, 2 * u).fill(ch === "M" ? 0xfff4d0 : 0xd8cfa8);
+      }),
+    );
+    // grass on the surface
+    g.rect(x0, sy - 4 * u, x1 - x0, 4 * u).fill(0x4e9a3a);
+    g.rect(x0, sy - u, x1 - x0, u).fill(0x3a7a2c);
+    for (let x = Math.floor(x0 / (2 * u)) * 2 * u; x < x1; x += 2 * u) {
+      const h = [0, 1, 1, 2][Math.floor(r() * 4)];
+      if (h) g.rect(x, sy - (4 + h) * u, u, h * u).fill(0x5fb247);
+    }
+    // the shaft's mouth: a hole in the grass and a wooden frame over it
+    const half = 46 * this.k;
+    const hx = this.homeX;
+    g.rect(hx - half, sy - 4 * u, half * 2, 5 * u).fill(CAVE.back);
+    const post = 4 * u;
+    const ph = 34 * this.k;
+    const wood = 0x8a5a2b;
+    const woodLo = 0x5e3a18;
+    for (const x of [hx - half - post, hx + half]) {
+      g.rect(x - u, sy - ph - u, post + 2 * u, ph + u).fill(INK);
+      g.rect(x, sy - ph, post, ph).fill(wood);
+      g.rect(x + post - u, sy - ph, u, ph).fill(woodLo);
+    }
+    g.rect(hx - half - post - 3 * u, sy - ph - 5 * u, half * 2 + post * 2 + 6 * u, 6 * u).fill(INK);
+    g.rect(hx - half - post - 2 * u, sy - ph - 4 * u, half * 2 + post * 2 + 4 * u, 4 * u).fill(wood);
+    g.rect(hx - half - post - 2 * u, sy - ph - u, half * 2 + post * 2 + 4 * u, u).fill(woodLo);
   }
 
   resetPath() {
@@ -103,6 +167,7 @@ export class World {
   setScale(k: number) {
     this.k = k;
     this.redrawTunnel();
+    this.redrawSky();
   }
 
   setDiscovery(d?: { x: number; y: number; rx: number; ry: number }) {
@@ -196,15 +261,19 @@ export class World {
   private drawBand(b: Band): Graphics {
     const g = new Graphics();
     const pal = bandPalette(b.i, b.top / this.ppm);
-    const w = this.width;
+    // three screens wide, so the home screen can zoom out without gaps
+    const L = -this.width;
+    const w = this.width * 3;
+    const R = L + w;
+    const randX = (r: () => number) => L + r() * w;
     const pts: number[] = [];
-    for (let x = -40; x <= w + 40; x += 16) pts.push(x, this.wave(b, x));
+    for (let x = L - 40; x <= R + 40; x += 16) pts.push(x, this.wave(b, x));
     const bottom = b.bottom + 60;
-    g.poly([...pts, w + 40, bottom, -40, bottom]).fill(pal.base);
+    g.poly([...pts, R + 40, bottom, L - 40, bottom]).fill(pal.base);
     // shaded lip under each boundary
     const lip: number[] = [];
-    for (let x = -40; x <= w + 40; x += 16) lip.push(x, this.wave(b, x));
-    for (let x = w + 40; x >= -40; x -= 16) lip.push(x, this.wave(b, x) + 7 + Math.sin(x * 0.05) * 2);
+    for (let x = L - 40; x <= R + 40; x += 16) lip.push(x, this.wave(b, x));
+    for (let x = R + 40; x >= L - 40; x -= 16) lip.push(x, this.wave(b, x) + 7 + Math.sin(x * 0.05) * 2);
     g.poly(lip).fill(pal.shade);
     g.moveTo(pts[0], pts[1]);
     for (let k = 2; k < pts.length; k += 2) g.lineTo(pts[k], pts[k + 1]);
@@ -215,12 +284,12 @@ export class World {
     // flecks
     const flecks = Math.floor((w * h) / 2600);
     for (let k = 0; k < flecks; k++) {
-      g.circle(r() * w, b.top + 14 + r() * (h - 10), 1 + r() * 1.6).fill({ color: pal.fleck, alpha: 0.8 });
+      g.circle(randX(r), b.top + 14 + r() * (h - 10), 1 + r() * 1.6).fill({ color: pal.fleck, alpha: 0.8 });
     }
     // embedded stones
     const stones = Math.floor((w * h) / 26000) + 1;
     for (let k = 0; k < stones; k++) {
-      const x = r() * w;
+      const x = randX(r);
       const y = b.top + 26 + r() * (h - 30);
       const rx = 7 + r() * 16;
       const ry = rx * (0.55 + r() * 0.3);
@@ -239,9 +308,9 @@ export class World {
     // roots near the surface, fossils mid-depth, crystals deep down
     const meters = b.top / this.ppm;
     if (meters < 30) {
-      const roots = 2 + Math.floor(r() * 3);
+      const roots = 6 + Math.floor(r() * 9);
       for (let k = 0; k < roots; k++) {
-        let x = r() * w, y = b.top + 4;
+        let x = randX(r), y = b.top + 4;
         g.moveTo(x, y);
         for (let s = 0; s < 6; s++) {
           x += (r() - 0.5) * 22;
@@ -252,14 +321,14 @@ export class World {
       }
     }
     if (meters >= 60 && meters < 140 && r() < 0.6) {
-      const x = r() * w, y = b.top + 40 + r() * (h - 60), s = 6 + r() * 4;
+      const x = randX(r), y = b.top + 40 + r() * (h - 60), s = 6 + r() * 4;
       g.moveTo(x, y);
       for (let a = 0; a < Math.PI * 5; a += 0.3) g.lineTo(x + Math.cos(a) * a * s * 0.18, y + Math.sin(a) * a * s * 0.18);
       g.stroke({ width: lw(), color: pal.fleck, alpha: 0.9 });
     }
     if (meters >= 100) {
-      const clusters = 1 + Math.floor(r() * (meters >= 140 ? 4 : 2));
-      for (let k = 0; k < clusters; k++) this.crystalCluster(g, r() * w, b.top + 30 + r() * (h - 40), CRYSTALS[Math.floor(r() * CRYSTALS.length)], r);
+      const clusters = 3 + Math.floor(r() * (meters >= 140 ? 12 : 6));
+      for (let k = 0; k < clusters; k++) this.crystalCluster(g, randX(r), b.top + 30 + r() * (h - 40), CRYSTALS[Math.floor(r() * CRYSTALS.length)], r);
     }
     this.placeEgg(g, b, meters, r);
     return g;
@@ -403,7 +472,8 @@ export class World {
     const d = this.discovery;
     // home chamber plus the shaft Digly arrived through
     const chamber = (gr: Graphics, grow: number, color: number) => {
-      gr.roundRect(hx - 46 * k - grow, -2200, 92 * k + grow * 2, 2200, 40 * k).fill(color);
+      const top = this.surfaceY;
+      gr.roundRect(hx - 46 * k - grow, top, 92 * k + grow * 2, -top + 40 * k, 0).fill(color);
       gr.ellipse(hx, 4 * k, 150 * k + grow, 104 * k + grow).fill(color);
       if (d) {
         gr.ellipse(d.x, d.y, d.rx + grow, d.ry + grow).fill(color);

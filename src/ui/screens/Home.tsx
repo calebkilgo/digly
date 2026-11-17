@@ -10,6 +10,9 @@ import { useSceneInsets } from "../SceneHost";
 import { Icon, Logo } from "../art";
 import type { Screen } from "../GameShell";
 
+export const DISCORD = "https://discord.gg/pGFDrzvfXu";
+export const INSTAGRAM = "https://www.instagram.com/digly_official";
+
 function useWide() {
   const [wide, setWide] = useState(false);
   useEffect(() => {
@@ -105,7 +108,7 @@ export function HomeScreen(props: {
           ))}
         </ol>
         <ul className="facts">
-          <li>Name as many as you can. Your best 3 count.</li>
+          <li>40 seconds a level. Name as many as you can. Your best 3 count.</li>
           <li>
             <b>Rare answers score big.</b> Each level is harder and worth more.
           </li>
@@ -119,9 +122,19 @@ export function HomeScreen(props: {
             {partway ? `CONTINUE · L${status!.next}` : "START"}
           </button>
         )}
-        <p className="next-line">
-          {total ? `Today: ${total.toLocaleString()} pts · ` : ""}Next dig in <b>{formatCountdown(nextResetAt(now) - now)}</b>
-        </p>
+        <div className="next-row">
+          <p className="next-line">
+            {total ? `Today: ${total.toLocaleString()} pts · ` : ""}Next dig in <b>{formatCountdown(nextResetAt(now) - now)}</b>
+          </p>
+          <div className="socials">
+            <a className="btn" href={DISCORD} target="_blank" rel="noopener noreferrer" aria-label="Digly on Discord" title="Discord" onClick={() => sfx.button()}>
+              <Icon name="discord" size={2} />
+            </a>
+            <a className="btn" href={INSTAGRAM} target="_blank" rel="noopener noreferrer" aria-label="Digly on Instagram" title="Instagram" onClick={() => sfx.button()}>
+              <Icon name="insta" size={2} />
+            </a>
+          </div>
+        </div>
         {props.netError && <p className="fine">{props.netError}</p>}
       </section>
 

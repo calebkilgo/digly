@@ -119,7 +119,8 @@ export interface Board {
 export interface ChallengeService {
   readonly kind: "remote" | "local";
   status(day: number): Promise<DayStatus>;
-  start(day: number, level: LevelNo, mode: AttemptMode, slug?: string): Promise<AttemptStart>;
+  // slug: admin demo category; vault: a Vault game number
+  start(day: number, level: LevelNo, mode: AttemptMode, opts?: { slug?: string; vault?: number }): Promise<AttemptStart>;
   submit(attemptId: string, text: string): Promise<SubmitResult>;
   finish(attemptId: string): Promise<AttemptResult>;
   board(day: number): Promise<Board>;
@@ -132,6 +133,8 @@ export interface ChallengeService {
   setEmail(email: string): Promise<Account>;
   deleteAccount(password: string): Promise<void>;
   categories(): Promise<CategoryInfo[]>; // admin demo dig
+  suggest(text: string): Promise<void>; // a prompt idea, guests too
+  suggestions(): Promise<{ text: string; day: number; createdAt: number }[]>; // admin only
   checkout(): Promise<string>; // URL of the Stripe page for Digly Unlimited
   confirmPurchase(sessionId: string): Promise<boolean>;
 }

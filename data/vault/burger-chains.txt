@@ -1,0 +1,73 @@
+# title: Burger restaurant chains
+# level: 1
+# domain: food
+# noun: chains
+# rule: Restaurant chains known for burgers, from any country.
+McDonald's | mcdonalds, mickey ds, maccas
+Burger King | bk, hungry jacks
+Wendy's | wendys
+Five Guys
+In-N-Out | in n out, in and out
+Shake Shack
+Whataburger
+Sonic | sonic drive in
+Carl's Jr. | carls jr, carls junior
+Hardee's | hardees
+Jack in the Box
+White Castle
+Culver's | culvers
+Checkers
+Rally's | rallys
+Smashburger
+Steak 'n Shake | steak n shake
+Red Robin
+Arby's | arbys
+Dairy Queen | dq
+A&W | a and w
+Fuddruckers
+Krystal
+Freddy's | freddys
+The Habit | habit burger
+Johnny Rockets
+Fatburger
+BurgerFi | burger fi
+Wayback Burgers
+Burgerville
+Back Yard Burgers
+Good Times
+Farmer Boys
+Mooyah
+Hopdoddy
+Bobby's Burger Palace | bobbys burgers
+Elevation Burger
+Umami Burger
+Wahlburgers
+Gordon Ramsay Burger
+Bareburger
+Original Tommy's | tommys
+Rax
+Burger Chef
+Wimpy
+Lotteria
+MOS Burger | mos
+Freshness Burger
+Harvey's | harveys
+Big Boy | bobs big boy, frischs big boy
+Kewpee
+Hamburger Hamlet
+Red Rooster
+Grill'd | grilld
+Byron
+Honest Burgers
+Gourmet Burger Kitchen | gbk
+Patty and Bun
+Jollibee
+Quick
+Cook Out | cookout
+Hwy 55 | highway 55
+Lion's Choice
+Nathan's | nathans famous
+Teddy's Bigger Burgers | teddys
+Burger Lounge
+Dick's Drive-In | dicks drive in
+Gott's Roadside | gotts

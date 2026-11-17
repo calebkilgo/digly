@@ -13,6 +13,7 @@ import {
   EMPTY_PROGRESS,
   loadProgress,
   recordPractice,
+  recordVault,
   recordRanked,
   saveProgress,
   type Progress,
@@ -40,6 +41,7 @@ export interface Run {
   level: number; // 0..2
   results: AttemptResult[];
   demo?: string[]; // admin demo dig: the category slug for each level
+  vault?: number; // Vault game number
 }
 
 const MENU_SCREENS: Screen[] = ["home", "board", "vault", "logbook", "settings"];
@@ -322,6 +324,10 @@ export function GameShell() {
         } else if (run.demo) {
           // demo digs don't touch progress or the Vault
           setRewards({ newBest: false, first: false, streak: 0 });
+        } else if (run.vault) {
+          const prevBest = p0.vaultBest?.[run.vault] ?? 0;
+          commit(recordVault(p0, run.vault, total, results.map((x) => x.challenge.title)));
+          setRewards({ newBest: prevBest > 0 && total > prevBest, first: false, streak: 0 });
         } else {
           const prevBest = p0.practiceBest[run.dig.day] ?? 0;
           commit(recordPractice(p0, run.dig.day, total, results.map((x) => x.challenge.title)));
@@ -451,11 +457,15 @@ export function GameShell() {
       )}
       {screen === "vault" && (
         <VaultScreen
-          today={today}
           progress={progress}
           unlimited={unlimited}
           onBack={() => go("home")}
-          onPlay={(d) => openPregame("practice", d)}
+          onPlay={(n) => {
+            setRun({ mode: "practice", dig: { ...digSlots(today), number: `Vault ${n}` }, level: 0, results: [], vault: n });
+            setDigResult(null);
+            scene?.prepareLevel(0);
+            go("pregame");
+          }}
           onUnlock={buyUnlimited}
         />
       )}
@@ -470,6 +480,7 @@ export function GameShell() {
           unlimited={unlimited}
           onUnlimited={() => go("vault")}
           loadCategories={() => service!.categories()}
+          loadSuggestions={() => service!.suggestions()}
           onDemo={(slugs) => {
             setRun({ mode: "practice", dig: digSlots(today), level: 0, results: [], demo: slugs });
             setDigResult(null);

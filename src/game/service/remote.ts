@@ -32,8 +32,8 @@ export class RemoteService implements ChallengeService {
     return s;
   }
 
-  start(day: number, level: LevelNo, mode: AttemptMode, slug?: string) {
-    return call<AttemptStart>("/api/attempts", { method: "POST", body: slug ? { day, level, mode, slug } : { day, level, mode } });
+  start(day: number, level: LevelNo, mode: AttemptMode, opts: { slug?: string; vault?: number } = {}) {
+    return call<AttemptStart>("/api/attempts", { method: "POST", body: { day, level, mode, ...opts } });
   }
 
   async checkout() {
@@ -42,6 +42,14 @@ export class RemoteService implements ChallengeService {
 
   async confirmPurchase(sessionId: string) {
     return (await call<{ unlimited: boolean }>(`/api/billing/confirm?session_id=${encodeURIComponent(sessionId)}`)).unlimited;
+  }
+
+  async suggest(text: string) {
+    await call("/api/suggest", { method: "POST", body: { text } });
+  }
+
+  async suggestions() {
+    return (await call<{ suggestions: { text: string; day: number; createdAt: number }[] }>("/api/admin/suggestions")).suggestions;
   }
 
   async categories() {

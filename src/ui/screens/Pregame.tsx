@@ -41,7 +41,7 @@ export function PregameScreen(props: { scene: DiglyScene | null; run: Run; onBac
       <div className="spacer" />
       <section className="pregame px" ref={card} aria-labelledby="pg-title" tabIndex={-1}>
         <div className="order-head">
-          <span className="label">{practice ? "Vault practice · unranked" : "Ranked dig"}</span>
+          <span className="label">{practice ? "Vault · unranked" : "Ranked dig"}</span>
           <span className="order-num">{run.dig.number}</span>
         </div>
         <h2 id="pg-title" className="card-title">

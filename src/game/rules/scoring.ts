@@ -17,7 +17,7 @@ export const SCORING = {
   caveIn: -15, // extra, when a level has no valid answers at all
   gameFloor: 0,
   // tier cutoffs on the z-score of an answer's difficulty within its prompt
-  tierZ: { gold: -1.0, diamond: 0.25, ruby: 1.5 },
+  tierZ: { gold: -1.0, diamond: 0.3, ruby: 1.8 }, // ~16% copper, 46% gold, 35% diamond, 3.6% ruby
 };
 
 export interface Scored {
@@ -34,11 +34,11 @@ export interface Tier {
   blurb: string;
 }
 
-// Highest first. The mins match the z cutoffs: CDF(-1) = 16, CDF(0.25) = 60, CDF(1.5) = 93.
+// Highest first. The mins match the z cutoffs: CDF(-1) = 16, CDF(0.3) = 62, CDF(1.8) = 96.
 export const TIERS: Tier[] = [
   { key: "platinum", label: "Platinum", min: 100, blurb: "the hardest one" },
-  { key: "ruby", label: "Ruby", min: 93, blurb: "very niche" },
-  { key: "diamond", label: "Diamond", min: 60, blurb: "niche" },
+  { key: "ruby", label: "Ruby", min: 96, blurb: "very niche" },
+  { key: "diamond", label: "Diamond", min: 62, blurb: "niche" },
   { key: "gold", label: "Gold", min: 16, blurb: "a bit niche" },
   { key: "copper", label: "Copper", min: 1, blurb: "the obvious ones" },
 ];

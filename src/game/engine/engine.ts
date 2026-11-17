@@ -6,7 +6,8 @@ import { dayNumber, dayStart, formatChallengeNumber } from "../rules/schedule";
 import { LEVELS } from "../rules/levels";
 import { SEEDS, type ChallengeSeed } from "../data/seeds";
 import { slugFor } from "../data/rotation";
-import { vaultOpen } from "../rules/plans";
+import { vaultGameOpen, vaultOpen } from "../rules/plans";
+import { VAULT_CHALLENGES, vaultSlug } from "../data/vault";
 import {
   GameError,
   type AttemptMode,
@@ -66,10 +67,15 @@ export class DigEngine {
     return this.opts.seeds ?? SEEDS;
   }
 
+  // daily categories plus the Vault's own prompts
+  private findSeed(slug: string) {
+    return this.seeds().find((s) => s.slug === slug) ?? VAULT_CHALLENGES.find((s) => s.slug === slug);
+  }
+
   private indexed(slug: string): Indexed {
     let x = this.indexes.get(slug);
     if (!x) {
-      const seed = this.seeds().find((s) => s.slug === slug);
+      const seed = this.findSeed(slug);
       if (!seed) throw new GameError("not_found", `Unknown challenge ${slug}`);
       const index = new AnswerIndex(parseAnswerBlock(seed.answers, slug));
       x = { index, byId: new Map(index.answers.map((a) => [a.id, a])), num: new Map(index.answers.map((a, i) => [a.id, i])) };
@@ -109,7 +115,7 @@ export class DigEngine {
   }
 
   challenge(day: number, level: LevelNo, slug?: string): PublicChallenge {
-    const seed = (slug && this.seeds().find((s) => s.slug === slug)) || seedFor(day, level, this.seeds());
+    const seed = (slug && this.findSeed(slug)) || seedFor(day, level, this.seeds());
     const info = LEVELS[level - 1];
     return {
       id: `${day}:${level}:${seed.slug}`,
@@ -166,16 +172,30 @@ export class DigEngine {
 
   // `slug` picks a specific category (the admin demo dig). The caller checks
   // the player is allowed; here it's only ever an unranked practice run.
+  // `vault`: a Vault game number; its prompts replace the day's categories.
   // `unlimited`: the player owns Digly Unlimited (the route looks it up).
-  async start(playerId: string, day: number, level: LevelNo, mode: AttemptMode, opts: { slug?: string; unlimited?: boolean } = {}): Promise<AttemptStart> {
-    const { slug, unlimited = false } = opts;
+  async start(
+    playerId: string,
+    day: number,
+    level: LevelNo,
+    mode: AttemptMode,
+    opts: { slug?: string; vault?: number; unlimited?: boolean } = {},
+  ): Promise<AttemptStart> {
+    const { vault, unlimited = false } = opts;
+    let { slug } = opts;
     if (![1, 2, 3].includes(level)) throw new GameError("bad_request", "Bad level");
     if (mode !== "ranked" && mode !== "practice") throw new GameError("bad_request", "Bad mode");
     this.checkDay(day);
     await this.store.ensurePlayer(playerId);
     const now = this.now();
-    if (slug !== undefined) {
-      const seed = this.seeds().find((s) => s.slug === slug);
+    if (vault !== undefined) {
+      const vs = Number.isInteger(vault) && [1, 2, 3].includes(level) ? vaultSlug(vault, level) : null;
+      if (mode !== "practice" || !vs || slug !== undefined) throw new GameError("bad_request", "Bad Vault game");
+      if (day !== this.today()) throw new GameError("bad_request", "Vault games are played on today's date");
+      if (!vaultGameOpen(vault, unlimited)) throw new GameError("locked", "Digly Unlimited opens every Vault game.");
+      slug = vs;
+    } else if (slug !== undefined) {
+      const seed = this.findSeed(slug);
       if (mode !== "practice" || !seed || seed.level !== level) throw new GameError("bad_request", "Bad demo category");
     }
     const ch = this.challenge(day, level, slug);
@@ -194,6 +214,7 @@ export class DigEngine {
         if (!rows.some((r) => r.level === l && r.finishedAt !== null)) throw new GameError("locked", `Finish level ${l} first`);
       }
     } else if (slug === undefined) {
+      // replaying a past day's categories (the old Vault)
       if (!vaultOpen(day, this.today(), unlimited)) throw new GameError("locked", "Digly Unlimited opens every past dig.");
       const ranked = day === this.today() ? await this.rankedRows(playerId, day) : [];
       const doneToday = ranked.filter((r) => r.finishedAt !== null).length === 3;
@@ -340,6 +361,15 @@ export class DigEngine {
       rarest: all.slice(0, 20).map((a) => ({ ...reveal(a), found: got.has(a.id) })),
       finishedAt: row.finishedAt ?? Math.min(this.now(), row.expiresAt),
     };
+  }
+
+  // A prompt idea from a player. Kept short and plain; links aren't allowed.
+  async suggest(playerId: string | null, raw: string) {
+    const text = String(raw ?? "").replace(/\s+/g, " ").trim();
+    if (text.length < 2 || text.length > 120) throw new GameError("bad_request", "Keep it between 2 and 120 characters.");
+    if (/https?:|www\.|<|>/i.test(text)) throw new GameError("bad_request", "Just the prompt, no links.");
+    if (playerId) await this.store.ensurePlayer(playerId);
+    await this.store.addSuggestion({ playerId, text, day: this.today(), createdAt: this.now() });
   }
 
   async topRejects(slug: string, limit = 100) {

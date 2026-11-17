@@ -1,5 +1,5 @@
 import type { AttemptMode } from "../service/types";
-import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store } from "./store";
+import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store, type Suggestion } from "./store";
 
 export interface MemoryData {
   players: Record<string, { name: string; username?: string; passwordHash?: string; email?: string | null; isAdmin?: boolean; unlimited?: boolean }>;
@@ -9,6 +9,7 @@ export interface MemoryData {
   attempts: Record<string, AttemptRow>;
   answers: Record<string, string[]>;
   rejects: Record<string, string[]>;
+  suggestions?: Suggestion[];
 }
 
 const empty = (): MemoryData => ({ players: {}, attempts: {}, answers: {}, rejects: {} });
@@ -218,6 +219,15 @@ export class MemoryStore implements Store {
 
   async answerStats(slug: string, beforeDay: number) {
     return memoryStats(this.data, slug, beforeDay);
+  }
+
+  async addSuggestion(s: Suggestion) {
+    (this.data.suggestions ??= []).push(s);
+    this.changed();
+  }
+
+  async listSuggestions(limit: number) {
+    return [...(this.data.suggestions ?? [])].reverse().slice(0, limit);
   }
 
   async topRejects(slug: string, limit: number) {

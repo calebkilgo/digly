@@ -268,7 +268,7 @@ describe("instant answer check", () => {
     // resuming hands back the found numbers
     const again = await eng.start("p", 1, 1, "ranked");
     expect(again.found).toContain(lab);
-  });
+  }, 20_000); // builds the full dog-breed lookup; slow when the test files run in parallel
 
   it("is fast: thousands of lookups per millisecond-scale budget", async () => {
     clock = dayStart(1) + 1000;
@@ -336,6 +336,36 @@ describe("demo dig", () => {
     expect(await code(eng.start("p", DAY, 2, "ranked", { slug: "nba-teams" }))).toBe("bad_request");
     expect(await code(eng.start("p", DAY, 2, "practice", { slug: "nope" }))).toBe("bad_request");
     expect(await code(eng.start("p", DAY, 1, "practice", { slug: "nba-teams" }))).toBe("bad_request");
+  });
+});
+
+describe("Vault games", () => {
+  it("plays a free Vault game's prompts as unranked practice", async () => {
+    const st = await eng.start("p", DAY, 1, "practice", { vault: 1 });
+    expect(st.challenge.title).toBe("Trees");
+    expect((await eng.submit("p", st.attemptId, "oak tree")).status).toBe("accepted");
+    const r = await eng.finish("p", st.attemptId);
+    expect(r.mode).toBe("practice");
+    expect((await eng.status("p", DAY)).next).toBe(1); // ranked dig untouched
+  });
+
+  it("needs Unlimited past the free games, and refuses bad requests", async () => {
+    expect(await code(eng.start("p", DAY, 1, "practice", { vault: 4 }))).toBe("locked");
+    expect(await code(eng.start("p", DAY, 1, "practice", { vault: 4, unlimited: true }))).toBe("ok");
+    expect(await code(eng.start("p", DAY, 1, "ranked", { vault: 1 }))).toBe("bad_request");
+    expect(await code(eng.start("p", DAY, 1, "practice", { vault: 999 }))).toBe("bad_request");
+    expect(await code(eng.start("p", DAY - 1, 1, "practice", { vault: 1 }))).toBe("bad_request");
+  });
+});
+
+describe("prompt ideas", () => {
+  it("stores trimmed ideas from guests and refuses links or empty text", async () => {
+    await eng.suggest("guest-1", "  Board   games from the 80s ");
+    expect(await code(eng.suggest("guest-1", "x"))).toBe("bad_request");
+    expect(await code(eng.suggest("guest-1", "see https://spam.example"))).toBe("bad_request");
+    const list = await store.listSuggestions(10);
+    expect(list.map((s) => s.text)).toEqual(["Board games from the 80s"]);
+    expect(list[0].day).toBe(DAY);
   });
 });
 

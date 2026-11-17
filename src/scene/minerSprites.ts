@@ -1,61 +1,70 @@
-// Digly the miner, hand-placed pixel by pixel. One character = one pixel.
-//   K ink   Y helmet   y helmet shade   L headlamp   S skin   s skin shade
-//   O shirt   o shirt shade   T overalls   t overalls shade   N boots
-//   M mouth   W white   G steel   g steel shade   H handle   h handle shade
+// Digly the miner, side view facing right, hand-placed pixel by pixel.
+// One character = one pixel.
+//   Z helmet shine  Y helmet  y helmet shade  e lamp housing  L headlamp
+//   R hair  S skin  s skin shade  K eye  O shirt  o shirt shade
+//   T overalls  t overalls shade  B button  N boots  n boot shade
+//   H handle  q handle shade  h handle cap  W steel shine  G steel  g steel dark  m steel mid
 
-export const PAL: Record<string, number> = {
-  K: 0x1b1030,
-  Y: 0xffd23f,
-  y: 0xe09a00,
-  L: 0xfff7b0,
-  S: 0xffc58f,
-  s: 0xe0956a,
-  O: 0xff6b2c,
-  o: 0xc9461a,
-  T: 0x2f8fe8,
-  t: 0x1d5fb0,
-  N: 0x7a4122,
-  M: 0x8a3a2a,
-  W: 0xffffff,
-  G: 0xd6d6e4,
-  g: 0x8a8aa6,
-  H: 0xc0782f,
-  h: 0x85491a,
+export const MPAL: Record<string, number> = {
+  Z: 0xffe36a,
+  Y: 0xf5c518,
+  y: 0xd19a0a,
+  e: 0xc9a227,
+  L: 0xfff7b8,
+  R: 0x5a3320,
+  S: 0xf3bb8c,
+  s: 0xd49467,
+  K: 0x231440,
+  O: 0xec7430,
+  o: 0xbd5018,
+  T: 0x3070d8,
+  t: 0x2150a5,
+  B: 0xf5c518,
+  N: 0x6a3a1d,
+  n: 0x4a2610,
+  H: 0xa8692f,
+  q: 0x7a4a20,
+  h: 0x5e3a18,
+  W: 0xe6edf5,
+  G: 0xb8c4d3,
+  g: 0x56637a,
+  m: 0x7e8ca2,
 };
 
 export const LAMP_HOT = 0xff3b30;
-export const SPR_W = 22;
-export const SPR_H = 28;
+export const SPR_W = 14;
+export const SPR_H = 27;
+// the root sits between his boots, this many pixels from the sprite's left edge
+export const FEET_X = 4;
 
 const BODY = [
-  ".......KKKKKKKK.......",
-  ".....KKYYYYYYYYKK.....",
-  "....KYYYYYKKYYYYYK....",
-  "...KYYYYYKLLKYYYYYK...",
-  "...KYYYYYKLLKYYYYYK...",
-  "..KYYYYYYYKKYYYYYYyK..",
-  "..KyYYYYYYYYYYYYYyyK..",
-  ".KKKKKKKKKKKKKKKKKKKK.",
-  ".KyyyyyyyyyyyyyyyyyyK.",
-  "...KssssssssssssssK...",
-  "...KSSSSSSSSSSSSSSK...",
-  "...KSSKKSSSSSSKKSSK...",
-  "...KSSSKKSSSSKKSSSK...",
-  "...KSSSSSSssSSSSSSK...",
-  "...KsSSSSSSSSSSSSsK...",
-  "....KsSSSKKKKSSSsK....",
-  ".....KKssssssssKK.....",
-  "....KOOKKKKKKKKOOK....",
-  "...KOOOTKOOOOKTOOOK...",
-  "..KOOOOTTTTTTTTOOOOK..",
-  "..KSKOOTTTTTTTTOOKSK..",
-  "..KSKoOTTTKKTTTOoKSK..",
-  "...KK.KTTTTTTTTK.KK...",
-  "......KTTTTTTTTK......",
-  "......KTTTttTTTK......",
-  "......KTTTKKTTTK......",
-  ".....KNNNNKKNNNNK.....",
-  ".....KKKKKK.KKKKK.....",
+  ".ZZZZZZZ......",
+  "yYYYYYYYY.....",
+  "yYYYYYYYeLL...",
+  "yYYYYYYYeee...",
+  "yyyyyyyyyyyy..",
+  ".RRRSSSS......",
+  "RRRRSSRRS.....",
+  "RSSsSSKSs.....",
+  "RSSsSSSs......",
+  "RsssSSSS......",
+  ".oOTTOOO......",
+  ".oOTTOOO......",
+  ".oOTOOTT......",
+  ".oOBOOTT......",
+  ".tTTOOOT......",
+  ".tTTTOOT......",
+  ".tTTTOOO......",
+  ".tTTTTOO......",
+  ".tTTTTTO......",
+  ".tttTTT.......",
+  ".tttTTT.......",
+  ".tttTTT.......",
+  ".tttTTT.......",
+  ".tttTTT.......",
+  ".tttTTT.......",
+  "nnnNNNNN......",
+  "nnnNNNNN......",
 ];
 
 function face(rows: Record<number, string>): string[] {
@@ -64,16 +73,45 @@ function face(rows: Record<number, string>): string[] {
 
 export const FRAMES = {
   stand: BODY,
-  blink: face({ 12: "...KSSSssSSSSssSSSK..." }),
-  focus: face({ 11: "...KSSSKKSSSSKKSSSK...", 12: "...KSSSKKSSSSKKSSSK..." }),
-  happy: face({ 15: "....KsSSKSSSSKSSsK....", 16: ".....KKssKKKKssKK....." }),
-  oops: face({ 11: "...KSKKSSSSSSSSKKSK...", 15: "....KsSSSSKKSSSSsK....", 16: ".....KKsssKKsssKK....." }),
+  blink: face({ 7: "RSSsSSSSs....." }),
+  focus: face({ 6: "RRRRSSSRS.....", 7: "RSSsSSKRs....." }),
+  happy: face({ 6: "RRRRSSKKS.....", 7: "RSSsSSSSs....." }),
+  oops: face({ 6: "RRRRSRRSS.....", 7: "RSSsSSKSs.....", 8: "RSSsSSKs......" }),
 } satisfies Record<string, string[]>;
 
 export type FrameName = keyof typeof FRAMES;
 
-// where the pickaxe handle sits in the right hand, in body pixels
-export const HAND = { x: 18.5, y: 21 };
+// Forearm, hand and pickaxe: one piece that swings around his hip.
+export const ARM = [
+  ".....hh.....",
+  ".....Hq.....",
+  ".....SS.....",
+  "OOOOOSS.....",
+  "OOOOOOO.....",
+  ".....Hq.....",
+  ".....Hq.....",
+  ".....Hq.....",
+  "W....Gg....W",
+  "mW...gg...Wm",
+  ".mWW.gg.WWm.",
+  "..mmWGGWmm..",
+  "....mmmm....",
+];
+// where ARM's top-left corner sits on the body, in body pixels
+export const ARM_AT = { x: 6, y: 14 };
+// the pivot (his hip / elbow) and the pick's striking point, in ARM pixels
+export const ARM_PIVOT = { x: 0.5, y: 3.5 };
+export const ARM_TIP = { x: 6, y: 12.5 };
+
+// ---- the old front-facing pickaxe, still used by the logo in the UI --------
+
+export const PAL: Record<string, number> = {
+  K: 0x1b1030,
+  G: 0xd6d6e4,
+  g: 0x8a8aa6,
+  H: 0xc0782f,
+  h: 0x85491a,
+};
 
 export const PICK = [
   "...KKKKKKKK...",
@@ -93,5 +131,3 @@ export const PICK = [
   ".....KHhK.....",
   ".....KKKK.....",
 ];
-export const PICK_GRIP = { x: 7, y: 13.5 };
-export const PICK_TIP = { x: -6, y: -10 };

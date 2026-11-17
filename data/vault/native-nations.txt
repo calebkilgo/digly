@@ -1,0 +1,174 @@
+# title: Native American nations
+# level: 2
+# domain: history
+# noun: nations
+# rule: Tribes and nations native to North, Central or South America.
+# rule: "Tribe" or "Nation" on the end is fine.
+# strip: tribe, nation, people, indians
+Cherokee
+Navajo | dine, navaho
+Apache
+Sioux | lakota, dakota, nakota
+Comanche
+Cheyenne
+Iroquois | haudenosaunee, six nations
+Mohawk
+Seminole
+Shawnee
+Blackfoot | blackfeet, siksika
+Crow | apsaalooke
+Hopi
+Pueblo
+Inuit
+Aztec | mexica
+Maya | mayan
+Inca | quechua
+Chickasaw
+Choctaw
+Creek | muscogee, muskogee
+Ojibwe | ojibwa, chippewa, anishinaabe
+Cree
+Algonquin
+Huron | wyandot, wendat
+Mohican | mahican
+Pawnee
+Arapaho
+Kiowa
+Nez Perce
+Shoshone | shoshoni
+Ute
+Paiute
+Zuni
+Wampanoag
+Powhatan
+Lenape | delaware
+Seneca
+Oneida
+Onondaga
+Cayuga
+Tuscarora
+Miami
+Potawatomi
+Menominee
+Ho-Chunk | winnebago
+Sauk | sac
+Meskwaki | fox
+Kickapoo
+Osage
+Omaha
+Ponca
+Otoe
+Missouria
+Iowa
+Kansa | kaw
+Quapaw
+Caddo
+Wichita
+Tonkawa
+Karankawa
+Natchez
+Catawba
+Yamasee
+Timucua
+Calusa
+Tequesta
+Apalachee
+Narragansett
+Pequot
+Mohegan
+Abenaki
+Penobscot
+Passamaquoddy
+Mi'kmaq | mikmaq, micmac
+Maliseet
+Innu | montagnais
+Haida
+Tlingit
+Tsimshian
+Kwakwaka'wakw | kwakiutl
+Nuu-chah-nulth | nootka
+Salish | coast salish
+Chinook
+Makah
+Yakama
+Spokane
+Coeur d'Alene
+Flathead | bitterroot salish
+Umatilla
+Klamath
+Modoc
+Yurok
+Karuk
+Hupa
+Pomo
+Miwok
+Ohlone | costanoan
+Chumash
+Tongva | gabrielino
+Cahuilla
+Mojave | mohave
+Yuma | quechan
+Tohono O'odham | papago
+Akimel O'odham | pima
+Yaqui
+Havasupai
+Hualapai
+Yavapai
+Tewa
+Taos Pueblo
+Acoma
+Laguna
+Mandan
+Hidatsa
+Arikara
+Assiniboine
+Gros Ventre
+Aleut | unangan
+Yupik | yupik
+Inupiat
+Athabaskan | athabascan, dene
+Gwich'in
+Tlicho | dogrib
+Chipewyan
+Beothuk
+Taino
+Arawak
+Carib | kalinago
+Guarani
+Mapuche
+Aymara
+Muisca
+Olmec
+Toltec
+Zapotec
+Mixtec
+Purepecha | tarascan
+Tarahumara | raramuri
+Huichol | wixarika
+Miskito
+Kuna | guna
+Yanomami
+Kayapo
+Tupi
+Ashaninka
+Shuar
+Selk'nam | ona
+Tehuelche
+Wayuu
+Lumbee
+Pamunkey
+Mattaponi
+Susquehannock
+Erie
+Neutral Nation
+Petun
+Ottawa | odawa
+Nipissing
+Mississauga
+Montauk
+Shinnecock
+Unkechaug
+Nanticoke
+Piscataway
+Tutelo
+Saponi

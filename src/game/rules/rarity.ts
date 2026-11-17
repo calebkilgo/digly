@@ -10,7 +10,7 @@ import { tierFromZ, type TierKey } from "./scoring";
 // trust the raw ratings to be bell-shaped (most long lists aren't), each
 // answer's place in the pool is turned into a normal z-score: z = invCDF of its
 // position from easiest to hardest. Every prompt then gets the same tier mix
-// (about 16% copper, 44% gold, 33% diamond, 7% ruby; see SCORING.tierZ), the
+// (about 16% copper, 46% gold, 35% diamond, 3.6% ruby; see SCORING.tierZ), the
 // order of answers never changes, and the shown score is CDF(z) x 100. The
 // single hardest answer is the Platinum. Ratings only use earlier days, so the
 // tiers stay fixed while a day is played.

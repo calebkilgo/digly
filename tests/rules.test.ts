@@ -110,12 +110,12 @@ describe("scoring", () => {
     expect(tierFromZ(-1.2)).toBe("copper");
     expect(tierFromZ(-1.0)).toBe("gold");
     expect(tierFromZ(0.24)).toBe("gold");
-    expect(tierFromZ(0.25)).toBe("diamond");
-    expect(tierFromZ(1.5)).toBe("ruby");
+    expect(tierFromZ(0.3)).toBe("diamond");
+    expect(tierFromZ(1.8)).toBe("ruby");
     expect(tierFor(15).key).toBe("copper");
     expect(tierFor(16).key).toBe("gold");
-    expect(tierFor(60).key).toBe("diamond");
-    expect(tierFor(93).key).toBe("ruby");
+    expect(tierFor(62).key).toBe("diamond");
+    expect(tierFor(96).key).toBe("ruby");
     expect(tierFor(100).key).toBe("platinum");
     // a stored tier always wins over the number
     expect(tierOf({ name: "x", rarity: 99, tier: "gold" }).key).toBe("gold");

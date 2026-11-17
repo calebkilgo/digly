@@ -16,15 +16,21 @@ export class LocalService implements ChallengeService {
   status(day: number) {
     return this.engine.status(ME, day);
   }
-  start(day: number, level: LevelNo, mode: AttemptMode, slug?: string) {
+  start(day: number, level: LevelNo, mode: AttemptMode, opts: { slug?: string; vault?: number } = {}) {
     // the offline preview has everything open
-    return this.engine.start(ME, day, level, mode, { slug, unlimited: true });
+    return this.engine.start(ME, day, level, mode, { ...opts, unlimited: true });
   }
   async checkout(): Promise<string> {
     throw new GameError("bad_request", "Purchases need the live site.");
   }
   async confirmPurchase() {
     return true;
+  }
+  async suggest(text: string) {
+    await this.engine.suggest(ME, text);
+  }
+  async suggestions() {
+    return (await this.engine.storeRef().listSuggestions(200)).map((s) => ({ text: s.text, day: s.day, createdAt: s.createdAt }));
   }
   async categories(): Promise<CategoryInfo[]> {
     const { SEEDS } = await import("../data/seeds");

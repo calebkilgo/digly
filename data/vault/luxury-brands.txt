@@ -1,0 +1,141 @@
+# title: Luxury brands
+# level: 2
+# domain: everyday objects
+# noun: brands
+# rule: High-end fashion, jewelry, watch, leather or beauty houses.
+# rule: Luxury car brands don't count.
+Gucci
+Louis Vuitton | lv, vuitton
+Chanel
+Prada
+Rolex
+Hermes | hermès
+Versace
+Dior | christian dior
+Armani | giorgio armani, emporio armani
+Burberry
+Tiffany & Co. | tiffany, tiffany and co, tiffanys
+Cartier
+Balenciaga
+Fendi
+Givenchy
+Yves Saint Laurent | ysl, saint laurent
+Dolce & Gabbana | dolce and gabbana, d and g, dg
+Michael Kors
+Coach
+Ralph Lauren | polo ralph lauren, polo
+Calvin Klein | ck
+Valentino
+Bottega Veneta | bottega
+Celine
+Moncler
+Off-White | off white
+Tom Ford
+Omega
+Patek Philippe | patek
+Audemars Piguet | ap
+Tag Heuer | tag
+Breitling
+Bulgari | bvlgari
+Van Cleef & Arpels | van cleef
+Harry Winston
+Chopard
+Swarovski
+Montblanc | mont blanc
+Christian Louboutin | louboutin
+Jimmy Choo
+Manolo Blahnik | manolo, manolos
+Salvatore Ferragamo | ferragamo
+Miu Miu
+Loewe
+Goyard
+Alexander McQueen | mcqueen
+Stella McCartney
+Vivienne Westwood
+Kate Spade
+Marc Jacobs
+Oscar de la Renta
+Carolina Herrera
+Vera Wang
+Badgley Mischka
+Tory Burch
+Hugo Boss | boss
+Lacoste
+Max Mara
+Missoni
+Moschino
+Emilio Pucci | pucci
+Roberto Cavalli | cavalli
+Brunello Cucinelli
+Loro Piana
+Ermenegildo Zegna | zegna
+Kiton
+Brioni
+Berluti
+Tod's | tods
+Church's | churchs
+John Lobb
+Bally
+Mulberry
+Alexander Wang
+Proenza Schouler
+Rick Owens
+Maison Margiela | margiela
+Comme des Garcons | comme des garcons
+Issey Miyake
+Yohji Yamamoto
+Kenzo
+Lanvin
+Balmain
+Chloe
+Jacquemus
+Elie Saab
+Zuhair Murad
+Jean Paul Gaultier | gaultier
+Thierry Mugler | mugler
+Paco Rabanne | rabanne
+Guerlain
+La Mer | creme de la mer
+Creed
+Jo Malone
+Diptyque
+Byredo
+Maison Francis Kurkdjian | mfk
+La Prairie
+Sisley
+Clé de Peau | cle de peau
+Piaget
+Vacheron Constantin | vacheron
+Jaeger-LeCoultre | jaeger lecoultre, jlc
+A. Lange & Söhne | a lange and sohne, lange
+Hublot
+Panerai
+IWC
+Breguet
+Richard Mille
+Blancpain
+Zenith
+Tudor
+Longines
+Graff
+De Beers
+Chaumet
+Boucheron
+Buccellati
+Mikimoto
+David Yurman
+Messika
+Pomellato
+Fabergé | faberge
+Smythson
+Globe-Trotter
+Rimowa
+Valextra
+Delvaux
+Moynat
+Asprey
+Ladurée | laduree
+Baccarat
+Lalique
+Christofle
+Fornasetti

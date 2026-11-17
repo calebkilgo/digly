@@ -1,5 +1,5 @@
 import { Container, Graphics, Sprite, Texture } from "pixi.js";
-import { FRAMES, HAND, LAMP_HOT, PAL, PICK, PICK_GRIP, PICK_TIP, SPR_H, SPR_W, type FrameName } from "./minerSprites";
+import { ARM, ARM_AT, ARM_PIVOT, ARM_TIP, FEET_X, FRAMES, LAMP_HOT, MPAL, SPR_H, SPR_W, type FrameName } from "./minerSprites";
 import { approach, clamp } from "./rng";
 
 export type MinerState = "idle" | "rev" | "drill" | "winddown" | "watch" | "victory";
@@ -16,7 +16,7 @@ function textureFrom(rows: string[], swap?: Record<string, number>): Texture {
     for (let x = 0; x < w; x++) {
       const ch = r[x];
       if (ch === ".") continue;
-      const v = swap?.[ch] ?? PAL[ch];
+      const v = swap?.[ch] ?? MPAL[ch];
       const i = (y * w + x) * 4;
       img.data[i] = (v >> 16) & 255;
       img.data[i + 1] = (v >> 8) & 255;
@@ -30,10 +30,14 @@ function textureFrom(rows: string[], swap?: Record<string, number>): Texture {
   return t;
 }
 
-const REST = 0.35;
-const WINDUP = -0.25;
-const STRIKE = 2.35;
-const PLANTED = 2.75;
+const TAU = Math.PI * 2;
+// Angles of the arm piece around his hip. 0 is the rest pose from the art: the
+// pick head on the ground in front of him. Positive turns clockwise, so one
+// swing is a full turn: down behind him, up over his head, then hard into the
+// ground in front.
+const REST = 0;
+const OVERHEAD = 4.15; // pick straight above his hip
+const SWING_SHARE = 0.82; // part of each swing spent turning; the rest it sits planted
 
 // Digly the miner. Units inside are sprite pixels; the scene scales the root
 // so one sprite pixel is one screen "art pixel". Origin is between his boots.
@@ -41,7 +45,7 @@ export class Miner {
   readonly root = new Container();
   private rig = new Container();
   private body: Sprite;
-  private pick: Sprite;
+  private arm: Sprite;
   private glow = new Graphics();
   private tex: Record<string, { cool: Texture; hot: Texture }> = {};
 
@@ -69,15 +73,19 @@ export class Miner {
   private lean = 0;
   private leanTarget = 0;
 
+  // the hip, relative to the root
+  private readonly pivot = { x: ARM_AT.x + ARM_PIVOT.x - FEET_X, y: ARM_AT.y + ARM_PIVOT.y - SPR_H };
+
   constructor() {
     for (const [name, rows] of Object.entries(FRAMES)) {
       this.tex[name] = { cool: textureFrom(rows), hot: textureFrom(rows, { L: LAMP_HOT }) };
     }
     this.body = new Sprite(this.tex.stand.cool);
-    this.body.anchor.set(0.5, 1);
-    this.pick = new Sprite(textureFrom(PICK));
-    this.pick.anchor.set(PICK_GRIP.x / 14, PICK_GRIP.y / 16);
-    this.rig.addChild(this.pick, this.body, this.glow);
+    this.body.anchor.set(FEET_X / SPR_W, 1);
+    this.arm = new Sprite(textureFrom(ARM));
+    this.arm.anchor.set(ARM_PIVOT.x / ARM[0].length, ARM_PIVOT.y / ARM.length);
+    this.arm.position.set(this.pivot.x, this.pivot.y);
+    this.rig.addChild(this.body, this.arm, this.glow);
     this.root.addChild(this.rig);
   }
 
@@ -125,18 +133,18 @@ export class Miner {
   }
 
   // world-space-ish points in sprite pixels, relative to the root
-  readonly lampPoint = { x: 0, y: 3.5 - SPR_H };
+  readonly lampPoint = { x: 9.5 - FEET_X, y: 2.5 - SPR_H };
 
   private setMood(m: FrameName, hold: number) {
     this.holdMood = m;
     this.moodHold = hold;
   }
 
-  private pickTip() {
-    const a = this.pick.rotation;
-    const x = PICK_TIP.x * Math.cos(a) - PICK_TIP.y * Math.sin(a);
-    const y = PICK_TIP.x * Math.sin(a) + PICK_TIP.y * Math.cos(a);
-    return { x: this.pick.x + x, y: this.pick.y + y };
+  private armPoint(px: number, py: number) {
+    const a = this.arm.rotation;
+    const dx = px - ARM_PIVOT.x;
+    const dy = py - ARM_PIVOT.y;
+    return { x: this.pivot.x + dx * Math.cos(a) - dy * Math.sin(a), y: this.pivot.y + dx * Math.sin(a) + dy * Math.cos(a) };
   }
 
   update(dt: number) {
@@ -144,53 +152,47 @@ export class Miner {
     const rm = this.reducedMotion;
     const digging = this.state === "drill" || this.state === "rev";
 
-    // ---- the swing ---------------------------------------------------------
-    let target = REST;
+    // ---- the swing: one full turn around the hip per strike ------------------
     if (digging) {
-      const period = this.urgent ? 0.34 : 0.5;
+      const period = this.urgent ? 0.42 : 0.6;
+      const before = this.swingT;
       this.swingT += dt / period;
       if (this.forceStrike) {
-        // jump straight to the downswing
-        if (this.swingT % 1 < 0.55) this.swingT = Math.floor(this.swingT) + 0.55;
+        // skip ahead to the pick coming over his head
+        const into = this.swingT % 1;
+        const overhead = Math.sqrt(OVERHEAD / TAU) * SWING_SHARE;
+        if (into < overhead) this.swingT = Math.floor(this.swingT) + overhead;
         this.forceStrike = false;
       }
       const p = this.swingT % 1;
-      if (p < 0.55) {
-        const k = p / 0.55;
-        target = STRIKE + (WINDUP - STRIKE) * (1 - Math.pow(1 - k, 2));
-      } else if (p < 0.72) {
-        const k = (p - 0.55) / 0.17;
-        target = WINDUP + (STRIKE - WINDUP) * k * k;
-      } else {
-        target = STRIKE;
-      }
-      const prev = (this.swingT - dt / period) % 1;
-      if (prev < 0.72 && p >= 0.72) {
-        const tip = this.pickTip();
+      // slow lift behind him, speeding up into the ground in front
+      this.angle = p < SWING_SHARE ? TAU * Math.pow(p / SWING_SHARE, 2.2) : TAU;
+      if (Math.floor(before + (1 - SWING_SHARE)) !== Math.floor(this.swingT + (1 - SWING_SHARE))) {
+        // crossed the end of the turn: the pick hits the ground
+        this.arm.rotation = 0;
+        const tip = this.armPoint(ARM_TIP.x, ARM_TIP.y);
         this.squash = rm ? 0 : 0.08 * this.power;
         this.onStrike?.(tip.x, tip.y, this.power);
         this.power = 1;
       }
-      this.angle = target;
       this.angleVel = 0;
     } else {
-      if (this.state === "winddown" || this.state === "watch") target = PLANTED;
-      if (this.state === "victory") target = WINDUP - 0.25 + Math.sin(this.t * 10) * 0.25;
-      // springy settle toward the pose
+      let target = REST;
+      if (this.state === "victory") target = OVERHEAD + Math.sin(this.t * 10) * 0.3;
+      // come back to rest the short way round
+      this.angle = ((this.angle % TAU) + TAU) % TAU;
+      if (this.angle - target > Math.PI) this.angle -= TAU;
+      if (target - this.angle > Math.PI) this.angle += TAU;
       this.angleVel += (-(this.angle - target) * 120 - this.angleVel * 14) * dt;
       this.angle += this.angleVel * dt;
     }
-    if (digging && this.angleVel !== 0) this.angleVel = 0;
-
-    // pick pivots at the hand, lifted when raised so it clears the helmet
-    const raised = clamp((STRIKE - this.angle) / (STRIKE - WINDUP), 0, 1);
-    this.pick.rotation = this.angle;
-    this.pick.position.set(Math.round(HAND.x - SPR_W / 2), Math.round(HAND.y - SPR_H - raised * 6));
-    // raised pick goes behind his head, striking pick comes in front
-    const behind = this.angle < 1.2;
-    const idx = this.rig.getChildIndex(this.pick);
-    if (behind && idx !== 0) this.rig.setChildIndex(this.pick, 0);
-    if (!behind && idx === 0) this.rig.setChildIndex(this.pick, 1);
+    this.arm.rotation = this.angle;
+    // the arm goes behind him while the pick head is behind his hip
+    const head = this.armPoint(ARM_TIP.x, ARM_TIP.y);
+    const behind = head.x < this.pivot.x - 1;
+    const idx = this.rig.getChildIndex(this.arm);
+    if (behind && idx !== 0) this.rig.setChildIndex(this.arm, 0);
+    if (!behind && idx === 0) this.rig.setChildIndex(this.arm, 1);
 
     // ---- body: hops, squash, idle bob --------------------------------------
     this.hopVel += 520 * dt;
@@ -205,7 +207,7 @@ export class Miner {
     this.lean = approach(this.lean, this.leanTarget, 6, dt);
     this.rig.y = Math.round(this.hop) + bob;
     this.rig.rotation = this.lean;
-    this.body.scale.set(1 + this.squash * 0.6, 1 - this.squash);
+    this.rig.scale.set(1 + this.squash * 0.6, 1 - this.squash);
 
     // ---- face ---------------------------------------------------------------
     this.blinkT -= dt;
@@ -230,13 +232,12 @@ export class Miner {
     const set = this.tex[this.mood];
     this.body.texture = this.hot ? set.hot : set.cool;
     const g = this.glow.clear();
-    const lx = this.lampPoint.x;
-    const ly = this.lampPoint.y + this.rig.y * 0;
+    const { x: lx, y: ly } = this.lampPoint;
     if (this.hot) {
-      g.circle(lx, ly, 10).fill({ color: LAMP_HOT, alpha: 0.25 });
-      g.circle(lx, ly, 6).fill({ color: LAMP_HOT, alpha: 0.45 });
+      g.circle(lx, ly, 9).fill({ color: LAMP_HOT, alpha: 0.25 });
+      g.circle(lx, ly, 5).fill({ color: LAMP_HOT, alpha: 0.45 });
     } else if (!this.urgent) {
-      g.circle(lx, ly, 5).fill({ color: 0xfff7b0, alpha: 0.18 });
+      g.circle(lx, ly, 4).fill({ color: 0xfff7b0, alpha: 0.2 });
     }
   }
 }

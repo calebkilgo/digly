@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store } from "@/game/engine/store";
+import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store, type Suggestion } from "@/game/engine/store";
 import type { AttemptMode, LevelNo } from "@/game/service/types";
 
 interface DbAttempt {
@@ -188,6 +188,27 @@ export class SupabaseStore implements Store {
     const counts: Record<string, number> = {};
     for (const [k, v] of Object.entries(data?.counts ?? {})) counts[k] = Number(v);
     return { plays: Number(data?.plays ?? 0), counts };
+  }
+
+  async addSuggestion(s: Suggestion) {
+    check(
+      await this.db.from("prompt_suggestions").insert({
+        player_id: s.playerId,
+        text: s.text,
+        day: s.day,
+        created_at: new Date(s.createdAt).toISOString(),
+      }),
+    );
+  }
+
+  async listSuggestions(limit: number) {
+    const data = check(await this.db.from("prompt_suggestions").select("player_id, text, day, created_at").order("created_at", { ascending: false }).limit(limit));
+    return (data as { player_id: string | null; text: string; day: number; created_at: string }[]).map((r) => ({
+      playerId: r.player_id,
+      text: r.text,
+      day: r.day,
+      createdAt: Date.parse(r.created_at),
+    }));
   }
 
   async topRejects(slug: string, limit: number) {

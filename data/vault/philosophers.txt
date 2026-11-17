@@ -1,0 +1,168 @@
+# title: Philosophers
+# level: 2
+# domain: history
+# noun: philosophers
+# rule: Thinkers known mainly for philosophy, any era or country.
+# rule: Last names are enough.
+# surname
+Plato
+Aristotle
+Socrates
+Friedrich Nietzsche | nietzsche
+Rene Descartes | descartes
+Immanuel Kant | kant
+Confucius
+Karl Marx | marx
+John Locke | locke
+Thomas Hobbes | hobbes
+Jean-Jacques Rousseau | rousseau
+Machiavelli | niccolo machiavelli
+Voltaire
+David Hume | hume
+Soren Kierkegaard | kierkegaard
+Jean-Paul Sartre | sartre
+Albert Camus | camus
+Lao Tzu | laozi, lao tse
+Sun Tzu | sunzi
+Marcus Aurelius
+Seneca
+Epictetus
+Pythagoras
+Heraclitus
+Parmenides
+Democritus
+Epicurus
+Diogenes
+Zeno of Elea | zeno
+Thales
+Anaximander
+Protagoras
+Plotinus
+Augustine | saint augustine, augustine of hippo
+Thomas Aquinas | aquinas
+Boethius
+Avicenna | ibn sina
+Averroes | ibn rushd
+Al-Farabi | farabi
+Maimonides
+Anselm
+William of Ockham | ockham, occam
+Francis Bacon | bacon
+Baruch Spinoza | spinoza
+Gottfried Leibniz | leibniz
+Blaise Pascal | pascal
+George Berkeley | berkeley
+Montesquieu
+Denis Diderot | diderot
+Adam Smith | smith
+Edmund Burke | burke
+Mary Wollstonecraft | wollstonecraft
+Jeremy Bentham | bentham
+John Stuart Mill | mill, js mill
+Georg Wilhelm Friedrich Hegel | hegel
+Arthur Schopenhauer | schopenhauer
+Friedrich Engels | engels
+Ralph Waldo Emerson | emerson
+Henry David Thoreau | thoreau
+William James
+Charles Sanders Peirce | peirce
+John Dewey | dewey
+Bertrand Russell | russell
+Ludwig Wittgenstein | wittgenstein
+Martin Heidegger | heidegger
+Edmund Husserl | husserl
+Simone de Beauvoir | de beauvoir, beauvoir
+Hannah Arendt | arendt
+Michel Foucault | foucault
+Jacques Derrida | derrida
+Gilles Deleuze | deleuze
+Jean Baudrillard | baudrillard
+Roland Barthes | barthes
+Theodor Adorno | adorno
+Max Horkheimer | horkheimer
+Herbert Marcuse | marcuse
+Jurgen Habermas | habermas
+Walter Benjamin
+Antonio Gramsci | gramsci
+Karl Popper | popper
+Thomas Kuhn | kuhn
+Willard Van Orman Quine | quine
+Gottlob Frege | frege
+Alfred North Whitehead | whitehead
+G.E. Moore | ge moore
+A.J. Ayer | aj ayer, ayer
+Gilbert Ryle | ryle
+J.L. Austin | jl austin
+John Rawls | rawls
+Robert Nozick | nozick
+Peter Singer | singer
+Martha Nussbaum | nussbaum
+Judith Butler | butler
+Noam Chomsky | chomsky
+Daniel Dennett | dennett
+Saul Kripke | kripke
+David Lewis
+Thomas Nagel | nagel
+John Searle | searle
+Hilary Putnam | putnam
+Richard Rorty | rorty
+Alasdair MacIntyre | macintyre
+Charles Taylor
+Slavoj Zizek | zizek
+Ayn Rand | rand
+Cicero
+Lucretius
+Zeno of Citium
+Chrysippus
+Pyrrho
+Sextus Empiricus
+Hypatia
+Empedocles
+Anaxagoras
+Xenophanes
+Gorgias
+Mencius | mengzi
+Zhuangzi | chuang tzu
+Mozi
+Xunzi
+Han Feizi
+Wang Yangming
+Zhu Xi
+Nagarjuna
+Adi Shankara | shankara
+Ramanuja
+Chanakya | kautilya
+Siddhartha Gautama | buddha
+Dogen
+Nishida Kitaro | nishida
+Al-Ghazali | ghazali
+Ibn Khaldun
+Rumi
+Erasmus
+Thomas More | more
+Michel de Montaigne | montaigne
+Giordano Bruno | bruno
+Hugo Grotius | grotius
+Pierre Bayle
+Nicolas Malebranche | malebranche
+Thomas Reid | reid
+Johann Gottlieb Fichte | fichte
+Friedrich Schelling | schelling
+Ludwig Feuerbach | feuerbach
+Auguste Comte | comte
+Henri Bergson | bergson
+Maurice Merleau-Ponty | merleau ponty
+Emmanuel Levinas | levinas
+Paul Ricoeur | ricoeur
+Hans-Georg Gadamer | gadamer
+Karl Jaspers | jaspers
+Martin Buber | buber
+Simone Weil
+Iris Murdoch | murdoch
+Elizabeth Anscombe | anscombe
+Philippa Foot
+Frantz Fanon | fanon
+W.E.B. Du Bois | du bois, web du bois
+Cornel West
+Kwame Anthony Appiah | appiah
+Alain de Botton | de botton

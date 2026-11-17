@@ -43,6 +43,9 @@ Milliliter | millilitre
 Milligram
 Month
 Decade
+Kilocalorie
+Millennium
+Fortnight
 Century
 Millisecond
 Byte
@@ -125,8 +128,5 @@ Hundredweight
 Gauss
 Rankine
 Electronvolt | electron volt
-Millennium
-Fortnight
-Kilocalorie
 Pinch
 Dash

@@ -18,6 +18,8 @@ export interface Progress {
   ranked: Record<string, DayRecord>; // keyed by day
   practiceBest: Record<string, number>; // keyed by day
   practiceTitles?: Record<string, string[]>; // categories dug in practice, keyed by day
+  vaultBest?: Record<string, number>; // keyed by Vault game number
+  vaultTitles?: Record<string, string[]>; // prompts dug in each Vault game
 }
 
 export const EMPTY_PROGRESS: Progress = { version: 1, ranked: {}, practiceBest: {} };
@@ -35,6 +37,11 @@ export function recordPractice(p: Progress, day: number, score: number, titles?:
 
 // Current streak counts back from today, or from yesterday if today isn't
 // played yet (the streak is still alive until the reset).
+export function recordVault(p: Progress, game: number, score: number, titles: string[]): Progress {
+  const best = Math.max(score, p.vaultBest?.[game] ?? 0);
+  return { ...p, vaultBest: { ...p.vaultBest, [game]: best }, vaultTitles: { ...p.vaultTitles, [game]: titles } };
+}
+
 export function currentStreak(p: Progress, today: number): number {
   let d = p.ranked[today] ? today : today - 1;
   let n = 0;

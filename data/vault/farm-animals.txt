@@ -1,0 +1,133 @@
+# title: Farm animals
+# level: 1
+# domain: nature
+# noun: animals
+# rule: Animals raised on farms, including breeds and young ones.
+Cow | cattle, cows, dairy cow
+Pig | hog, swine, boar, sow
+Chicken | hen, chickens
+Sheep
+Goat
+Horse
+Duck
+Turkey
+Rooster | cockerel
+Donkey | burro
+Goose
+Rabbit
+Llama
+Alpaca
+Bull
+Calf
+Lamb
+Piglet
+Foal | colt, filly
+Mule
+Ox | oxen
+Chick
+Ram
+Ewe
+Steer
+Heifer
+Mare
+Stallion
+Pony
+Bee | honeybee, honey bee
+Cat | barn cat
+Dog | sheepdog, farm dog
+Water Buffalo | buffalo
+Yak
+Bison
+Camel
+Emu
+Ostrich
+Guinea Fowl
+Peacock | peafowl
+Quail
+Pheasant
+Pigeon | dove
+Guinea Pig
+Reindeer
+Zebu
+Gosling
+Duckling
+Billy Goat | billy
+Nanny Goat | nanny
+Gilt
+Barrow
+Capon
+Pullet
+Drake
+Gander
+Jenny
+Holstein | holstein friesian
+Jersey Cow | jersey
+Guernsey Cow | guernsey
+Angus | black angus, aberdeen angus
+Hereford
+Longhorn | texas longhorn
+Highland Cow | highland cattle
+Brahman
+Charolais
+Limousin
+Simmental
+Shorthorn
+Brown Swiss
+Ayrshire
+Wagyu
+Merino
+Suffolk
+Romney
+Corriedale
+Jacob Sheep
+Shetland Sheep
+Cheviot
+Southdown
+Yorkshire Pig | large white
+Berkshire
+Duroc
+Tamworth
+Landrace
+Pot-bellied Pig | potbellied pig, pot belly pig
+Kunekune
+Mangalica | mangalitsa
+Gloucestershire Old Spot
+Leghorn
+Rhode Island Red
+Plymouth Rock | barred rock
+Orpington | buff orpington
+Silkie
+Wyandotte
+Australorp
+Brahma Chicken
+Bantam
+Pekin Duck | pekin
+Muscovy Duck | muscovy
+Mallard
+Indian Runner Duck | runner duck
+Khaki Campbell
+Toulouse Goose
+Embden Goose
+Nubian Goat | nubian
+Boer Goat | boer
+Pygmy Goat
+Alpine Goat
+Saanen
+LaMancha
+Angora Goat | angora
+Nigerian Dwarf Goat
+Fainting Goat | myotonic goat
+Clydesdale
+Percheron
+Belgian Draft Horse | belgian
+Shire Horse
+Miniature Horse
+Mini Donkey | miniature donkey
+Hinny
+Earthworm | worms
+Silkworm
+Ferret
+Deer | red deer, farmed deer
+Elk
+Snail
+Cricket

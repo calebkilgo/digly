@@ -127,3 +127,20 @@ describe("migration 0005", () => {
     expect(left.rows).toEqual([{ player_id: null }]);
   });
 });
+
+describe("migration 0006", () => {
+  it("stores prompt ideas, keeps them when the player is deleted, and checks length", async () => {
+    const db = new PGlite();
+    await db.exec(SQL);
+    const SQL6 = readFileSync(new URL("../supabase/migrations/0006_prompt_suggestions.sql", import.meta.url), "utf8");
+    await db.exec(SQL6);
+    await db.exec(SQL6);
+    await db.query("insert into players (id) values ($1)", [P]);
+    await db.query("insert into prompt_suggestions (player_id, text, day) values ($1, 'Board games', 31)", [P]);
+    await db.query("insert into prompt_suggestions (player_id, text, day) values (null, 'Kinds of cheese', 31)");
+    await expect(db.query("insert into prompt_suggestions (text, day) values ('x', 31)")).rejects.toBeTruthy();
+    await db.query("delete from players where id = $1", [P]);
+    const rows = await db.query<{ player_id: string | null }>("select player_id from prompt_suggestions order by id");
+    expect(rows.rows).toEqual([{ player_id: null }, { player_id: null }]);
+  });
+});

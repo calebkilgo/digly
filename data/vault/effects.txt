@@ -1,0 +1,158 @@
+# title: Things ending in "effect"
+# level: 3
+# domain: language
+# noun: effects
+# rule: Named effects from science, psychology, economics or everyday speech.
+# rule: The word "effect" can be left off.
+# strip: effect, effects
+Butterfly Effect
+Placebo Effect
+Domino Effect
+Greenhouse Effect
+Side Effect | side effects
+Special Effects | special effect, sfx, vfx
+Sound Effect | sound effects
+Doppler Effect
+Ripple Effect
+Bandwagon Effect
+Halo Effect
+Mandela Effect
+Streisand Effect
+Dunning-Kruger Effect | dunning kruger
+Knock-on Effect | knock on effect
+Snowball Effect
+Nocebo Effect
+Bystander Effect
+Coriolis Effect
+Photoelectric Effect
+Hawthorne Effect
+Pygmalion Effect
+Zeigarnik Effect
+IKEA Effect
+Baader-Meinhof Effect | baader meinhof, frequency illusion
+Lindy Effect
+Cobra Effect
+Matthew Effect
+Peltzman Effect
+Decoy Effect
+Spotlight Effect
+Mere-Exposure Effect | mere exposure effect
+Barnum Effect | forer effect
+Werther Effect
+Ceiling Effect
+Floor Effect
+Wealth Effect
+Cocktail Party Effect
+Venturi Effect
+Magnus Effect
+Tyndall Effect
+Hall Effect
+Zeeman Effect
+Stark Effect
+Compton Effect | compton scattering
+Seebeck Effect
+Peltier Effect
+Joule-Thomson Effect | joule thomson
+Meissner Effect
+Josephson Effect
+Casimir Effect
+Mpemba Effect
+Leidenfrost Effect
+Oberth Effect
+Cheerios Effect
+Marangoni Effect
+Purkinje Effect
+McGurk Effect
+Stroop Effect
+Von Restorff Effect | isolation effect
+Flynn Effect
+Westermarck Effect
+Ringelmann Effect
+Pratfall Effect
+Benjamin Franklin Effect | ben franklin effect
+Google Effect
+Proteus Effect
+Golem Effect
+Osborne Effect
+Slashdot Effect
+Bezold Effect
+Allee Effect
+Wahlund Effect
+Founder Effect
+Bottleneck Effect
+Baldwin Effect
+Mozart Effect
+Edge Effect
+Urban Heat Island Effect | heat island effect
+Lake Effect
+Rain Shadow Effect | rain shadow
+Fujiwara Effect
+Multiplier Effect
+Crowding Out Effect | crowding out
+Income Effect
+Substitution Effect
+Veblen Effect
+Network Effect | network effects
+Snob Effect
+Pigou Effect
+Cantillon Effect
+Balassa-Samuelson Effect
+J-Curve Effect | j curve
+Fisher Effect
+January Effect
+Bullwhip Effect
+Lipstick Effect
+Wimbledon Effect
+Endowment Effect
+Framing Effect
+Anchoring Effect | anchoring
+Primacy Effect
+Recency Effect
+Serial Position Effect
+Testing Effect
+Spacing Effect
+Generation Effect
+Picture Superiority Effect
+Self-Reference Effect
+False Consensus Effect
+Overjustification Effect
+Ambiguity Effect
+Contrast Effect
+Observer Effect
+Quantum Zeno Effect
+Tunnel Effect | quantum tunneling
+Piezoelectric Effect | piezoelectricity
+Kerr Effect
+Faraday Effect
+Pockels Effect
+Raman Effect
+Cherenkov Effect | cherenkov radiation
+Mossbauer Effect
+Auger Effect
+Unruh Effect
+Sachs-Wolfe Effect
+Shapiro Effect
+Lense-Thirring Effect | frame dragging
+Yarkovsky Effect
+Poynting-Robertson Effect
+Kaye Effect
+Weissenberg Effect
+Brazil Nut Effect
+Coanda Effect
+Ground Effect
+Albedo Effect
+Rebound Effect
+Jevons Effect | jevons paradox
+Bohr Effect
+Haldane Effect
+Warburg Effect
+Michelangelo Effect
+Florence Nightingale Effect
+Tetris Effect
+Stendhal Effect
+CSI Effect
+Oprah Effect
+Colbert Effect
+Hot Hand Effect
+Sports Illustrated Cover Effect | sports illustrated jinx
+Madden Effect | madden curse

@@ -21,8 +21,8 @@ SEEDS = ROOT / "src" / "game" / "data" / "seeds.ts"
 MIN_POOL = {1: 30, 2: 60, 3: 100}
 MAX_WORDS = 8
 # must match SCORING.tierZ in src/game/rules/scoring.ts
-TIER_Z = {"gold": -1.0, "diamond": 0.25, "ruby": 1.5}
-TARGET = {"copper": 0.159, "gold": 0.440, "diamond": 0.334, "ruby": 0.067}
+TIER_Z = {"gold": -1.0, "diamond": 0.3, "ruby": 1.8}
+TARGET = {"copper": 0.159, "gold": 0.459, "diamond": 0.346, "ruby": 0.036}
 SHARE_SLACK = 0.03
 OVERLAP_WARN = 0.25
 

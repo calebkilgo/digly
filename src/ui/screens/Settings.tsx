@@ -14,6 +14,7 @@ export function SettingsScreen(props: {
   onResetToday: () => Promise<void>;
   onResetAll: () => Promise<void>;
   admin: boolean;
+  loadSuggestions: () => Promise<{ text: string; day: number; createdAt: number }[]>;
   unlimited: boolean;
   onUnlimited: () => void;
   loadCategories: () => Promise<CategoryInfo[]>;
@@ -195,9 +196,42 @@ export function SettingsScreen(props: {
           {msg}
         </div>
         <DemoPicker load={props.loadCategories} onPlay={props.onDemo} />
+        <Suggestions load={props.loadSuggestions} />
       </div>
       )}
     </ScreenFrame>
+  );
+}
+
+// Admin: the latest prompt ideas players sent in.
+function Suggestions({ load }: { load: () => Promise<{ text: string; day: number; createdAt: number }[]> }) {
+  const [list, setList] = useState<{ text: string; createdAt: number }[] | null>(null);
+  const [err, setErr] = useState("");
+  if (!list)
+    return (
+      <div>
+        <button className="btn btn-sm" onClick={() => load().then(setList, () => setErr("Couldn't load prompt ideas."))}>
+          Show prompt ideas
+        </button>
+        {err && <div style={{ fontSize: 13 }}>{err}</div>}
+      </div>
+    );
+  const fmt = new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" });
+  return (
+    <div style={{ fontSize: 13 }}>
+      <div className="t" style={{ fontSize: 15 }}>Prompt ideas ({list.length})</div>
+      {list.length === 0 ? (
+        <div>None yet.</div>
+      ) : (
+        <ul style={{ margin: "4px 0 0", paddingLeft: 18, maxHeight: 220, overflowY: "auto" }}>
+          {list.map((s, i) => (
+            <li key={i}>
+              {s.text} <span style={{ color: "#cdb68b" }}>· {fmt.format(s.createdAt)}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 

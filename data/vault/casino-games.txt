@@ -1,0 +1,79 @@
+# title: Casino games
+# level: 1
+# domain: sports and games
+# noun: games
+# rule: Games you can play at a casino, including poker styles.
+Slot Machines | slots, slot machine, pokies, fruit machine, one armed bandit
+Blackjack | twenty one, 21, vingt et un
+Poker
+Roulette
+Craps | dice
+Baccarat | punto banco
+Texas Hold'em | texas holdem, holdem, hold em
+Keno
+Bingo
+Video Poker
+Pai Gow Poker | pai gow
+Three Card Poker
+Caribbean Stud | caribbean stud poker
+Let It Ride
+Sic Bo
+Big Six Wheel | wheel of fortune, money wheel, big wheel
+Casino War | war
+Omaha | omaha hold em
+Seven Card Stud | stud
+Five Card Draw | draw poker
+Ultimate Texas Hold'em | ultimate texas holdem
+Mississippi Stud
+Four Card Poker
+Spanish 21 | spanish twenty one
+Pontoon
+Chemin de Fer
+Red Dog | acey deucey, in between
+Faro
+Chuck-a-luck | chuck a luck, birdcage
+Fan-Tan | fan tan
+Dragon Tiger
+Andar Bahar
+Teen Patti
+Pachinko
+Mahjong
+Crazy 4 Poker
+High Card Flush
+Blackjack Switch
+Free Bet Blackjack
+Double Exposure Blackjack | double exposure
+Crapless Craps
+Boule
+Trente et Quarante
+Scratch Cards | scratchers, scratch offs, scratch tickets
+Lottery | lotto
+Sports Betting
+Horse Racing | horse betting, off track betting
+Razz
+HORSE | h o r s e
+Deuces Wild
+Jacks or Better
+Pai Gow Tiles | pai gow dominoes
+Electronic Bingo
+Progressive Slots | progressive jackpot
+Video Slots
+Mini Baccarat
+EZ Baccarat | ez bac
+Double Down Stud
+Casino Hold'em | casino holdem
+Two Up
+Crown and Anchor
+Hazard
+Chinese Poker
+Pineapple
+Short Deck | six plus holdem
+Badugi
+Stud Poker
+Live Dealer
+Penny Slots
+Video Keno
+Lightning Roulette
+French Roulette
+American Roulette
+European Roulette

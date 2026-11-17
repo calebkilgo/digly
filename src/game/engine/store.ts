@@ -86,6 +86,16 @@ export interface Store {
   answerStats(slug: string, beforeDay: number): Promise<{ plays: number; counts: Record<string, number> }>;
   // most common inputs that didn't match, for growing the answer lists
   topRejects(slug: string, limit: number): Promise<{ text: string; n: number }[]>;
+  // prompt ideas from players (guests too)
+  addSuggestion(s: Suggestion): Promise<void>;
+  listSuggestions(limit: number): Promise<Suggestion[]>;
+}
+
+export interface Suggestion {
+  playerId: string | null;
+  text: string;
+  day: number;
+  createdAt: number;
 }
 
 export class StoreConflict extends Error {}

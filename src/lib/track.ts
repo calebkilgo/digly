@@ -4,6 +4,7 @@ import * as Sentry from "@sentry/nextjs";
 // Usage events. Numbers and modes only: answer text never leaves the game.
 export type TrackEvent =
   | "dig_started"
+  | "prompt_suggested"
   | "level_finished"
   | "dig_finished"
   | "start_failed"

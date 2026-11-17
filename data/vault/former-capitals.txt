@@ -1,0 +1,138 @@
+# title: Former capital cities
+# level: 3
+# domain: geography
+# noun: cities
+# rule: Cities that used to be the capital of a country or a US state.
+Philadelphia
+New York City | new york, nyc
+Rio de Janeiro | rio
+Kyoto
+Saint Petersburg | st petersburg, leningrad, petrograd
+Istanbul | constantinople, byzantium
+Calcutta | kolkata
+Bonn
+Karachi
+Lagos
+Nanjing | nanking
+Xi'an | xian, changan
+Melbourne
+Toronto
+Montreal
+Quebec City
+Almaty | alma ata
+Dar es Salaam
+Yangon | rangoon
+Abidjan
+Tel Aviv
+Turin | torino
+Florence | firenze
+Krakow | cracow
+Kaunas
+Bursa
+Edirne
+Konya
+Alexandria
+Thebes | luxor
+Memphis
+Persepolis
+Isfahan | esfahan
+Tabriz
+Qazvin
+Shiraz
+Mashhad
+Herat
+Kandahar
+Agra
+Fatehpur Sikri
+Lahore
+Murshidabad
+Mandalay
+Ayutthaya
+Sukhothai
+Hue
+Luang Prabang
+Nara
+Kamakura
+Gyeongju
+Kaesong
+Kaifeng
+Luoyang
+Hangzhou
+Anyang
+Karakorum
+Toledo
+Valladolid
+Coimbra
+Guimaraes
+Aachen
+Winchester
+York
+Dunfermline
+Scone
+Trondheim | nidaros
+Turku | abo
+Uppsala
+Roskilde
+Gniezno
+Plovdiv
+Veliko Tarnovo
+Kragujevac
+Nafplio | nauplion
+Aegina
+Cetinje
+Shkodra | shkoder
+Zanzibar City
+Zomba
+Bulawayo
+Mombasa
+Entebbe
+Saint-Louis | saint louis senegal
+Grand-Bassam
+Belize City
+Antigua Guatemala
+Cartago
+Ouro Preto
+Salvador
+Cusco | cuzco
+Tenochtitlan
+Annapolis Royal
+Williamsburg | williamsburg virginia
+New Haven
+Kaskaskia
+Vandalia
+Chillicothe
+Zanesville
+Corydon
+Vincennes
+Iowa City
+Lecompton
+Tuscaloosa
+Cahaba
+Huntsville
+Milledgeville
+Louisville | louisville georgia
+Savannah
+New Bern
+New Orleans
+Wheeling
+San Jose
+Benicia
+Vallejo
+Lancaster
+Princeton
+Prescott
+Tucson
+Golden
+Lewiston
+Guthrie
+Virginia City
+Sitka
+Lahaina
+Kailua-Kona
+Mdina
+Quezon City
+Rawalpindi
+Rabaul
+Levuka
+Kororareka | russell
+Auckland

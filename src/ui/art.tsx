@@ -167,6 +167,8 @@ const UI_PAL: Record<string, string> = {
   S: "#c9ccd6",
   s: "#8b8fa0",
   R: "#ff4a3d",
+  D: "#5865f2",
+  I: "#e1306c",
 };
 
 const ICONS: Record<string, string[]> = {
@@ -238,6 +240,32 @@ const ICONS: Record<string, string[]> = {
     "..KKKKKKKKKK....",
     "..KSK....KSK....",
     "...K......K.....",
+  ],
+  discord: [
+    "..KKK....KKK..",
+    ".KDDDKKKKDDDK.",
+    "KDDDDDDDDDDDDK",
+    "KDDDDDDDDDDDDK",
+    "KDDWWDDDDWWDDK",
+    "KDDWWDDDDWWDDK",
+    "KDDDDDDDDDDDDK",
+    "KDDDWDDDDWDDDK",
+    ".KDDDWWWWDDDK.",
+    "..KKDDDDDDKK..",
+    "....KK..KK....",
+  ],
+  insta: [
+    ".KKKKKKKKKK.",
+    "KIIIIIIIIIIK",
+    "KIIIIIIIWWIK",
+    "KIIIKKKKIIIK",
+    "KIIKWWWWKIIK",
+    "KIIKWIIWKIIK",
+    "KIIKWIIWKIIK",
+    "KIIKWWWWKIIK",
+    "KIIIKKKKIIIK",
+    "KIIIIIIIIIIK",
+    ".KKKKKKKKKK.",
   ],
   lamp: [
     "...KKKK...",

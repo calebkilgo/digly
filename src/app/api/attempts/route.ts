@@ -1,7 +1,7 @@
 import { getEngine, handle, intParam, limit, playerId, readJson, requireAdmin } from "@/server/game";
 import { GameError, type AttemptMode, type LevelNo } from "@/game/service/types";
 
-// POST /api/attempts {day, level, mode} -> starts (or resumes) a level and
+// POST /api/attempts {day, level, mode, vault?} -> starts (or resumes) a level and
 // reveals its category. The server clock starts here.
 export async function POST(req: Request) {
   return handle(async () => {
@@ -17,12 +17,13 @@ export async function POST(req: Request) {
       await requireAdmin();
       slug = String(body.slug);
     }
-    // older Vault days need Digly Unlimited (admins always have it)
+    const vault = body.vault === undefined ? undefined : intParam(body.vault);
+    // most Vault games need Digly Unlimited (admins always have it)
     let unlimited = false;
     if (mode === "practice") {
       const p = await engine.storeRef().getPlayer(pid);
       unlimited = !!p?.unlimited || !!p?.isAdmin;
     }
-    return engine.start(pid, intParam(body.day), intParam(body.level) as LevelNo, mode as AttemptMode, { slug, unlimited });
+    return engine.start(pid, intParam(body.day), intParam(body.level) as LevelNo, mode as AttemptMode, { slug, vault, unlimited });
   });
 }

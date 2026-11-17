@@ -1,8 +1,6 @@
 @import "tailwindcss";
-@import "@fontsource/pixelify-sans/400.css";
-@import "@fontsource/pixelify-sans/600.css";
-@import "@fontsource/pixelify-sans/700.css";
-@import "@fontsource/jersey-10/400.css";
+@import "@fontsource/tiny5/400.css";
+@import "@fontsource/jersey-15/400.css";
 
 /* ------------------------------------------------------------------------
    Digly pixel UI. Every box has notched pixel corners (four offset shadows),
@@ -30,9 +28,10 @@
   --red-lo: #b8261c;
   --blue: #2f8fff;
   --muted: #8a7fa6;
-  --font: "Pixelify Sans", ui-monospace, monospace;
-  /* Jersey 10: tall, condensed pixel display face for numbers, buttons and titles */
-  --display: "Jersey 10", "Pixelify Sans", monospace;
+  --font: "Tiny5", ui-monospace, monospace;
+  /* Jersey 15: condensed pixel display face for numbers, buttons and titles.
+     Tiny5 and Jersey 15 both draw 5 and S differently, unlike the old fonts. */
+  --display: "Jersey 15", "Tiny5", monospace;
   --app-h: 100dvh;
   --app-top: 0px;
 }
@@ -555,8 +554,8 @@ input {
 
 .ladder {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
 }
 
 .rung {
@@ -567,7 +566,8 @@ input {
   text-align: center;
   font-size: 12px;
   line-height: 1.05;
-  padding: 6px 2px 5px;
+  padding: 5px 1px 4px;
+  min-width: 0;
   background: rgba(27, 16, 48, 0.07);
 }
 
@@ -2003,14 +2003,14 @@ input {
   line-height: 1.55;
 }
 .legal h1 {
-  font-family: "Jersey 10", "Pixelify Sans", monospace;
+  font-family: var(--display);
   font-weight: 400;
   font-size: 52px;
   line-height: 1;
   margin: 16px 0 4px;
 }
 .legal h2 {
-  font-family: "Jersey 10", "Pixelify Sans", monospace;
+  font-family: var(--display);
   font-weight: 400;
   font-size: 32px;
   margin: 28px 0 6px;
@@ -2059,7 +2059,7 @@ input {
   margin-bottom: 12px;
 }
 .unlock-card .t {
-  font-family: "Jersey 10", "Pixelify Sans", monospace;
+  font-family: var(--display);
   font-size: 30px;
   color: #ffc928;
   line-height: 1;
@@ -2090,4 +2090,95 @@ input {
   font-weight: 700;
   font-size: 16px;
   cursor: pointer;
+}
+
+/* next-dig line with the Discord / Instagram buttons beside it */
+.next-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.next-row .next-line {
+  margin: 0;
+}
+.socials {
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+.socials .btn {
+  padding: 5px 7px;
+  line-height: 0;
+  text-decoration: none;
+}
+
+/* the pre-dig card has to fit on one screen without scrolling */
+.pregame { gap: 9px; padding: 12px 16px 14px; }
+.pregame h2.card-title { font-size: 30px; }
+.pregame .chip-lv { padding: 6px 4px 7px; gap: 2px; }
+.pregame .chip-lv .lv-n { font-size: 22px; }
+.pregame .chip-lv .lv-x { font-size: 24px; }
+.pregame .rules { font-size: 15px; gap: 5px; line-height: 1.2; }
+.pregame .rules .pip { width: 22px; height: 22px; font-size: 13px; }
+.pregame .rung { padding: 5px 2px; gap: 2px; }
+.pregame .rung b { font-size: 13px; }
+.pregame .rung .how { font-size: 12px; }
+@media (max-width: 520px), (max-height: 760px) {
+  .pregame h2.card-title { font-size: 25px; }
+  .pregame .rung .how { display: none !important; }
+}
+
+/* prompt idea box on the results screen */
+.suggest {
+  margin: 8px var(--b) 0;
+  padding: 8px 10px;
+  background: var(--paper);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.suggest label {
+  font-size: 13px;
+  font-weight: 700;
+}
+.suggest-row {
+  display: flex;
+  gap: 8px;
+}
+.suggest-row input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  font-size: 16px; /* 16px stops iOS zooming in */
+  padding: 6px 8px;
+  border: 3px solid var(--ink);
+  border-radius: 0;
+  background: #fff;
+  color: var(--ink);
+}
+.suggest-err {
+  font-size: 12px;
+  color: var(--red-lo);
+}
+.suggest-done {
+  margin: 8px var(--b) 0;
+  padding: 8px 10px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* phones: a shorter daily card so the zoomed-out mine shows above it */
+@media (max-width: 520px) {
+  .home-panel { gap: 8px; padding: 12px 14px 14px; }
+  .home-panel .card-title { font-size: 32px; }
+  .home-panel .chip-lv { padding: 5px 4px 6px; gap: 0; flex-direction: row; justify-content: center; align-items: baseline; }
+  .home-panel .chip-lv .lv-line { display: none; }
+  .home-panel .chip-lv .lv-n { font-size: 18px; white-space: nowrap; }
+  .home-panel .chip-lv .lv-x { font-size: 18px; margin-left: 5px; white-space: nowrap; }
+  .home-panel .facts { font-size: 15px; gap: 2px; }
+  .home-panel .btn-big { padding-top: 8px; padding-bottom: 8px; }
 }
