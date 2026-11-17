@@ -6,7 +6,7 @@ import { foundLabel, tierFor } from "@/game/rules/scoring";
 import { sfx } from "@/audio/sfx";
 import { GemIcon } from "./art";
 import { GemLadder } from "./GemLadder";
-import { shareImage, shareText } from "./share";
+import { shareImage, shareText, siteName, subline } from "./share";
 
 export function Sheet({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
   const close = useRef<HTMLButtonElement>(null);
@@ -124,16 +124,17 @@ export function ShareSheet({ number, result, beat, onClose }: { number: string; 
       <div className="share-card px dark">
         <span className="label">DIGLY {number}</span>
         <span className="big-num">{result.total.toLocaleString()}</span>
-        <span style={{ fontWeight: 700, fontSize: 18 }}>{beat !== null ? `Rarer than ${beat}% of diggers` : "Dig deep."}</span>
+        <span style={{ fontWeight: 700, fontSize: 18 }}>{subline(result, beat)}</span>
         {result.levels.map((l, i) => (
           <span key={i} style={{ display: "flex", gap: 6, justifyContent: "center", alignItems: "center" }}>
             <span className="label" style={{ width: 28 }}>L{l.level}</span>
             {l.top.map((t, j) => (
               <GemIcon key={j} tier={tierFor(t.rarity).key} size={3} />
             ))}
+            <span className="label" style={{ marginLeft: 6 }}>{l.points.toLocaleString()}</span>
           </span>
         ))}
-        <span style={{ fontSize: 14, color: "#8a7fa6" }}>Dig deep. digly.io</span>
+        <span style={{ fontSize: 14, color: "#8a7fa6" }}>Dig deep. {siteName()}</span>
       </div>
       <div className="share-actions">
         <button
@@ -202,9 +203,11 @@ export function AccountSheet(props: {
   start?: "signup" | "login";
   onSignUp: (u: string, p: string, e?: string) => Promise<unknown>;
   onLogIn: (u: string, p: string) => Promise<unknown>;
+  onForgot: (login: string) => Promise<unknown>;
   onClose: () => void;
 }) {
-  const [mode, setMode] = useState<"signup" | "login">(props.start ?? "signup");
+  const [mode, setMode] = useState<"signup" | "login" | "forgot">(props.start ?? "signup");
+  const [sent, setSent] = useState(false);
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
   const field = { fontSize: 16, padding: "10px 12px", border: "3px solid #24160f", borderRadius: 6, fontFamily: "inherit", fontWeight: 700, width: "100%" } as const;
@@ -217,6 +220,11 @@ export function AccountSheet(props: {
     setBusy(true);
     setErr("");
     try {
+      if (mode === "forgot") {
+        await props.onForgot(u);
+        setSent(true);
+        return;
+      }
       if (mode === "signup") await props.onSignUp(u, p, String(f.get("email") ?? "") || undefined);
       else await props.onLogIn(u, p);
       sfx.stamp();
@@ -230,16 +238,41 @@ export function AccountSheet(props: {
   };
 
   return (
-    <Sheet title={mode === "signup" ? "Create an account" : "Log in"} onClose={props.onClose}>
+    <Sheet title={mode === "signup" ? "Create an account" : mode === "login" ? "Log in" : "Reset your password"} onClose={props.onClose}>
       {props.reason && <p className="fine" style={{ margin: 0 }}>{props.reason}</p>}
       <div className="tabs" role="tablist">
         <button role="tab" aria-selected={mode === "signup"} className={`tab ${mode === "signup" ? "on" : ""}`} onClick={() => (setMode("signup"), setErr(""))}>
           New account
         </button>
-        <button role="tab" aria-selected={mode === "login"} className={`tab ${mode === "login" ? "on" : ""}`} onClick={() => (setMode("login"), setErr(""))}>
+        <button role="tab" aria-selected={mode !== "signup"} className={`tab ${mode !== "signup" ? "on" : ""}`} onClick={() => (setMode("login"), setErr(""))}>
           I have one
         </button>
       </div>
+      {mode === "forgot" ? (
+        sent ? (
+          <p role="status" style={{ margin: 0, fontWeight: 700 }}>
+            If that account has an email on file, a reset link is on its way. It works for one hour. Check your spam folder too.
+          </p>
+        ) : (
+          <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <span className="label">Username or email</span>
+              <input name="username" required maxLength={200} autoComplete="username" autoCapitalize="off" spellCheck={false} style={field} />
+            </label>
+            {err && (
+              <p role="alert" style={{ margin: 0, color: "#b3261e", fontWeight: 700 }}>
+                {err}
+              </p>
+            )}
+            <button className="btn btn-big btn-y" type="submit" disabled={busy}>
+              {busy ? "…" : "Send reset link"}
+            </button>
+            <p className="fine" style={{ margin: 0 }}>
+              Resets go to the email on your account. No email on file? A reset isn&apos;t possible, so add one in Options once you&apos;re back in.
+            </p>
+          </form>
+        )
+      ) : (
       <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 10 }} autoComplete="on">
         <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
           <span className="label">Username</span>
@@ -251,7 +284,7 @@ export function AccountSheet(props: {
         </label>
         {mode === "signup" && (
           <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <span className="label">Email (optional, for account recovery)</span>
+            <span className="label">Email (optional, needed to reset your password)</span>
             <input name="email" type="email" maxLength={200} autoComplete="email" style={field} />
           </label>
         )}
@@ -263,7 +296,68 @@ export function AccountSheet(props: {
         <button className="btn btn-big btn-y" type="submit" disabled={busy}>
           {busy ? "…" : mode === "signup" ? "Create account" : "Log in"}
         </button>
-        {mode === "signup" && <p className="fine" style={{ margin: 0 }}>Today&apos;s dig from this device comes with you and goes on the board.</p>}
+        {mode === "login" && (
+          <button type="button" className="linkish" onClick={() => (setMode("forgot"), setErr(""), setSent(false))}>
+            Forgot password?
+          </button>
+        )}
+        {mode === "signup" && (
+          <p className="fine" style={{ margin: 0 }}>
+            Today&apos;s dig from this device comes with you and goes on the board. By signing up you agree to the{" "}
+            <a href="/terms" target="_blank">terms</a> and <a href="/privacy" target="_blank">privacy policy</a>.
+          </p>
+        )}
+      </form>
+      )}
+    </Sheet>
+  );
+}
+
+// Opened from the link in a reset email (?reset=...).
+export function ResetSheet(props: { onReset: (password: string) => Promise<unknown>; onClose: () => void }) {
+  const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
+  const field = { fontSize: 16, padding: "10px 12px", border: "3px solid #24160f", borderRadius: 6, fontFamily: "inherit", fontWeight: 700, width: "100%" } as const;
+  return (
+    <Sheet title="Pick a new password" onClose={props.onClose}>
+      <form
+        style={{ display: "flex", flexDirection: "column", gap: 10 }}
+        onSubmit={async (e) => {
+          e.preventDefault();
+          const f = new FormData(e.currentTarget);
+          const a = String(f.get("password") ?? "");
+          if (a !== String(f.get("again") ?? "")) return setErr("Those passwords don't match.");
+          setBusy(true);
+          setErr("");
+          try {
+            await props.onReset(a);
+            sfx.stamp();
+            props.onClose();
+          } catch (x) {
+            setErr(x instanceof Error && x.message !== "offline" ? x.message : "Couldn't reach the mine. Try again.");
+            sfx.invalid();
+          } finally {
+            setBusy(false);
+          }
+        }}
+      >
+        <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          <span className="label">New password</span>
+          <input name="password" type="password" required minLength={8} maxLength={128} autoComplete="new-password" style={field} />
+        </label>
+        <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          <span className="label">Same again</span>
+          <input name="again" type="password" required minLength={8} maxLength={128} autoComplete="new-password" style={field} />
+        </label>
+        {err && (
+          <p role="alert" style={{ margin: 0, color: "#b3261e", fontWeight: 700 }}>
+            {err}
+          </p>
+        )}
+        <button className="btn btn-big btn-y" type="submit" disabled={busy}>
+          {busy ? "…" : "Save and log in"}
+        </button>
+        <p className="fine" style={{ margin: 0 }}>This logs you out everywhere else.</p>
       </form>
     </Sheet>
   );

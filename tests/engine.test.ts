@@ -268,3 +268,30 @@ describe("admin reset", () => {
     expect(await code(eng.start("p", DAY, 1, "ranked"))).toBe("ok");
   });
 });
+
+describe("password reset and account deletion in the store", () => {
+  it("reset links are single use and expire", async () => {
+    await store.ensurePlayer("p");
+    await store.claimAccount("p", { username: "Rocky", passwordHash: "old", email: "r@x.io" });
+    expect(await store.findByLogin("R@X.IO")).toMatchObject({ playerId: "p", email: "r@x.io" });
+    expect(await store.findByLogin("rocky")).toMatchObject({ playerId: "p" });
+    await store.createReset("h1", "p", 1000);
+    expect(await store.useReset("h1", 500)).toBe("p");
+    expect(await store.useReset("h1", 500)).toBeNull(); // used
+    await store.createReset("h2", "p", 1000);
+    expect(await store.useReset("h2", 2000)).toBeNull(); // expired
+    await store.setPassword("p", "new");
+    expect((await store.findAccount("rocky"))!.passwordHash).toBe("new");
+  });
+
+  it("deleting a player removes their runs, sessions and board row", async () => {
+    await play("p", 1, ["pug"]);
+    await store.claimAccount("p", { username: "Rocky", passwordHash: "x", email: null });
+    await store.createSession("s", "p", Date.now() + 1e6);
+    await store.deletePlayer("p");
+    expect(await eng.board(null, DAY)).toEqual([]);
+    expect(await store.sessionPlayer("s", Date.now())).toBeNull();
+    expect(await store.getPlayer("p")).toBeNull();
+    expect(await store.findAccount("rocky")).toBeNull();
+  });
+});

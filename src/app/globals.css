@@ -1972,3 +1972,80 @@ input {
   padding: 10px 16px;
   pointer-events: auto;
 }
+
+.linkish {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: #5b4fb0;
+  text-decoration: underline;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+/* privacy / terms pages: plain, readable, scrolls on its own (the game locks body scroll) */
+.legal {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  background: #fff4dc;
+  color: #1b1030;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-overflow-scrolling: touch;
+}
+.legal-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+  font-size: 17px;
+  line-height: 1.55;
+}
+.legal h1 {
+  font-family: "Jersey 10", "Pixelify Sans", monospace;
+  font-weight: 400;
+  font-size: 52px;
+  line-height: 1;
+  margin: 16px 0 4px;
+}
+.legal h2 {
+  font-family: "Jersey 10", "Pixelify Sans", monospace;
+  font-weight: 400;
+  font-size: 32px;
+  margin: 28px 0 6px;
+}
+.legal h3 {
+  font-size: 18px;
+  margin: 16px 0 4px;
+}
+.legal ul {
+  padding-left: 22px;
+}
+.legal li {
+  margin: 6px 0;
+}
+.legal a {
+  color: #5b4fb0;
+  font-weight: 700;
+}
+.legal code {
+  font-size: 15px;
+  background: #f1e3c2;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+.legal-back {
+  display: inline-block;
+  text-decoration: none;
+}
+.legal-updated {
+  color: #6b5f86;
+  margin-top: 0;
+}
+.legal-foot {
+  margin-top: 40px;
+  padding-top: 16px;
+  border-top: 3px solid #1b1030;
+  font-size: 15px;
+}

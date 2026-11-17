@@ -59,8 +59,10 @@ export class SupabaseStore implements Store {
   }
 
   async getPlayer(id: string): Promise<PlayerInfo | null> {
-    const data = check(await this.db.from("players").select("id,username,is_admin").eq("id", id).maybeSingle());
-    return data ? { id: data.id as string, username: (data.username as string | null) ?? null, isAdmin: data.is_admin === true } : null;
+    const data = check(await this.db.from("players").select("id,username,is_admin,email").eq("id", id).maybeSingle());
+    return data
+      ? { id: data.id as string, username: (data.username as string | null) ?? null, isAdmin: data.is_admin === true, email: (data.email as string | null) ?? null }
+      : null;
   }
 
   async claimAccount(id: string, a: { username: string; passwordHash: string; email: string | null }) {
@@ -96,6 +98,43 @@ export class SupabaseStore implements Store {
 
   async deleteSession(tokenHash: string) {
     check(await this.db.from("sessions").delete().eq("token_hash", tokenHash));
+  }
+
+  async deleteSessionsFor(playerId: string) {
+    check(await this.db.from("sessions").delete().eq("player_id", playerId));
+  }
+
+  async deletePlayer(playerId: string) {
+    // attempts, answers, rejects, sessions and reset links go with it (on delete cascade)
+    check(await this.db.from("players").delete().eq("id", playerId));
+  }
+
+  async findByLogin(login: string) {
+    const l = login.trim();
+    const esc = l.replace(/[\\%_]/g, "\\$&");
+    const col = l.includes("@") ? "email" : "username";
+    const data = check(await this.db.from("players").select("id,username,email").ilike(col, esc).not("username", "is", null).limit(1).maybeSingle());
+    return data ? { playerId: data.id as string, username: data.username as string, email: (data.email as string | null) ?? null } : null;
+  }
+
+  async setEmail(playerId: string, email: string | null) {
+    check(await this.db.from("players").update({ email }).eq("id", playerId));
+  }
+
+  async setPassword(playerId: string, passwordHash: string) {
+    check(await this.db.from("players").update({ password_hash: passwordHash }).eq("id", playerId));
+  }
+
+  async createReset(tokenHash: string, playerId: string, expiresAt: number) {
+    check(await this.db.from("password_resets").insert({ token_hash: tokenHash, player_id: playerId, expires_at: new Date(expiresAt).toISOString() }));
+  }
+
+  async useReset(tokenHash: string, now: number) {
+    // delete-and-return makes the link single use even with two clicks at once
+    const data = check(await this.db.from("password_resets").delete().eq("token_hash", tokenHash).select("player_id,expires_at"));
+    const row = (data as { player_id: string; expires_at: string }[] | null)?.[0];
+    if (!row) return null;
+    return new Date(row.expires_at).getTime() > now ? row.player_id : null;
   }
 
   async deleteAttempts(playerId: string, day: number | null) {

@@ -125,11 +125,16 @@ export interface ChallengeService {
   signUp(username: string, password: string, email?: string): Promise<Account>;
   logIn(username: string, password: string): Promise<Account>;
   logOut(): Promise<void>;
+  forgotPassword(login: string): Promise<void>;
+  resetPassword(token: string, password: string): Promise<Account>;
+  setEmail(email: string): Promise<Account>;
+  deleteAccount(password: string): Promise<void>;
 }
 
 export interface Account {
   username: string | null; // null while playing as a guest
   admin?: boolean; // can use the testing tools
+  email?: string | null; // for password resets; only shown to the account itself
 }
 
 export class GameError extends Error {

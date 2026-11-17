@@ -59,6 +59,18 @@ export class LocalService implements ChallengeService {
     return { username: a.username };
   }
   async logOut() {}
+  async forgotPassword() {
+    throw new GameError("bad_request", "Password reset needs the live site.");
+  }
+  async resetPassword(): Promise<Account> {
+    throw new GameError("bad_request", "Password reset needs the live site.");
+  }
+  async deleteAccount() {
+    this.store.reset();
+  }
+  async setEmail(): Promise<Account> {
+    throw new GameError("bad_request", "Email needs the live site.");
+  }
   async resetDay(day: number) {
     this.store.resetDay(day);
   }

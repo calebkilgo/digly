@@ -20,6 +20,7 @@ export interface PlayerInfo {
   id: string;
   username: string | null;
   isAdmin?: boolean;
+  email?: string | null;
 }
 
 export interface BoardTotal {
@@ -41,6 +42,16 @@ export interface Store {
   createSession(tokenHash: string, playerId: string, expiresAt: number): Promise<void>;
   sessionPlayer(tokenHash: string, now: number): Promise<string | null>;
   deleteSession(tokenHash: string): Promise<void>;
+  deleteSessionsFor(playerId: string): Promise<void>;
+  // removes the player and everything tied to them (attempts, answers, sessions)
+  deletePlayer(playerId: string): Promise<void>;
+  // password reset
+  findByLogin(usernameOrEmail: string): Promise<{ playerId: string; username: string; email: string | null } | null>;
+  setEmail(playerId: string, email: string | null): Promise<void>;
+  setPassword(playerId: string, passwordHash: string): Promise<void>;
+  createReset(tokenHash: string, playerId: string, expiresAt: number): Promise<void>;
+  // one use: returns the player and deletes the token, or null if unknown or expired
+  useReset(tokenHash: string, now: number): Promise<string | null>;
   // Must throw StoreConflict if a ranked attempt already exists for (player, day, level).
   insertAttempt(row: AttemptRow): Promise<void>;
   getAttempt(id: string): Promise<AttemptRow | null>;

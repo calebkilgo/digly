@@ -123,6 +123,19 @@ npm run answers -- /tmp/corpora
 - Rate limits: 5 sign-ups per hour per IP, 20 logins per 15 min per IP and 10 per username. Some usernames are reserved ("you", "guest", "admin" and similar).
 - Payments (Vault and Plus) will hang off the account.
 
+## Password reset and account deletion
+
+- "Forgot password?" in the login sheet takes a username or email. If the account has an email, it gets a one-time link (`/?reset=TOKEN`) that works for one hour. The reply is the same whether or not the account exists.
+- Picking a new password logs the account out on every other device and logs it in here.
+- Email is optional at sign-up and can be added, changed or removed in Options. Without one, a reset isn't possible.
+- Delete account (Options) asks for the password, then removes the player and everything tied to them.
+- Email goes through Resend (`RESEND_API_KEY`, `EMAIL_FROM`). Links use `SITE_URL` or the Vercel production URL, never the request's Host header.
+- Rate limits: 5 reset requests per hour per IP and 3 per account; 10 reset attempts per hour per IP.
+
+## Privacy policy and terms
+
+`/privacy` and `/terms`, linked from sign-up and Options. Set `NEXT_PUBLIC_CONTACT_EMAIL` for the contact address shown on both. Keep them in step with what the app collects. If you add a service or a new kind of data, update `/privacy`.
+
 ## Admin tools
 
 Options shows an Admin tools box (reset today's dig, clear all progress) only to accounts with `players.is_admin = true`. Set it in Supabase SQL:
@@ -163,7 +176,7 @@ Resets go through `/api/admin/reset`. It needs a logged-in admin session and onl
 3. Project Settings > API: copy the Project URL and the `service_role` key.
 4. Vercel > Project > Settings > Environment Variables: add `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` for Production and Preview. Redeploy.
 5. Check `https://<your-site>/api/dig`. It should say `"backend":"supabase"`.
-6. Run each new file in `supabase/migrations/` in order. 0002 adds accounts and rarity stats; 0003 adds the admin flag.
+6. Run each new file in `supabase/migrations/` in order. 0002 adds accounts and rarity stats; 0003 adds the admin flag; 0004 adds password reset links.
 
 For local dev put the same two lines in `.env.local`.
 

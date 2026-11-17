@@ -29,7 +29,7 @@ import { BoardScreen } from "./screens/Board";
 import { VaultScreen } from "./screens/Vault";
 import { LogbookScreen } from "./screens/Logbook";
 import { SettingsScreen } from "./screens/Settings";
-import { AccountSheet } from "./sheets";
+import { AccountSheet, ResetSheet } from "./sheets";
 import { identify, track } from "@/lib/track";
 
 export type Screen = "home" | "pregame" | "play" | "reveal" | "summary" | "board" | "vault" | "logbook" | "settings";
@@ -65,6 +65,17 @@ export function GameShell() {
   const [netError, setNetError] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [admin, setAdmin] = useState(false);
+  const [email, setEmail] = useState<string | null>(null);
+  const [resetToken, setResetToken] = useState<string | null>(null);
+
+  // arriving from a password reset email: ?reset=TOKEN
+  useEffect(() => {
+    const t = new URLSearchParams(window.location.search).get("reset");
+    if (!t) return;
+    setResetToken(t);
+    // drop the token from the address bar and history
+    window.history.replaceState(null, "", window.location.pathname);
+  }, []);
   const [accountSheet, setAccountSheet] = useState<{ start: "signup" | "login"; reason?: string } | null>(null);
   const [settings, updateSettings] = useSettings();
   const systemRm = useSystemReducedMotion();
@@ -111,6 +122,7 @@ export function GameShell() {
         (a) => {
           setUsername(a.username);
           setAdmin(!!a.admin);
+          setEmail(a.email ?? null);
           identify(a.username);
         },
         () => {},
@@ -121,6 +133,7 @@ export function GameShell() {
     async (u: string, p: string, e?: string) => {
       const a = await service!.signUp(u, p, e);
       setUsername(a.username);
+      setEmail(e?.trim() || null);
       identify(a.username);
       track("account_created");
       await refresh();
@@ -132,6 +145,7 @@ export function GameShell() {
       const a = await service!.logIn(u, p);
       setUsername(a.username);
       setAdmin(!!a.admin);
+      void service!.account().then((x) => setEmail(x.email ?? null), () => {});
       identify(a.username);
       track("logged_in");
       await refresh();
@@ -142,6 +156,7 @@ export function GameShell() {
     await service?.logOut();
     setUsername(null);
     setAdmin(false);
+    setEmail(null);
     identify(null);
     track("logged_out");
     await refresh();
@@ -390,6 +405,20 @@ export function GameShell() {
           systemRm={systemRm}
           onBack={() => go("home")}
           admin={admin}
+          email={email}
+          onDelete={async (pw) => {
+            await service!.deleteAccount(pw);
+            setUsername(null);
+            setAdmin(false);
+            setEmail(null);
+            identify(null);
+            commit(EMPTY_PROGRESS);
+            await refresh();
+          }}
+          onEmail={async (e) => {
+            const a = await service!.setEmail(e);
+            setEmail(a.email ?? null);
+          }}
           username={username}
           onAccount={(start) => setAccountSheet({ start })}
           onLogOut={logOut}
@@ -408,7 +437,27 @@ export function GameShell() {
         />
       )}
       {accountSheet && service && (
-        <AccountSheet start={accountSheet.start} reason={accountSheet.reason} onSignUp={signUp} onLogIn={logIn} onClose={() => setAccountSheet(null)} />
+        <AccountSheet
+          start={accountSheet.start}
+          reason={accountSheet.reason}
+          onSignUp={signUp}
+          onLogIn={logIn}
+          onForgot={(login) => service.forgotPassword(login)}
+          onClose={() => setAccountSheet(null)}
+        />
+      )}
+      {resetToken && service && (
+        <ResetSheet
+          onReset={async (pw) => {
+            const a = await service.resetPassword(resetToken, pw);
+            setUsername(a.username);
+            setAdmin(!!a.admin);
+            setEmail(a.email ?? null);
+            identify(a.username);
+            await refresh();
+          }}
+          onClose={() => setResetToken(null)}
+        />
       )}
       <div ref={announce} className="sr-only" aria-live="polite" />
     </div>

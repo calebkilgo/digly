@@ -13,12 +13,16 @@ export function SettingsScreen(props: {
   onResetToday: () => Promise<void>;
   onResetAll: () => Promise<void>;
   admin: boolean;
+  email: string | null;
+  onEmail: (email: string) => Promise<void>;
+  onDelete: (password: string) => Promise<void>;
   username: string | null;
   onAccount: (start: "signup" | "login") => void;
   onLogOut: () => Promise<void>;
 }) {
   const { settings, update } = props;
   const [msg, setMsg] = useState("");
+  const [acctMsg, setAcctMsg] = useState("");
 
   const lever = (label: string, desc: string, on: boolean, set: (v: boolean) => void) => (
     <div className="setting px">
@@ -74,11 +78,58 @@ export function SettingsScreen(props: {
               : "Playing as a guest. Make an account to put your scores on the board."}
           </div>
         </div>
+        {props.username && (
+          <form
+            style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "flex-end" }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              const v = String(new FormData(e.currentTarget).get("email") ?? "");
+              void props.onEmail(v).then(
+                () => setAcctMsg(v ? "Email saved." : "Email removed."),
+                (x) => setAcctMsg(x instanceof Error ? x.message : "Couldn't save that."),
+              );
+            }}
+          >
+            <label style={{ display: "flex", flexDirection: "column", gap: 4, flex: "1 1 200px" }}>
+              <span className="d">{props.email ? "Email for password resets" : "Add an email so you can reset your password"}</span>
+              <input
+                name="email"
+                type="email"
+                defaultValue={props.email ?? ""}
+                key={props.email ?? ""}
+                maxLength={200}
+                autoComplete="email"
+                style={{ fontSize: 16, padding: "8px 10px", border: "3px solid #24160f", borderRadius: 6, fontFamily: "inherit", fontWeight: 700 }}
+              />
+            </label>
+            <button className="btn btn-sm" type="submit">
+              Save
+            </button>
+            <span role="status" style={{ fontSize: 13, flexBasis: "100%", minHeight: 16 }}>
+              {acctMsg}
+            </span>
+          </form>
+        )}
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           {props.username ? (
-            <button className="btn btn-sm" onClick={() => void props.onLogOut()}>
-              Log out
-            </button>
+            <>
+              <button className="btn btn-sm" onClick={() => void props.onLogOut()}>
+                Log out
+              </button>
+              <button
+                className="btn btn-sm"
+                onClick={() => {
+                  const pw = window.prompt(`Delete ${props.username} for good? Your scores and history are removed and can't be brought back. Type your password to confirm.`);
+                  if (!pw) return;
+                  void props.onDelete(pw).then(
+                    () => setAcctMsg("Account deleted."),
+                    (x) => setAcctMsg(x instanceof Error ? x.message : "Couldn't delete the account."),
+                  );
+                }}
+              >
+                Delete account
+              </button>
+            </>
           ) : (
             <>
               <button className="btn btn-sm btn-y" onClick={() => props.onAccount("signup")}>
@@ -91,6 +142,9 @@ export function SettingsScreen(props: {
           )}
         </div>
       </div>
+      <p className="fine" style={{ textAlign: "center" }}>
+        <a href="/privacy">Privacy policy</a> · <a href="/terms">Terms of use</a>
+      </p>
       {props.admin && (
       <div className="setting px dark" style={{ flexDirection: "column", alignItems: "stretch" }}>
         <div>

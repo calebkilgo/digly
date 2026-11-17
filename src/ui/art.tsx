@@ -80,7 +80,7 @@ export const GEM_FILL: Record<Tier["key"], { base: string; shade: string; light:
 
 // Same shapes as the Pixi treasures in Reveal.ts: nugget, coin, bar, round
 // cut, brilliant cut. All 10x9 so they line up in lists.
-const GEM_ROWS: Record<Tier["key"], string[]> = {
+export const GEM_ROWS: Record<Tier["key"], string[]> = {
   copper: [
     "..........",
     "...KKKK...",

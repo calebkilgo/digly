@@ -65,6 +65,22 @@ export class RemoteService implements ChallengeService {
     await call("/api/account", { method: "POST", body: { action: "logout" } });
   }
 
+  async forgotPassword(login: string) {
+    await call("/api/account", { method: "POST", body: { action: "forgot", login } });
+  }
+
+  resetPassword(token: string, password: string) {
+    return call<Account>("/api/account", { method: "POST", body: { action: "reset", token, password } });
+  }
+
+  async deleteAccount(password: string) {
+    await call("/api/account", { method: "POST", body: { action: "delete", password } });
+  }
+
+  setEmail(email: string) {
+    return call<Account>("/api/account", { method: "POST", body: { action: "email", email } });
+  }
+
   // admin-only testing tools; they remove your own runs and keep you logged in
   async resetDay(day: number) {
     await call("/api/admin/reset", { method: "POST", body: { scope: "day", day } });

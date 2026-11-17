@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Digly · Dig deeper. Find rarer.",
-  description: "A 60-second daily knowledge dig. Only your three rarest answers count.",
+  title: "Digly · Dig deep.",
+  description: "A daily knowledge dig in three levels. Name as many as you can; the rarer the answer, the more it's worth.",
 };
 
 export const viewport: Viewport = {

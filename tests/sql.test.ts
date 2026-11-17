@@ -85,3 +85,25 @@ describe("migration 0003", () => {
     expect(r.rows).toEqual([{ username: "calebk", is_admin: true }, { username: "other", is_admin: false }]);
   });
 });
+
+describe("migration 0004", () => {
+  it("adds single-use reset links that go away with the player", async () => {
+    const db = new PGlite();
+    await db.exec(SQL);
+    await db.exec(SQL2);
+    const SQL4 = readFileSync(new URL("../supabase/migrations/0004_password_reset.sql", import.meta.url), "utf8");
+    await db.exec(SQL4);
+    await db.exec(SQL4);
+    await db.query("insert into players (id, username, email) values ($1, 'Rocky', 'r@x.io')", [P]);
+    await db.query("insert into password_resets (token_hash, player_id, expires_at) values ('t', $1, now() + interval '1 hour')", [P]);
+    const del = await db.query<{ player_id: string }>("delete from password_resets where token_hash = 't' returning player_id");
+    expect(del.rows).toEqual([{ player_id: P }]);
+    const again = await db.query("delete from password_resets where token_hash = 't' returning player_id");
+    expect(again.rows).toEqual([]);
+    await db.query("insert into password_resets (token_hash, player_id, expires_at) values ('u', $1, now())", [P]);
+    await db.query("insert into sessions (token_hash, player_id, expires_at) values ('s', $1, now())", [P]);
+    await db.query("delete from players where id = $1", [P]);
+    const left = await db.query<{ n: number }>("select (select count(*) from password_resets) + (select count(*) from sessions) as n");
+    expect(Number(left.rows[0].n)).toBe(0);
+  });
+});

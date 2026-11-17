@@ -4,6 +4,7 @@ import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type 
 export interface MemoryData {
   players: Record<string, { name: string; username?: string; passwordHash?: string; email?: string | null; isAdmin?: boolean }>;
   sessions?: Record<string, { playerId: string; expiresAt: number }>;
+  resets?: Record<string, { playerId: string; expiresAt: number }>;
   attempts: Record<string, AttemptRow>;
   answers: Record<string, string[]>;
   rejects: Record<string, string[]>;
@@ -32,7 +33,7 @@ export class MemoryStore implements Store {
 
   async getPlayer(id: string): Promise<PlayerInfo | null> {
     const p = this.data.players[id];
-    return p ? { id, username: p.username ?? null, isAdmin: !!p.isAdmin } : null;
+    return p ? { id, username: p.username ?? null, isAdmin: !!p.isAdmin, email: p.email ?? null } : null;
   }
 
   async claimAccount(id: string, a: { username: string; passwordHash: string; email: string | null }) {
@@ -63,6 +64,50 @@ export class MemoryStore implements Store {
   async deleteSession(tokenHash: string) {
     if (this.data.sessions) delete this.data.sessions[tokenHash];
     this.changed();
+  }
+
+  async deleteSessionsFor(playerId: string) {
+    for (const [k, v] of Object.entries(this.data.sessions ?? {})) if (v.playerId === playerId) delete this.data.sessions![k];
+    this.changed();
+  }
+
+  async deletePlayer(playerId: string) {
+    await this.deleteAttempts(playerId, null);
+    await this.deleteSessionsFor(playerId);
+    for (const [k, v] of Object.entries(this.data.resets ?? {})) if (v.playerId === playerId) delete this.data.resets![k];
+    delete this.data.players[playerId];
+    this.changed();
+  }
+
+  async findByLogin(login: string) {
+    const l = login.trim().toLowerCase();
+    const hit = Object.entries(this.data.players).find(([, p]) => p.username && (p.username.toLowerCase() === l || (p.email ?? "").toLowerCase() === l));
+    return hit ? { playerId: hit[0], username: hit[1].username!, email: hit[1].email ?? null } : null;
+  }
+
+  async setEmail(playerId: string, email: string | null) {
+    const p = this.data.players[playerId];
+    if (p) p.email = email;
+    this.changed();
+  }
+
+  async setPassword(playerId: string, passwordHash: string) {
+    const p = this.data.players[playerId];
+    if (p) p.passwordHash = passwordHash;
+    this.changed();
+  }
+
+  async createReset(tokenHash: string, playerId: string, expiresAt: number) {
+    (this.data.resets ??= {})[tokenHash] = { playerId, expiresAt };
+    this.changed();
+  }
+
+  async useReset(tokenHash: string, now: number) {
+    const r = this.data.resets?.[tokenHash];
+    if (!r) return null;
+    delete this.data.resets![tokenHash];
+    this.changed();
+    return r.expiresAt > now ? r.playerId : null;
   }
 
   async insertAttempt(row: AttemptRow) {

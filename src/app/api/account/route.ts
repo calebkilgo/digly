@@ -1,5 +1,7 @@
 import { endSession, getEngine, handle, limit, playerId, readJson, startSession } from "@/server/game";
-import { checkEmail, checkPassword, checkPassword8, checkUsername, dummyHash, hashPassword } from "@/server/auth";
+import { checkEmail, checkPassword, checkPassword8, checkUsername, dummyHash, hashPassword, newToken, tokenHash } from "@/server/auth";
+import { resetEmail, sendEmail, siteUrl } from "@/server/email";
+import * as Sentry from "@sentry/nextjs";
 import { GameError } from "@/game/service/types";
 import { StoreConflict } from "@/game/engine/store";
 import { headers } from "next/headers";
@@ -9,7 +11,7 @@ export async function GET() {
   return handle(async () => {
     const pid = await playerId(false);
     const p = pid ? await getEngine().engine.storeRef().getPlayer(pid) : null;
-    return { username: p?.username ?? null, admin: !!p?.username && !!p?.isAdmin };
+    return { username: p?.username ?? null, admin: !!p?.username && !!p?.isAdmin, email: p?.username ? (p.email ?? null) : null };
   });
 }
 
@@ -53,6 +55,60 @@ export async function POST(req: Request) {
       await startSession(acct.playerId);
       const p = await store.getPlayer(acct.playerId);
       return { username: acct.username, admin: !!p?.isAdmin };
+    }
+
+    // Always answers the same way, so it can't be used to find which accounts exist.
+    if (body.action === "forgot") {
+      const login = String(body.login ?? "").trim().slice(0, 200);
+      limit(`forgot:${ip}`, 5, 60 * 60_000);
+      if (login) limit(`forgot:${login.toLowerCase()}`, 3, 60 * 60_000);
+      const acct = login ? await store.findByLogin(login) : null;
+      if (acct?.email) {
+        const token = newToken();
+        await store.createReset(tokenHash(token), acct.playerId, Date.now() + 60 * 60_000);
+        const { text, html } = resetEmail(acct.username, `${siteUrl()}/?reset=${token}`);
+        try {
+          await sendEmail(acct.email, "Reset your Digly password", text, html);
+        } catch (e) {
+          console.error(e);
+          Sentry.captureException(e);
+        }
+      }
+      return { ok: true };
+    }
+
+    if (body.action === "reset") {
+      limit(`reset:${ip}`, 10, 60 * 60_000);
+      const password = checkPassword8(body.password);
+      const pid = await store.useReset(tokenHash(String(body.token ?? "")), Date.now());
+      if (!pid) throw new GameError("bad_login", "That reset link has expired or was already used. Ask for a new one.");
+      await store.setPassword(pid, await hashPassword(password));
+      // a new password logs out every other device
+      await store.deleteSessionsFor(pid);
+      await startSession(pid);
+      const p = await store.getPlayer(pid);
+      return { username: p?.username ?? null, admin: !!p?.isAdmin, email: p?.email ?? null };
+    }
+
+    if (body.action === "email") {
+      const pid = await playerId(false);
+      const p = pid ? await store.getPlayer(pid) : null;
+      if (!p?.username) throw new GameError("forbidden", "Log in first.");
+      const email = checkEmail(body.email);
+      await store.setEmail(p.id, email);
+      return { username: p.username, admin: !!p.isAdmin, email };
+    }
+
+    if (body.action === "delete") {
+      const pid = await playerId(false);
+      const p = pid ? await store.getPlayer(pid) : null;
+      if (!p?.username) throw new GameError("forbidden", "Log in first.");
+      // the password is asked again so a borrowed device can't wipe an account
+      const acct = await store.findAccount(p.username);
+      if (!acct || !(await checkPassword(String(body.password ?? ""), acct.passwordHash))) throw new GameError("bad_login", "Wrong password.");
+      await store.deletePlayer(p.id);
+      await endSession();
+      return { username: null };
     }
 
     throw new GameError("bad_request", "Unknown action");
