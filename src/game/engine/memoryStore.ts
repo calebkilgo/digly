@@ -1,8 +1,9 @@
 import type { AttemptMode } from "../service/types";
-import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Store } from "./store";
+import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store } from "./store";
 
 export interface MemoryData {
-  players: Record<string, { name: string; username?: string; passwordHash?: string; email?: string | null; isAdmin?: boolean }>;
+  players: Record<string, { name: string; username?: string; passwordHash?: string; email?: string | null; isAdmin?: boolean; unlimited?: boolean }>;
+  purchases?: Record<string, Purchase & { status: "paid" | "refunded" }>;
   sessions?: Record<string, { playerId: string; expiresAt: number }>;
   resets?: Record<string, { playerId: string; expiresAt: number }>;
   attempts: Record<string, AttemptRow>;
@@ -33,7 +34,7 @@ export class MemoryStore implements Store {
 
   async getPlayer(id: string): Promise<PlayerInfo | null> {
     const p = this.data.players[id];
-    return p ? { id, username: p.username ?? null, isAdmin: !!p.isAdmin, email: p.email ?? null } : null;
+    return p ? { id, username: p.username ?? null, isAdmin: !!p.isAdmin, email: p.email ?? null, unlimited: !!p.unlimited } : null;
   }
 
   async claimAccount(id: string, a: { username: string; passwordHash: string; email: string | null }) {
@@ -69,6 +70,25 @@ export class MemoryStore implements Store {
   async deleteSessionsFor(playerId: string) {
     for (const [k, v] of Object.entries(this.data.sessions ?? {})) if (v.playerId === playerId) delete this.data.sessions![k];
     this.changed();
+  }
+
+  async grantUnlimited(p: Purchase) {
+    (this.data.purchases ??= {})[p.id] = { ...p, status: "paid" };
+    const pl = this.data.players[p.playerId];
+    if (pl) pl.unlimited = true;
+    this.changed();
+  }
+
+  async revokeByPaymentIntent(pi: string) {
+    const hit = Object.values(this.data.purchases ?? {}).find((x) => x.paymentIntent === pi);
+    if (!hit) return null;
+    hit.status = "refunded";
+    // keep access if they have another paid purchase
+    const stillPaid = Object.values(this.data.purchases ?? {}).some((x) => x.playerId === hit.playerId && x.status === "paid");
+    const pl = this.data.players[hit.playerId];
+    if (pl && !stillPaid) pl.unlimited = false;
+    this.changed();
+    return hit.playerId;
   }
 
   async deletePlayer(playerId: string) {

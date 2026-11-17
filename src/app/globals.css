@@ -2049,3 +2049,45 @@ input {
   border-top: 3px solid #1b1030;
   font-size: 15px;
 }
+
+/* Digly Unlimited */
+.unlock-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+.unlock-card .t {
+  font-family: "Jersey 10", "Pixelify Sans", monospace;
+  font-size: 30px;
+  color: #ffc928;
+  line-height: 1;
+}
+.unlock-card .d {
+  font-size: 16px;
+  color: #fff4dc;
+  margin-top: 4px;
+}
+.unlimited-badge {
+  font-weight: 700;
+  color: #1f8c3a;
+}
+.room.locked {
+  opacity: 0.6;
+}
+
+.toast-banner {
+  position: fixed;
+  left: 50%;
+  top: calc(env(safe-area-inset-top, 0px) + 14px);
+  transform: translateX(-50%);
+  z-index: 60;
+  max-width: min(92vw, 520px);
+  padding: 12px 16px;
+  background: #fff4dc;
+  color: #1b1030;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+}

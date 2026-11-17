@@ -36,6 +36,14 @@ export class RemoteService implements ChallengeService {
     return call<AttemptStart>("/api/attempts", { method: "POST", body: slug ? { day, level, mode, slug } : { day, level, mode } });
   }
 
+  async checkout() {
+    return (await call<{ url: string }>("/api/billing/checkout", { method: "POST", body: {} })).url;
+  }
+
+  async confirmPurchase(sessionId: string) {
+    return (await call<{ unlimited: boolean }>(`/api/billing/confirm?session_id=${encodeURIComponent(sessionId)}`)).unlimited;
+  }
+
   async categories() {
     return (await call<{ categories: CategoryInfo[] }>("/api/admin/categories")).categories;
   }

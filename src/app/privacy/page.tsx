@@ -44,6 +44,16 @@ export default function Privacy() {
           <b>A login session</b> in a cookie (<code>digly_sid</code>) that lasts up to 90 days. We store only a hash of it.
         </li>
       </ul>
+      <h3>If you buy Digly Unlimited</h3>
+      <ul>
+        <li>
+          <b>Payment</b> happens on Stripe&apos;s checkout page. Stripe collects your card details and email; we never see or store card numbers.
+        </li>
+        <li>
+          <b>A purchase record</b> on our side: which account bought it, the amount, the date, and Stripe&apos;s reference IDs, so we can honor the
+          purchase and handle refunds.
+        </li>
+      </ul>
       <h3>Usage and error tracking</h3>
       <ul>
         <li>
@@ -83,6 +93,9 @@ export default function Privacy() {
           <b>Resend</b> sends password reset emails.
         </li>
         <li>
+          <b>Stripe</b> processes payments for Digly Unlimited.
+        </li>
+        <li>
           <b>PostHog</b> handles usage analytics.
         </li>
         <li>
@@ -97,6 +110,7 @@ export default function Privacy() {
       <h2>How long we keep it</h2>
       <ul>
         <li>Account data is kept until you delete your account.</li>
+        <li>Purchase records are kept as long as tax and accounting rules require, even after an account is deleted, but without your username.</li>
         <li>Guest game data is kept so rarity scores stay accurate. It isn&apos;t tied to your identity.</li>
         <li>Password reset links expire after one hour. Login sessions expire after 90 days.</li>
         <li>Analytics and error data are kept according to PostHog&apos;s and Sentry&apos;s retention settings, typically up to a year.</li>

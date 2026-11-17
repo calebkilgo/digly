@@ -14,6 +14,8 @@ export function SettingsScreen(props: {
   onResetToday: () => Promise<void>;
   onResetAll: () => Promise<void>;
   admin: boolean;
+  unlimited: boolean;
+  onUnlimited: () => void;
   loadCategories: () => Promise<CategoryInfo[]>;
   onDemo: (slugs: string[]) => void;
   email: string | null;
@@ -79,6 +81,15 @@ export function SettingsScreen(props: {
             {props.username
               ? `Logged in as ${props.username}. Your ranked digs go on the board.`
               : "Playing as a guest. Make an account to put your scores on the board."}
+          </div>
+          <div className="d" style={{ marginTop: 6 }}>
+            {props.unlimited ? (
+              <b>Digly Unlimited: every past dig is open.</b>
+            ) : (
+              <button type="button" className="linkish" onClick={props.onUnlimited}>
+                Get Digly Unlimited ($5, one time)
+              </button>
+            )}
           </div>
         </div>
         {props.username && (

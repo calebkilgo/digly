@@ -7,6 +7,7 @@ import { dayNumber, dayStart, formatChallengeNumber } from "../rules/schedule";
 import { LEVELS } from "../rules/levels";
 import { SEEDS, type ChallengeSeed } from "../data/seeds";
 import { slugFor } from "../data/rotation";
+import { vaultOpen } from "../rules/plans";
 import {
   GameError,
   type AttemptMode,
@@ -166,7 +167,9 @@ export class DigEngine {
 
   // `slug` picks a specific category (the admin demo dig). The caller checks
   // the player is allowed; here it's only ever an unranked practice run.
-  async start(playerId: string, day: number, level: LevelNo, mode: AttemptMode, slug?: string): Promise<AttemptStart> {
+  // `unlimited`: the player owns Digly Unlimited (the route looks it up).
+  async start(playerId: string, day: number, level: LevelNo, mode: AttemptMode, opts: { slug?: string; unlimited?: boolean } = {}): Promise<AttemptStart> {
+    const { slug, unlimited = false } = opts;
     if (![1, 2, 3].includes(level)) throw new GameError("bad_request", "Bad level");
     if (mode !== "ranked" && mode !== "practice") throw new GameError("bad_request", "Bad mode");
     this.checkDay(day);
@@ -192,6 +195,7 @@ export class DigEngine {
         if (!rows.some((r) => r.level === l && r.finishedAt !== null)) throw new GameError("locked", `Finish level ${l} first`);
       }
     } else if (slug === undefined) {
+      if (!vaultOpen(day, this.today(), unlimited)) throw new GameError("locked", "Digly Unlimited opens every past dig.");
       const ranked = day === this.today() ? await this.rankedRows(playerId, day) : [];
       const doneToday = ranked.filter((r) => r.finishedAt !== null).length === 3;
       if (day === this.today() && !doneToday) throw new GameError("locked", "Practice opens after the day's ranked dig");

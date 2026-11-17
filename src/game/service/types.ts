@@ -130,6 +130,8 @@ export interface ChallengeService {
   setEmail(email: string): Promise<Account>;
   deleteAccount(password: string): Promise<void>;
   categories(): Promise<CategoryInfo[]>; // admin demo dig
+  checkout(): Promise<string>; // URL of the Stripe page for Digly Unlimited
+  confirmPurchase(sessionId: string): Promise<boolean>;
 }
 
 export interface CategoryInfo {
@@ -142,6 +144,7 @@ export interface Account {
   username: string | null; // null while playing as a guest
   admin?: boolean; // can use the testing tools
   email?: string | null; // for password resets; only shown to the account itself
+  unlimited?: boolean; // owns Digly Unlimited
 }
 
 export class GameError extends Error {

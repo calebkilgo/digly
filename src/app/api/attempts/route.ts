@@ -17,6 +17,12 @@ export async function POST(req: Request) {
       await requireAdmin();
       slug = String(body.slug);
     }
-    return engine.start(pid, intParam(body.day), intParam(body.level) as LevelNo, mode as AttemptMode, slug);
+    // older Vault days need Digly Unlimited (admins always have it)
+    let unlimited = false;
+    if (mode === "practice") {
+      const p = await engine.storeRef().getPlayer(pid);
+      unlimited = !!p?.unlimited || !!p?.isAdmin;
+    }
+    return engine.start(pid, intParam(body.day), intParam(body.level) as LevelNo, mode as AttemptMode, { slug, unlimited });
   });
 }

@@ -17,7 +17,14 @@ export class LocalService implements ChallengeService {
     return this.engine.status(ME, day);
   }
   start(day: number, level: LevelNo, mode: AttemptMode, slug?: string) {
-    return this.engine.start(ME, day, level, mode, slug);
+    // the offline preview has everything open
+    return this.engine.start(ME, day, level, mode, { slug, unlimited: true });
+  }
+  async checkout(): Promise<string> {
+    throw new GameError("bad_request", "Purchases need the live site.");
+  }
+  async confirmPurchase() {
+    return true;
   }
   async categories(): Promise<CategoryInfo[]> {
     const { SEEDS } = await import("../data/seeds");
@@ -48,7 +55,7 @@ export class LocalService implements ChallengeService {
   // The offline preview fakes accounts on this device so the flow can be tried.
   async account(): Promise<Account> {
     const p = await this.store.getPlayer(ME);
-    return { username: p?.username ?? null, admin: true };
+    return { username: p?.username ?? null, admin: true, unlimited: true };
   }
   async signUp(username: string, password: string): Promise<Account> {
     if (!/^[A-Za-z0-9_]{3,16}$/.test(username)) throw new GameError("bad_request", "Usernames are 3 to 16 letters, numbers or underscores.");

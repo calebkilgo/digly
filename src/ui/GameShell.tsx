@@ -68,6 +68,8 @@ export function GameShell() {
   const [admin, setAdmin] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
   const [resetToken, setResetToken] = useState<string | null>(null);
+  const [unlimited, setUnlimited] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
 
   // arriving from a password reset email: ?reset=TOKEN
   useEffect(() => {
@@ -124,6 +126,7 @@ export function GameShell() {
           setUsername(a.username);
           setAdmin(!!a.admin);
           setEmail(a.email ?? null);
+          setUnlimited(!!a.unlimited);
           identify(a.username);
         },
         () => {},
@@ -146,6 +149,7 @@ export function GameShell() {
       const a = await service!.logIn(u, p);
       setUsername(a.username);
       setAdmin(!!a.admin);
+      setUnlimited(!!a.unlimited);
       void service!.account().then((x) => setEmail(x.email ?? null), () => {});
       identify(a.username);
       track("logged_in");
@@ -158,10 +162,52 @@ export function GameShell() {
     setUsername(null);
     setAdmin(false);
     setEmail(null);
+    setUnlimited(false);
     identify(null);
     track("logged_out");
     await refresh();
   }, [service, refresh]);
+
+  // Digly Unlimited: needs an account, then hands off to Stripe Checkout
+  const buyUnlimited = useCallback(async () => {
+    if (!service) return;
+    if (!username) {
+      track("post_prompt_shown", { from: "unlimited" });
+      setAccountSheet({ start: "signup", reason: "Make an account first, so Digly Unlimited stays with you on every device." });
+      return;
+    }
+    track("checkout_started");
+    window.location.href = await service.checkout();
+  }, [service, username]);
+
+  // back from Stripe: ?unlimited=success&session_id=... or ?unlimited=cancel
+  useEffect(() => {
+    if (!service) return;
+    const q = new URLSearchParams(window.location.search);
+    const state = q.get("unlimited");
+    if (!state) return;
+    window.history.replaceState(null, "", window.location.pathname);
+    if (state !== "success") return;
+    const sid = q.get("session_id") ?? "";
+    void (async () => {
+      // the webhook usually beats us here; if not, ask Stripe directly
+      for (let i = 0; i < 4; i++) {
+        try {
+          const a = await service.account();
+          if (a.unlimited || (await service.confirmPurchase(sid))) {
+            setUnlimited(true);
+            setToast("Digly Unlimited is yours. Every Vault door is open. Thanks for supporting Digly!");
+            track("purchase_completed");
+            return;
+          }
+        } catch {
+          // try again
+        }
+        await new Promise((r) => setTimeout(r, 1500));
+      }
+      setToast("Payment received. Unlimited can take a minute to show up; reopen the Vault shortly.");
+    })();
+  }, [service]);
 
   // a dig finished on another device (or before a cache wipe) still counts here
   useEffect(() => {
@@ -404,7 +450,14 @@ export function GameShell() {
         />
       )}
       {screen === "vault" && (
-        <VaultScreen today={today} progress={progress} onBack={() => go("home")} onPlay={(d) => openPregame("practice", d)} />
+        <VaultScreen
+          today={today}
+          progress={progress}
+          unlimited={unlimited}
+          onBack={() => go("home")}
+          onPlay={(d) => openPregame("practice", d)}
+          onUnlock={buyUnlimited}
+        />
       )}
       {screen === "logbook" && <LogbookScreen progress={progress} today={today} name={username} onBack={() => go("home")} />}
       {screen === "settings" && (
@@ -414,6 +467,8 @@ export function GameShell() {
           systemRm={systemRm}
           onBack={() => go("home")}
           admin={admin}
+          unlimited={unlimited}
+          onUnlimited={() => go("vault")}
           loadCategories={() => service!.categories()}
           onDemo={(slugs) => {
             setRun({ mode: "practice", dig: digSlots(today), level: 0, results: [], demo: slugs });
@@ -474,6 +529,11 @@ export function GameShell() {
           }}
           onClose={() => setResetToken(null)}
         />
+      )}
+      {toast && (
+        <div className="toast-banner px" role="status" onClick={() => setToast(null)}>
+          {toast}
+        </div>
       )}
       <div ref={announce} className="sr-only" aria-live="polite" />
     </div>

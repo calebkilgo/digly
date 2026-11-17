@@ -21,6 +21,16 @@ export interface PlayerInfo {
   username: string | null;
   isAdmin?: boolean;
   email?: string | null;
+  unlimited?: boolean;
+}
+
+export interface Purchase {
+  id: string; // Stripe Checkout session id
+  playerId: string;
+  product: string;
+  amount: number;
+  currency: string;
+  paymentIntent: string | null;
 }
 
 export interface BoardTotal {
@@ -52,6 +62,10 @@ export interface Store {
   createReset(tokenHash: string, playerId: string, expiresAt: number): Promise<void>;
   // one use: returns the player and deletes the token, or null if unknown or expired
   useReset(tokenHash: string, now: number): Promise<string | null>;
+  // Digly Unlimited. Both are idempotent: Stripe can deliver an event twice.
+  grantUnlimited(p: Purchase): Promise<void>;
+  // returns the player who lost access, or null if the payment wasn't ours
+  revokeByPaymentIntent(paymentIntent: string): Promise<string | null>;
   // Must throw StoreConflict if a ranked attempt already exists for (player, day, level).
   insertAttempt(row: AttemptRow): Promise<void>;
   getAttempt(id: string): Promise<AttemptRow | null>;

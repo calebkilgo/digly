@@ -45,10 +45,23 @@ export default function Terms() {
       </ul>
       <p>We may suspend or delete accounts that break these rules, and remove their scores.</p>
 
-      <h2>Paid features</h2>
-      <p>
-        Digly may offer paid extras later, such as the archive of past digs. Those will come with their own prices and terms, shown before you pay.
-      </p>
+      <h2>Digly Unlimited</h2>
+      <ul>
+        <li>
+          Digly Unlimited is a one-time purchase (US$5 unless shown otherwise at checkout) that opens every past dig in the Vault for replay. The daily dig
+          stays free for everyone.
+        </li>
+        <li>It&apos;s tied to your Digly account, not to a device. Log in anywhere to use it.</li>
+        <li>Payments are handled by Stripe. We never see or store your card details.</li>
+        <li>
+          <b>Refunds:</b> if you change your mind, email us within 14 days of buying and we&apos;ll refund you in full. A refunded or disputed payment
+          removes Unlimited from the account.
+        </li>
+        <li>
+          &quot;For good&quot; means for as long as Digly runs. If we ever shut Digly down within a year of your purchase, we&apos;ll refund it.
+        </li>
+        <li>Deleting your account removes Unlimited with it, and it can&apos;t be moved to another account.</li>
+      </ul>
 
       <h2>Our content</h2>
       <p>

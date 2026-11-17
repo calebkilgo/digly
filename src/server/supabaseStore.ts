@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Store } from "@/game/engine/store";
+import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store } from "@/game/engine/store";
 import type { AttemptMode, LevelNo } from "@/game/service/types";
 
 interface DbAttempt {
@@ -59,9 +59,15 @@ export class SupabaseStore implements Store {
   }
 
   async getPlayer(id: string): Promise<PlayerInfo | null> {
-    const data = check(await this.db.from("players").select("id,username,is_admin,email").eq("id", id).maybeSingle());
+    const data = check(await this.db.from("players").select("id,username,is_admin,email,unlimited").eq("id", id).maybeSingle());
     return data
-      ? { id: data.id as string, username: (data.username as string | null) ?? null, isAdmin: data.is_admin === true, email: (data.email as string | null) ?? null }
+      ? {
+          id: data.id as string,
+          username: (data.username as string | null) ?? null,
+          isAdmin: data.is_admin === true,
+          email: (data.email as string | null) ?? null,
+          unlimited: data.unlimited === true,
+        }
       : null;
   }
 
@@ -102,6 +108,37 @@ export class SupabaseStore implements Store {
 
   async deleteSessionsFor(playerId: string) {
     check(await this.db.from("sessions").delete().eq("player_id", playerId));
+  }
+
+  async grantUnlimited(p: Purchase) {
+    // upsert on the session id, so a repeated webhook is harmless
+    check(
+      await this.db.from("purchases").upsert(
+        {
+          id: p.id,
+          player_id: p.playerId,
+          product: p.product,
+          amount: p.amount,
+          currency: p.currency,
+          payment_intent: p.paymentIntent,
+          status: "paid",
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "id" },
+      ),
+    );
+    check(await this.db.from("players").update({ unlimited: true, unlimited_at: new Date().toISOString() }).eq("id", p.playerId));
+  }
+
+  async revokeByPaymentIntent(pi: string) {
+    const rows = check(
+      await this.db.from("purchases").update({ status: "refunded", updated_at: new Date().toISOString() }).eq("payment_intent", pi).select("player_id"),
+    ) as { player_id: string | null }[];
+    const pid = rows?.[0]?.player_id;
+    if (!pid) return null;
+    const paid = check(await this.db.from("purchases").select("id").eq("player_id", pid).eq("status", "paid").limit(1)) as unknown[];
+    if (!paid.length) check(await this.db.from("players").update({ unlimited: false }).eq("id", pid));
+    return pid;
   }
 
   async deletePlayer(playerId: string) {

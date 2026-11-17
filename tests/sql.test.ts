@@ -107,3 +107,23 @@ describe("migration 0004", () => {
     expect(Number(left.rows[0].n)).toBe(0);
   });
 });
+
+describe("migration 0005", () => {
+  it("adds Unlimited and a purchases table that outlives deleted accounts", async () => {
+    const db = new PGlite();
+    await db.exec(SQL);
+    const SQL5 = readFileSync(new URL("../supabase/migrations/0005_unlimited.sql", import.meta.url), "utf8");
+    await db.exec(SQL5);
+    await db.exec(SQL5);
+    await db.query("insert into players (id) values ($1)", [P]);
+    expect((await db.query<{ unlimited: boolean }>("select unlimited from players")).rows[0].unlimited).toBe(false);
+    const up = "insert into purchases (id, player_id, product, amount, currency, payment_intent, status) values ('cs_1', $1, 'unlimited', 500, 'usd', 'pi_1', 'paid') on conflict (id) do update set status = excluded.status";
+    await db.query(up, [P]);
+    await db.query(up, [P]);
+    expect(Number((await db.query<{ n: number }>("select count(*) as n from purchases")).rows[0].n)).toBe(1);
+    await expect(db.query("insert into purchases (id, product, amount, currency, status) values ('cs_2', 'unlimited', 500, 'usd', 'gift')")).rejects.toBeTruthy();
+    await db.query("delete from players where id = $1", [P]);
+    const left = await db.query<{ player_id: string | null }>("select player_id from purchases");
+    expect(left.rows).toEqual([{ player_id: null }]);
+  });
+});

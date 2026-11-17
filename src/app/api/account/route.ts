@@ -11,7 +11,12 @@ export async function GET() {
   return handle(async () => {
     const pid = await playerId(false);
     const p = pid ? await getEngine().engine.storeRef().getPlayer(pid) : null;
-    return { username: p?.username ?? null, admin: !!p?.username && !!p?.isAdmin, email: p?.username ? (p.email ?? null) : null };
+    return {
+      username: p?.username ?? null,
+      admin: !!p?.username && !!p?.isAdmin,
+      email: p?.username ? (p.email ?? null) : null,
+      unlimited: !!p?.username && (!!p?.unlimited || !!p?.isAdmin),
+    };
   });
 }
 
@@ -54,7 +59,7 @@ export async function POST(req: Request) {
       if (!acct || !ok) throw new GameError("bad_login", "Wrong username or password.");
       await startSession(acct.playerId);
       const p = await store.getPlayer(acct.playerId);
-      return { username: acct.username, admin: !!p?.isAdmin };
+      return { username: acct.username, admin: !!p?.isAdmin, unlimited: !!p?.unlimited || !!p?.isAdmin };
     }
 
     // Always answers the same way, so it can't be used to find which accounts exist.
@@ -87,7 +92,7 @@ export async function POST(req: Request) {
       await store.deleteSessionsFor(pid);
       await startSession(pid);
       const p = await store.getPlayer(pid);
-      return { username: p?.username ?? null, admin: !!p?.isAdmin, email: p?.email ?? null };
+      return { username: p?.username ?? null, admin: !!p?.isAdmin, email: p?.email ?? null, unlimited: !!p?.unlimited || !!p?.isAdmin };
     }
 
     if (body.action === "email") {

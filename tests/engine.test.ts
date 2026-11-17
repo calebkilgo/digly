@@ -156,6 +156,8 @@ describe("practice", () => {
   it("opens past digs any number of times, and today only after the ranked dig", async () => {
     await play("p", 2, [], "practice", DAY - 3);
     await play("p", 2, [], "practice", DAY - 3);
+    expect(await code(eng.start("p", DAY - 4, 1, "practice"))).toBe("locked"); // past the free window
+    expect(await code(eng.start("p", DAY - 4, 1, "practice", { unlimited: true }))).toBe("ok");
     expect(await code(eng.start("p", DAY, 1, "practice"))).toBe("locked");
     await play("p", 1, []);
     await play("p", 2, []);
@@ -298,7 +300,7 @@ describe("password reset and account deletion in the store", () => {
 
 describe("demo dig", () => {
   it("plays a chosen category as unranked practice, even before today's ranked dig", async () => {
-    const st = await eng.start("p", DAY, 2, "practice", "nba-teams");
+    const st = await eng.start("p", DAY, 2, "practice", { slug: "nba-teams" });
     expect(st.challenge.title).toBe("NBA teams");
     expect((await eng.submit("p", st.attemptId, "lakers")).status).toBe("accepted");
     const r = await eng.finish("p", st.attemptId);
@@ -309,8 +311,30 @@ describe("demo dig", () => {
   });
 
   it("refuses ranked mode, unknown categories and the wrong level", async () => {
-    expect(await code(eng.start("p", DAY, 2, "ranked", "nba-teams"))).toBe("bad_request");
-    expect(await code(eng.start("p", DAY, 2, "practice", "nope"))).toBe("bad_request");
-    expect(await code(eng.start("p", DAY, 1, "practice", "nba-teams"))).toBe("bad_request");
+    expect(await code(eng.start("p", DAY, 2, "ranked", { slug: "nba-teams" }))).toBe("bad_request");
+    expect(await code(eng.start("p", DAY, 2, "practice", { slug: "nope" }))).toBe("bad_request");
+    expect(await code(eng.start("p", DAY, 1, "practice", { slug: "nba-teams" }))).toBe("bad_request");
+  });
+});
+
+describe("Digly Unlimited in the store", () => {
+  const buy = (id: string, pi: string) => ({ id, playerId: "p", product: "unlimited", amount: 500, currency: "usd", paymentIntent: pi });
+
+  it("grants once even if Stripe sends the event twice, and a refund takes it back", async () => {
+    await store.ensurePlayer("p");
+    await store.grantUnlimited(buy("cs_1", "pi_1"));
+    await store.grantUnlimited(buy("cs_1", "pi_1"));
+    expect((await store.getPlayer("p"))!.unlimited).toBe(true);
+    expect(await store.revokeByPaymentIntent("pi_unknown")).toBeNull();
+    expect(await store.revokeByPaymentIntent("pi_1")).toBe("p");
+    expect((await store.getPlayer("p"))!.unlimited).toBe(false);
+  });
+
+  it("keeps access when another paid purchase remains", async () => {
+    await store.ensurePlayer("p");
+    await store.grantUnlimited(buy("cs_1", "pi_1"));
+    await store.grantUnlimited(buy("cs_2", "pi_2"));
+    await store.revokeByPaymentIntent("pi_1");
+    expect((await store.getPlayer("p"))!.unlimited).toBe(true);
   });
 });

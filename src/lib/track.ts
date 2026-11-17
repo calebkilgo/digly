@@ -14,7 +14,9 @@ export type TrackEvent =
   | "board_viewed"
   | "vault_opened"
   | "answers_viewed"
-  | "share_clicked";
+  | "share_clicked"
+  | "checkout_started"
+  | "purchase_completed";
 
 export function track(event: TrackEvent, props?: Record<string, string | number | boolean | null>) {
   try {

@@ -142,6 +142,14 @@ npm run answers -- /tmp/corpora
 - `src/app/manifest.ts` plus `public/icons/*` let phones add Digly to the home screen and open it full screen. `src/app/icon.png` and `apple-icon.png` are the tab and iPhone icons.
 - All of these are drawn from the game's sprite data by `scripts/make_brand.py` (`pip install pillow fonttools`). Rerun it if the miner or gems change.
 
+## Digly Unlimited (payments)
+
+- One-time US$5 purchase through Stripe Checkout. It opens every past dig in the Vault. Free players get today's dig plus the last 3 days (`FREE_VAULT_DAYS` in `src/game/rules/plans.ts`).
+- The purchase needs an account. Guests who tap Unlock are asked to sign up first.
+- `POST /api/billing/checkout` makes the Checkout session and tags it with the player id. `POST /api/billing/webhook` verifies Stripe's signature, grants on `checkout.session.completed`, and revokes on `charge.refunded` or `charge.dispute.created`. `GET /api/billing/confirm` lets the returning buyer's page confirm straight away if the webhook is slow.
+- The server enforces the Vault lock, not the UI. Admins always have Unlimited.
+- Purchases live in the `purchases` table (migration 0005). They're kept, without the player link, if an account is deleted.
+
 ## Admin tools
 
 Options shows an Admin tools box (reset today's dig, clear all progress, and a demo dig where you pick the category for each level) only to accounts with `players.is_admin = true`. Set it in Supabase SQL:
@@ -182,7 +190,7 @@ Resets go through `/api/admin/reset`. It needs a logged-in admin session and onl
 3. Project Settings > API: copy the Project URL and the `service_role` key.
 4. Vercel > Project > Settings > Environment Variables: add `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` for Production and Preview. Redeploy.
 5. Check `https://<your-site>/api/dig`. It should say `"backend":"supabase"`.
-6. Run each new file in `supabase/migrations/` in order. 0002 adds accounts and rarity stats; 0003 adds the admin flag; 0004 adds password reset links.
+6. Run each new file in `supabase/migrations/` in order. 0002 adds accounts and rarity stats; 0003 adds the admin flag; 0004 adds password reset links; 0005 adds Digly Unlimited.
 
 For local dev put the same two lines in `.env.local`.
 
