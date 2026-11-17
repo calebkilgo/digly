@@ -9,9 +9,9 @@ const recs = parseAnswerBlock(Array.from({ length: 100 }, (_, i) => `Answer ${i}
 describe("live rarity", () => {
   it("scores by find rate on a log scale", () => {
     expect(rarityFromRate(0.6)).toBe(1);
-    expect(rarityFromRate(0.3)).toBe(13);
-    expect(rarityFromRate(0.03)).toBe(55);
-    expect(tierFor(rarityFromRate(0.004)).key).toBe("diamond");
+    expect(tierFor(rarityFromRate(0.3)).key).toBe("copper"); // 3 in 10 players
+    expect(tierFor(rarityFromRate(0.15)).key).toBe("gold"); // 3 in 20
+    expect(tierFor(rarityFromRate(0.009)).key).toBe("diamond"); // under 1 in 100
     expect(rarityFromRate(0.0001)).toBe(99);
   });
 
@@ -45,8 +45,20 @@ describe("live rarity", () => {
     const m = liveRarity(dogs, null);
     const r = (n: string) => m.get(dogs.find((d) => d.canonical === n)!.id)!.rarity;
     expect(r("Labrador Retriever")).toBeLessThan(3);
-    expect(r("Bloodhound")).toBeGreaterThan(8);
-    expect(tierFor(r("Kooikerhondje")).key).toBe("gold");
+    expect(tierFor(r("Dachshund")).key).toBe("copper");
+    for (const n of ["Australian Shepherd", "Cocker Spaniel", "Mastiff", "Bloodhound"]) expect(tierFor(r(n)).key, n).toBe("gold");
+    expect(tierFor(r("Kooikerhondje")).key).toBe("diamond");
+  });
+
+  it("short, well-known lists still give their rarest answers Diamonds", () => {
+    const af = parseAnswerBlock(SEEDS.find((s) => s.slug === "african-countries")!.answers, "a");
+    const m = liveRarity(af, null);
+    const t = (n: string) => tierFor(m.get(af.find((d) => d.canonical === n)!.id)!.rarity).key;
+    expect(t("Egypt")).toBe("copper");
+    expect(t("Chad")).toBe("gold");
+    expect(t("Djibouti")).toBe("gold");
+    expect(t("Cape Verde")).toBe("diamond");
+    expect(t("Sao Tome and Principe")).toBe("platinum");
   });
 
   it("labels the share", () => {

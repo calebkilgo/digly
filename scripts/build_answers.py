@@ -130,6 +130,12 @@ CATS = {
     "egyptian-gods": ([("mythology/egyptian_gods.json",)], None,
         ["Ra", "Anubis", "Osiris", "Isis", "Horus", "Set", "Thoth", "Bastet", "Hathor", "Amun", "Sobek", "Ptah", "Sekhmet", "Nut", "Geb"]),
 }
+# junk in the public lists
+BLOCK = {
+    "dinosaurs": {"Mollusc", "Fish", "Birds", "Fossil", "Turtle", "Dinosaur", "Crocodile", "Mammal", "Pterosaur", "Theropod", "Ichthyosaur", "Cetacea", "Plesiosaur"},
+    "gemstones": {"Bone", "Synthetic Diamond"},
+}
+
 # categories that keep their hand file as-is
 for slug in ["african-countries", "birds", "bones", "cheeses", "dances", "elements", "european-countries", "greek-myth", "languages", "us-states"]:
     CATS[slug] = ([], None, [])
@@ -225,7 +231,9 @@ def estimate(items, commons):
             base = sorted(c for _, c in near)[len(near) // 2]
             it["curated"] = min(99, base + (i / n) * 0.9)
         else:
-            it["curated"] = 18 + 81 * (i / n)
+            # Word frequency is a rough guide (names like "Ash" or "Coral" are
+            # also everyday words), so only the hand-picked commons can be copper.
+            it["curated"] = 40 + 59 * (i / n)
     for it in items:
         it["curated"] = round(max(1, min(99.99, it["curated"])), 2)
 
@@ -243,6 +251,8 @@ def build(slug, misc):
     for spec in extras:
         for raw in corpora(*spec):
             name = title(str(raw).strip())
+            if name in BLOCK.get(slug, ()):
+                continue
             aliases = []
             if transform:
                 name, aliases = transform(name)
