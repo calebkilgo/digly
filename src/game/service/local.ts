@@ -44,19 +44,19 @@ export class LocalService implements ChallengeService {
   // The offline preview fakes accounts on this device so the flow can be tried.
   async account(): Promise<Account> {
     const p = await this.store.getPlayer(ME);
-    return { username: p?.username ?? null };
+    return { playerId: p?.username ? ME : null, username: p?.username ?? null };
   }
   async signUp(username: string, password: string): Promise<Account> {
     if (!/^[A-Za-z0-9_]{3,16}$/.test(username)) throw new GameError("bad_request", "Usernames are 3 to 16 letters, numbers or underscores.");
     if (password.length < 8) throw new GameError("bad_request", "Passwords need at least 8 characters.");
     await this.store.ensurePlayer(ME);
     await this.store.claimAccount(ME, { username, passwordHash: "offline", email: null });
-    return { username };
+    return { playerId: ME, username };
   }
   async logIn(username: string): Promise<Account> {
     const a = await this.store.findAccount(username);
     if (!a) throw new GameError("bad_login", "No account with that name in this preview.");
-    return { username: a.username };
+    return { playerId: ME, username: a.username };
   }
   async logOut() {}
   async resetDay(day: number) {

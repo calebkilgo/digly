@@ -1,8 +1,8 @@
 import * as Sentry from "@sentry/nextjs";
 import posthog from "posthog-js";
 
-// Runs in the browser before the app starts. Both tools stay off until their
-// keys are set, and neither runs in the offline preview build.
+// Runs in the browser before the app starts. The offline preview does not send
+// analytics because it has no networked backend.
 const live = process.env.NEXT_PUBLIC_DIGLY_BACKEND !== "local";
 
 const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
@@ -17,15 +17,21 @@ if (live && dsn) {
 }
 
 const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-if (live && key) {
+const host = process.env.NEXT_PUBLIC_POSTHOG_HOST;
+
+if (live && key && host) {
   posthog.init(key, {
-    api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com",
+    api_host: host,
     person_profiles: "identified_only",
-    capture_pageview: true,
-    autocapture: false, // only the events in src/lib/track.ts
-    disable_session_recording: true,
-    respect_dnt: true,
+    defaults: "2026-08-30",
+    capture_exceptions: true,
+    debug: process.env.NODE_ENV === "development",
   });
+} else if (live && process.env.NODE_ENV === "development") {
+  const missingVariable = key ? "NEXT_PUBLIC_POSTHOG_HOST" : "NEXT_PUBLIC_POSTHOG_KEY";
+  throw new Error(
+    `${missingVariable} variable required by PostHog is missing or un-configured, this causes events to be silently missed. This error stops appearing once ${missingVariable} is configured`,
+  );
 }
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;

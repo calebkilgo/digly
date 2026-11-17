@@ -4,12 +4,12 @@ import { GameError } from "@/game/service/types";
 import { StoreConflict } from "@/game/engine/store";
 import { headers } from "next/headers";
 
-// GET /api/account -> { username } (null for guests)
+// GET /api/account -> authenticated account identity (null for guests)
 export async function GET() {
   return handle(async () => {
     const pid = await playerId(false);
     const p = pid ? await getEngine().engine.storeRef().getPlayer(pid) : null;
-    return { username: p?.username ?? null };
+    return { playerId: p?.username ? pid : null, username: p?.username ?? null };
   });
 }
 
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
 
     if (body.action === "logout") {
       await endSession();
-      return { username: null };
+      return { playerId: null, username: null };
     }
 
     if (body.action === "signup") {
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
         throw e;
       }
       await startSession(pid);
-      return { username };
+      return { playerId: pid, username };
     }
 
     if (body.action === "login") {
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
       const ok = await checkPassword(String(body.password ?? ""), acct?.passwordHash ?? (await dummyHash()));
       if (!acct || !ok) throw new GameError("bad_login", "Wrong username or password.");
       await startSession(acct.playerId);
-      return { username: acct.username };
+      return { playerId: acct.playerId, username: acct.username };
     }
 
     throw new GameError("bad_request", "Unknown action");
