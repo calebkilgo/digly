@@ -1,9 +1,9 @@
 import type { AnswerRecord } from "./answerIndex";
 
-// Real rarity. For each answer, the share of past ranked players who found
-// it, blended with the starting estimate so a handful of games can't swing
-// it. Answers are then ranked by that share and placed on the same curve as
-// before, so the gem mix stays the same while the order comes from players.
+// Real rarity. Each answer's score comes from the share of players expected to
+// find it, so it doesn't depend on how long the answer list is. Before players
+// exist that share is an estimate; after, it's the real find rate blended with
+// the estimate so a handful of games can't swing it.
 
 export interface AnswerStats {
   plays: number; // ranked attempts at this category before the day being scored
@@ -12,12 +12,13 @@ export interface AnswerStats {
 
 export interface LiveRarity {
   rarity: number;
-  found?: number; // percent of players who found it, once there's enough data
+  pct: number; // share of players who find it, 0..100
+  estimated: boolean; // true until enough real players have dug this category
 }
 
 // The starting estimate counts as this many imaginary players.
-export const PRIOR_WEIGHT = 50;
-// Below this many real players the UI keeps saying "~" estimates.
+export const PRIOR_WEIGHT = 200;
+// Below this many real players the % shown is marked as an estimate.
 export const MIN_PLAYS_FOR_PCT = 30;
 
 // Curated 1 (everyone says it) .. 100 (nobody does) -> expected find rate.
@@ -26,24 +27,33 @@ export function priorRate(curated: number) {
   return 0.002 + 0.6 * r * r;
 }
 
+// Find rate -> score on a log scale. 60% of players or more scores 1;
+// 0.25% or fewer scores 99. Diamond (90+) is roughly 1 in 230 players.
+const P_TOP = 0.6;
+const P_FLOOR = 0.0025;
+export function rarityFromRate(p: number) {
+  const s = (100 * Math.log(P_TOP / Math.max(p, 1e-9))) / Math.log(P_TOP / P_FLOOR);
+  return Math.max(1, Math.min(99, Math.round(s)));
+}
+
 export function liveRarity(records: AnswerRecord[], stats: AnswerStats | null): Map<string, LiveRarity> {
-  const out = new Map<string, LiveRarity>();
-  if (!stats || stats.plays <= 0) {
-    for (const r of records) out.set(r.id, { rarity: r.rarity });
-    return out;
-  }
-  const { plays, counts } = stats;
+  const plays = stats?.plays ?? 0;
+  const counts = stats?.counts ?? {};
+  const estimated = plays < MIN_PLAYS_FOR_PCT;
   const rated = records.map((r) => {
-    const n = counts[r.id] ?? 0;
-    return { r, n, p: (n + PRIOR_WEIGHT * priorRate(r.curated)) / (plays + PRIOR_WEIGHT) };
+    const p = ((counts[r.id] ?? 0) + PRIOR_WEIGHT * priorRate(r.curated)) / (plays + PRIOR_WEIGHT);
+    return { r, p };
   });
-  // most found first; the estimate breaks exact ties
-  rated.sort((a, b) => b.p - a.p || a.r.curated - b.r.curated);
-  const last = rated.length - 1;
-  rated.forEach((x, i) => {
-    const pos = last <= 0 ? 1 : i / last;
-    const rarity = i === last ? 100 : Math.max(1, Math.min(99, Math.round(1 + 98 * pos * pos)));
-    out.set(x.r.id, { rarity, found: plays >= MIN_PLAYS_FOR_PCT ? Math.round((100 * x.n) / plays) : undefined });
-  });
+  // the single least-found answer is the Platinum; the estimate breaks ties
+  let plat = rated[0];
+  for (const x of rated) if (x.p < plat.p || (x.p === plat.p && x.r.curated >= plat.r.curated)) plat = x;
+  const out = new Map<string, LiveRarity>();
+  for (const x of rated) {
+    out.set(x.r.id, {
+      rarity: x === plat ? 100 : rarityFromRate(x.p),
+      pct: Math.round(x.p * 1000) / 10,
+      estimated,
+    });
+  }
   return out;
 }

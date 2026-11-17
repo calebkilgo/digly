@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { AttemptResult, DigResult, PublicChallenge, RevealedAnswer } from "@/game/service/types";
-import { foundByPct, tierFor } from "@/game/rules/scoring";
+import { foundLabel, tierFor } from "@/game/rules/scoring";
 import { sfx } from "@/audio/sfx";
 import { GemIcon } from "./art";
 import { GemLadder } from "./GemLadder";
@@ -40,7 +40,7 @@ function Row({ a, cls }: { a: RevealedAnswer; cls?: string }) {
       <span>
         {a.name}
         <br />
-        <span className="p">{a.pct ?? `~${foundByPct(a.rarity)}`}% found it</span>
+        <span className="p">{foundLabel(a)}</span>
       </span>
       <span className="r">{a.rarity}</span>
     </li>

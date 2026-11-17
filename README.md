@@ -79,14 +79,25 @@ The index throws on alias collisions and duplicate answers, and a test builds ev
 
 ## Real rarity
 
-Rarity for a day is built from ranked play on earlier days only, so it never changes while that day is being played and every digger is scored the same way.
+An answer's score comes from the share of players who find it, so it doesn't depend on how long the answer list is.
 
 1. Each answer starts with an estimated find rate. It comes from the hand-set value in `data/answers/*.txt`, or from English word frequency if there isn't one.
-2. The real rate is (players who found it + 50 x estimate) / (players + 50). The estimate counts as 50 imaginary players, so a handful of games can't swing it.
-3. Answers are ranked by that rate and placed on the same curve as before: most answers score low, about 5% are Diamond, and exactly one is Platinum. Real data changes the order, not the gem mix.
-4. Once a category has 30+ ranked plays, results show the real "% found it". Before that they show a "~" estimate.
+2. The live rate is (players who found it + 200 x estimate) / (players + 200). The estimate counts as 200 imaginary players, so a few games can't swing it, and real data takes over as plays build up.
+3. Rate becomes score on a log scale. Found by 60% or more scores 1, about 30% scores 13, 3% scores 55, and about 0.4% (1 in 230) is Diamond. The single least-found answer is Platinum (100).
+4. Results show "~X% find it" while the rate is still mostly an estimate (under 30 ranked plays), and "X% found it" after that.
+5. Rarity for a day uses only earlier days' plays, so it's fixed while that day is played.
 
 Code: `src/game/rules/rarity.ts`, `DigEngine.rarity()`, SQL `digly_answer_stats`.
+
+## Runs itself
+
+- A new dig opens at 00:00 UTC every day. `src/game/data/rotation.ts` works out the categories: days 1 to 29 keep their original walk, and from #030 each level shuffles its whole pool, digs every category once, then reshuffles. It never repeats a category back to back, and it needs no schedule or upkeep.
+- To add a category, add it to `SEEDS` with `since: <a future day number>`. It joins the first cycle that starts on or after that day, and days already played never change.
+- Rarity updates from real play on its own.
+
+## Instant answers
+
+When a level starts, the server sends salted fingerprints of every accepted spelling, but no names and no rarity. The browser fingerprints what's typed and shows Found or Already dug in a few milliseconds. The server still checks and scores every answer in the background and supplies the proper name. Typos and sound-alikes don't match a fingerprint, so they wait for the server's matcher. `src/game/rules/quickCheck.ts`.
 
 ## Answer data
 
@@ -94,7 +105,7 @@ Code: `src/game/rules/rarity.ts`, `DigEngine.rarity()`, SQL `digly_answer_stats`
 
 - `data/answers/<slug>.txt` holds the hand-curated answers: `Name | alias, alias = rarity`. The rarity is optional.
 - `scripts/build_answers.py` merges those with public lists from github.com/dariusk/corpora (dogs, dinosaurs, horses, gems, knots and more). It fills missing rarity from word frequency, drops anything that clashes with an existing name or alias, and writes `src/game/data/answers.generated.ts`.
-- `src/game/data/rotation.ts` sets which category is dug on which day. A rotation never changes once its days have started; to add categories, append a new rotation starting on a future day. The new 29-category rotation starts with #030.
+- `src/game/data/rotation.ts` picks each day's categories automatically (see Runs itself).
 
 To grow a list: open `/api/admin/rejects?slug=dog-breeds&key=YOUR_ADMIN_KEY` to see the most common inputs that didn't match. Add the real ones to the .txt file, then rebuild:
 
@@ -121,7 +132,7 @@ npm run answers -- /tmp/corpora
 
 ## Tested
 
-- 57 unit tests: rules, matching, the generated data (category counts, 18 real-world inputs like "c++", "t rex", "cowboys", "aubergine"), rotation (old days unchanged, every category once per cycle, no back-to-back repeats), live rarity (estimates with no data, reordering while keeping the gem mix, small samples barely move it, frozen during the day), the engine, accounts in the store, and both migrations in embedded Postgres.
+- 61 unit tests: rules, matching, the generated data (category counts, 18 real-world inputs like "c++", "t rex", "cowboys", "aubergine"), rotation (old days unchanged, every category once per cycle, no back-to-back repeats), live rarity (estimates with no data, reordering while keeping the gem mix, small samples barely move it, frozen during the day), the engine, accounts in the store, and both migrations in embedded Postgres.
 - API with curl: guest board row, reserved, short and taken usernames, a short password, sign-up claiming today's runs, an old guest cookie alone not working, logout, a wrong password, logging back in resuming at level 2, and the admin key check.
 - Headless Chrome on desktop (1280x800) and mobile (390x844): a guest plays all three levels, taps "Post to the board", signs up, then sees their name on the board and in Options. No page errors.
 - The browser bundle contains no answers (checked for four rare ones). The offline preview build still runs.

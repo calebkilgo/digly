@@ -7,6 +7,7 @@ import { URGENT_MS, remainingMs } from "@/game/rules/timer";
 import { DEPTH_MAX_M, LEVELS } from "@/game/rules/levels";
 import { sfx } from "@/audio/sfx";
 import { reportError, track } from "@/lib/track";
+import { quickMatch } from "@/game/rules/quickCheck";
 import { useSceneInsets } from "../SceneHost";
 import { CheckMark, Icon, OreIcon } from "../art";
 import type { Run } from "../GameShell";
@@ -61,6 +62,8 @@ export function PlayScreen(props: {
   const fbKey = useRef(0);
   const lastHit = useRef(0);
   const comboRef = useRef(0);
+  const found = useRef(new Set<number>()); // answer numbers found this level
+  const pending = useRef(new Set<Promise<unknown>>()); // submits still in flight
 
   const cbs = useRef(props);
   cbs.current = props;
@@ -85,6 +88,7 @@ export function PlayScreen(props: {
               setAttempt({ ...a, expiresAt: a.expiresAt - skew });
               setWaiting(false);
               track("dig_started", { mode: run.mode, level: ch.level, day: run.dig.day, resumed: a.accepted.length > 0 });
+              for (const n of a.found ?? []) found.current.add(n);
               if (a.accepted.length) {
                 setCount(a.accepted.length);
                 setRecent([...a.accepted].reverse().slice(0, 8));
@@ -114,7 +118,8 @@ export function PlayScreen(props: {
     setOver(true);
     sfx.timeUp();
     say("Time! Counting your finds.");
-    const [, r] = await Promise.all([scene ? scene.endRound() : Promise.resolve(), finishWithRetry(service, attempt.attemptId)]);
+    const settle = Promise.allSettled([...pending.current]);
+    const [, r] = await Promise.all([scene ? scene.endRound() : Promise.resolve(), settle.then(() => finishWithRetry(service, attempt.attemptId))]);
     if (r) cbs.current.onFinished(r);
     else cbs.current.onAbort("Lost the connection while counting. Your finds are saved; open the dig again to see them.");
   }, [attempt, scene, service, say]);
@@ -193,6 +198,36 @@ export function PlayScreen(props: {
     setTimeout(() => setFlyers((f) => f.filter((q) => q.id !== id)), 450);
   };
 
+  // the find effects, shared by instant and server-confirmed answers
+  const celebrate = (name: string, corrected?: boolean) => {
+    const n = found.current.size;
+    const now = Date.now();
+    comboRef.current = now - lastHit.current < COMBO_WINDOW_MS ? comboRef.current + 1 : 1;
+    lastHit.current = now;
+    fbKey.current++;
+    setCombo(comboRef.current);
+    setCount(n);
+    setRecent((x) => [name, ...x].slice(0, 8));
+    setFeedback({ status: "accepted", text: name, key: fbKey.current, corrected });
+    scene?.valid();
+    sfx.valid(comboRef.current - 1);
+    flyOre();
+    const m = MILESTONES[n];
+    if (m) {
+      setBanner({ n, text: m, key: fbKey.current });
+      setTimeout(() => sfx.milestone(n / 5), 120);
+      scene?.milestone();
+    }
+    say(`Found ${name}${corrected ? ", corrected spelling" : ""}. ${n} finds.${m ? ` ${m}` : ""}`);
+  };
+
+  const duplicate = (name: string) => {
+    fbKey.current++;
+    setFeedback({ status: "duplicate", text: name, key: fbKey.current });
+    sfx.duplicate();
+    say(`Already found ${name}.`);
+  };
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const el = input.current;
@@ -201,39 +236,58 @@ export function PlayScreen(props: {
     el.value = "";
     el.focus({ preventScroll: true });
     if (!attempt || over || !text.trim()) return;
+
+    // Instant path: the fingerprint check knows it's an answer, so show it now
+    // and let the server confirm (and supply the proper name) in the background.
+    const num = attempt.check ? quickMatch(attempt.check, text) : null;
+    if (num !== null) {
+      const shown = tidy(text);
+      if (found.current.has(num)) return duplicate(shown);
+      found.current.add(num);
+      celebrate(shown);
+      const job = service.submit(attempt.attemptId, text).then(
+        (r) => {
+          if (r.status === "accepted" || r.status === "duplicate") {
+            if (r.canonical && r.canonical !== shown) {
+              setRecent((x) => x.map((w) => (w === shown ? r.canonical! : w)));
+              setFeedback((f) => (f && f.text === shown ? { ...f, text: r.canonical!, corrected: r.corrected } : f));
+            }
+          } else if (r.status === "rejected") {
+            // shouldn't happen; trust the server
+            found.current.delete(num);
+            setCount(found.current.size);
+            setRecent((x) => x.filter((w) => w !== shown));
+          }
+        },
+        () => {},
+      );
+      pending.current.add(job);
+      void job.finally(() => pending.current.delete(job));
+      return;
+    }
+
+    // Slow path: typos, sound-alikes and misses need the server's matcher.
     let r;
+    const job = service.submit(attempt.attemptId, text);
+    pending.current.add(job);
     try {
-      r = await service.submit(attempt.attemptId, text);
+      r = await job;
     } catch {
       fbKey.current++;
       setFeedback({ status: "rejected", text: "connection blip, try again", key: fbKey.current });
       return;
+    } finally {
+      pending.current.delete(job);
     }
     if (ended.current && r.status !== "accepted") return;
-    fbKey.current++;
     if (r.status === "accepted") {
-      const now = Date.now();
-      comboRef.current = now - lastHit.current < COMBO_WINDOW_MS ? comboRef.current + 1 : 1;
-      lastHit.current = now;
-      setCombo(comboRef.current);
-      setCount(r.acceptedCount);
-      setRecent((x) => [r.canonical!, ...x].slice(0, 8));
-      setFeedback({ status: "accepted", text: r.canonical!, key: fbKey.current, corrected: r.corrected });
-      scene?.valid();
-      sfx.valid(comboRef.current - 1);
-      flyOre();
-      const m = MILESTONES[r.acceptedCount];
-      if (m) {
-        setBanner({ n: r.acceptedCount, text: m, key: fbKey.current });
-        setTimeout(() => sfx.milestone(r.acceptedCount / 5), 120);
-        scene?.milestone();
-      }
-      say(`Found ${r.canonical}${r.corrected ? ", corrected spelling" : ""}. ${r.acceptedCount} finds.${m ? ` ${m}` : ""}`);
+      if (r.num !== undefined) found.current.add(r.num);
+      else found.current.add(-1 - found.current.size);
+      celebrate(r.canonical!, r.corrected);
     } else if (r.status === "duplicate") {
-      setFeedback({ status: "duplicate", text: r.canonical!, key: fbKey.current });
-      sfx.duplicate();
-      say(`Already found ${r.canonical}.`);
+      duplicate(r.canonical!);
     } else if (r.status === "rejected") {
+      fbKey.current++;
       comboRef.current = 0;
       setCombo(0);
       setFeedback({ status: "rejected", text: text.trim(), key: fbKey.current });
@@ -425,4 +479,12 @@ async function finishWithRetry(service: ChallengeService, id: string): Promise<A
     }
   }
   return null;
+}
+
+// what the player typed, tidied for the instant stamp until the server sends the real name
+function tidy(text: string) {
+  return text
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/(^|[\s-])(\p{L})/gu, (_, p, c) => p + c.toUpperCase());
 }

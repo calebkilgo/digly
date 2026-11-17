@@ -1,6 +1,8 @@
 import { AnswerIndex, CORRECTED, parseAnswerBlock, type AnswerRecord } from "../rules/answerIndex";
 import { finalScore, topN } from "../rules/scoring";
 import { liveRarity, type LiveRarity } from "../rules/rarity";
+import { fingerprint, type QuickCheck } from "../rules/quickCheck";
+import { compact } from "../rules/normalize";
 import { dayNumber, dayStart, formatChallengeNumber } from "../rules/schedule";
 import { LEVELS } from "../rules/levels";
 import { SEEDS, type ChallengeSeed } from "../data/seeds";
@@ -37,6 +39,7 @@ export function seedFor(day: number, level: LevelNo, seeds: ChallengeSeed[] = SE
 interface Indexed {
   index: AnswerIndex;
   byId: Map<string, AnswerRecord>;
+  num: Map<string, number>; // answer id -> position, as used by QuickCheck
 }
 
 export class DigEngine {
@@ -69,7 +72,7 @@ export class DigEngine {
       const seed = this.seeds().find((s) => s.slug === slug);
       if (!seed) throw new GameError("not_found", `Unknown challenge ${slug}`);
       const index = new AnswerIndex(parseAnswerBlock(seed.answers, slug));
-      x = { index, byId: new Map(index.answers.map((a) => [a.id, a])) };
+      x = { index, byId: new Map(index.answers.map((a) => [a.id, a])), num: new Map(index.answers.map((a, i) => [a.id, i])) };
       this.indexes.set(slug, x);
     }
     return x;
@@ -217,10 +220,22 @@ export class DigEngine {
     return this.startPayload(row, ch, now);
   }
 
+  private quickCheck(row: AttemptRow): QuickCheck {
+    const { index } = this.indexed(row.slug);
+    const salt = row.id;
+    const keys: Record<string, number> = {};
+    index.answers.forEach((a, i) => {
+      for (const form of [a.normalized, ...a.aliases]) keys[fingerprint(salt, compact(form))] = i;
+    });
+    return { salt, keys };
+  }
+
   private async startPayload(row: AttemptRow, ch: PublicChallenge, now: number): Promise<AttemptStart> {
-    const { byId } = this.indexed(row.slug);
+    const { byId, num } = this.indexed(row.slug);
     const ids = await this.store.listAnswers(row.id);
     return {
+      check: this.quickCheck(row),
+      found: ids.map((id) => num.get(id) ?? -1),
       attemptId: row.id,
       challenge: ch,
       mode: row.mode,
@@ -253,8 +268,9 @@ export class DigEngine {
     }
     const added = await this.store.addAnswer(row.id, match.answer.id);
     const n = (await this.store.listAnswers(row.id)).length;
-    if (!added) return { status: "duplicate", canonical: match.answer.canonical, acceptedCount: n };
-    return { status: "accepted", canonical: match.answer.canonical, corrected: CORRECTED.includes(match.kind), acceptedCount: n };
+    const num = this.indexed(row.slug).num.get(match.answer.id);
+    if (!added) return { status: "duplicate", canonical: match.answer.canonical, num, acceptedCount: n };
+    return { status: "accepted", canonical: match.answer.canonical, num, corrected: CORRECTED.includes(match.kind), acceptedCount: n };
   }
 
   async finish(playerId: string, attemptId: string): Promise<AttemptResult> {
@@ -284,7 +300,7 @@ export class DigEngine {
     const live = await this.rarity(row.slug, row.day);
     const reveal = (a: AnswerRecord) => {
       const l = live.get(a.id)!;
-      return l.found === undefined ? { name: a.canonical, rarity: l.rarity } : { name: a.canonical, rarity: l.rarity, pct: l.found };
+      return { name: a.canonical, rarity: l.rarity, pct: l.pct, ...(l.estimated ? { est: true } : {}) };
     };
     const ids = await this.store.listAnswers(row.id);
     const got = new Set(ids);

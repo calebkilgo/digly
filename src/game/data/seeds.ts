@@ -18,6 +18,7 @@ export interface ChallengeSeed {
   rules: string[];
   scoringVersion: number;
   answers: string;
+  since?: number; // first day number this category can be dug (default: any)
 }
 
 export const SEEDS: ChallengeSeed[] = [

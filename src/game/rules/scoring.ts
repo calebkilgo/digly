@@ -58,3 +58,11 @@ export function percentile(score: number, others: number[]): number {
 export function tierFor(rarity: number): Tier {
   return TIERS.find((t) => rarity >= t.min) ?? TIERS[TIERS.length - 1];
 }
+
+// "~12% find it", "<1% find it", or a real "12% found it" once enough have played.
+export function foundLabel(a: { rarity: number; pct?: number; est?: boolean }) {
+  const pct = a.pct ?? foundByPct(a.rarity);
+  const n = pct < 1 ? "<1" : pct < 10 ? String(Math.round(pct * 10) / 10) : String(Math.round(pct));
+  const approx = a.est || a.pct === undefined;
+  return approx ? `~${n}% find it` : `${n}% found it`;
+}

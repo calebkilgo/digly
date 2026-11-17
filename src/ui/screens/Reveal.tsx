@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { DiglyScene, RockAnchor } from "@/scene/DiglyScene";
 import type { AttemptResult, RevealedAnswer } from "@/game/service/types";
-import { foundByPct, tierFor } from "@/game/rules/scoring";
+import { foundLabel, tierFor } from "@/game/rules/scoring";
 import { LEVELS } from "@/game/rules/levels";
 import { hash } from "@/scene/rng";
 import { sfx } from "@/audio/sfx";
@@ -180,7 +180,7 @@ export function RevealScreen(props: {
                 {t.label}
               </span>
             </div>
-            {spacing >= 100 && <span className="pct">{a.pct ?? `~${foundByPct(a.rarity)}`}% found it</span>}
+            {spacing >= 100 && <span className="pct">{foundLabel(a)}</span>}
           </div>
         );
       })}

@@ -47,28 +47,26 @@ describe("generated answer data", () => {
   });
 });
 
-import { slugFor, ROTATIONS } from "../src/game/data/rotation";
+import { slugFor } from "../src/game/data/rotation";
 
 describe("rotation", () => {
-  it("keeps every day up to launch of the new pool exactly as it was", () => {
-    // spot values from the old stride walk
+  it("keeps every day already played exactly as it was", () => {
     expect(slugFor(1, 1)).toBe("dog-breeds");
     expect(slugFor(29, 1)).toBe("dog-breeds");
     expect(slugFor(29, 2)).toBe("african-countries");
     expect(slugFor(29, 3)).toBe("bones");
   });
 
-  it("uses every category once per cycle and never repeats back to back", () => {
-    const r = ROTATIONS[1];
+  it("runs forever on its own: every category once per cycle, no back-to-back repeats", () => {
     for (const l of [1, 2, 3] as const) {
-      const n = r.pools[l].length;
-      const cycle = Array.from({ length: n }, (_, i) => slugFor(r.from + i, l));
+      const n = SEEDS.filter((s) => s.level === l).length;
+      const cycle = Array.from({ length: n }, (_, i) => slugFor(30 + i, l));
       expect(new Set(cycle).size).toBe(n);
-      for (let d = r.from + 1; d < r.from + 200; d++) expect(slugFor(d, l)).not.toBe(slugFor(d - 1, l));
+      for (let d = 31; d < 30 + 365 * 5; d++) expect(slugFor(d, l)).not.toBe(slugFor(d - 1, l));
     }
   });
 
-  it("only names categories that exist", () => {
-    for (const r of ROTATIONS) for (const l of [1, 2, 3] as const) for (const s of r.pools[l]) expect(SEEDS.some((x) => x.slug === s && x.level === l), s).toBe(true);
+  it("only names categories that exist at the right level", () => {
+    for (let d = 1; d < 400; d++) for (const l of [1, 2, 3] as const) expect(SEEDS.find((s) => s.slug === slugFor(d, l))?.level).toBe(l);
   });
 });

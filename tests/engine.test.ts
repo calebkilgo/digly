@@ -126,7 +126,7 @@ describe("scoring on the server", () => {
     for (const t of ["pug", "beagle", "mudi", "azawakh", "nonsense dog", "poodle", "boxer", "basenji"]) await eng.submit("p", st.attemptId, t);
     const r = await eng.finish("p", st.attemptId);
     expect(r.top).toHaveLength(5);
-    expect(r.top[0]).toEqual({ name: "Mudi", rarity: 100 });
+    expect(r.top[0]).toMatchObject({ name: "Mudi", rarity: 100 });
     expect(r.score).toBe(r.top.reduce((s, t) => s + t.rarity, 0));
     expect(r.points).toBe(r.score);
     expect(r.rejected).toEqual(["nonsense dog"]);
@@ -215,8 +215,8 @@ describe("real rarity", () => {
     const r0 = await eng.finish("x", before.attemptId);
     const pug0 = r0.accepted[0].rarity;
 
-    // 60 players on earlier dog-breed days all type "mudi" (the estimated Platinum)
-    for (let i = 0; i < 60; i++) {
+    // 300 players on earlier dog-breed days all type "mudi" (the estimated Platinum)
+    for (let i = 0; i < 300; i++) {
       await store.insertAttempt({ id: `h${i}`, playerId: `h${i}`, day: 0 as number, level: 1, mode: "ranked", slug: "dog-breeds", startedAt: 0, expiresAt: 1, finishedAt: 1, score: 0, points: 0, uniqueCount: 1, submissions: 1 });
       await store.addAnswer(`h${i}`, "dog-breeds:mudi");
     }
@@ -227,8 +227,33 @@ describe("real rarity", () => {
     const fresh = new DigEngine(store, { now: () => clock });
     const live = await fresh.rarity("dog-breeds", 1);
     expect(live.get("dog-breeds:mudi")!.rarity).toBeLessThan(10); // everyone says it now
-    expect(live.get("dog-breeds:mudi")!.found).toBe(100);
+    expect(live.get("dog-breeds:mudi")!.pct).toBeGreaterThan(50);
     const plat = [...live.entries()].find(([, v]) => v.rarity === 100)!;
     expect(plat[0]).not.toBe("dog-breeds:mudi");
+  });
+});
+
+import { quickMatch } from "../src/game/rules/quickCheck";
+
+describe("instant answer check", () => {
+  it("knows answers, aliases and plurals at once, agrees with the server, and leaks no names", async () => {
+    clock = dayStart(1) + 1000; // dog breeds
+    eng = new DigEngine(store, { now: () => clock });
+    const st = await eng.start("p", 1, 1, "ranked");
+    const check = st.check!;
+    const lab = quickMatch(check, "Labrador");
+    expect(lab).not.toBeNull();
+    expect(quickMatch(check, "lab")).toBe(lab);
+    expect(quickMatch(check, "labradors")).toBe(lab);
+    expect(quickMatch(check, "pugs")).not.toBeNull();
+    expect(quickMatch(check, "labrdor")).toBeNull(); // typos go to the server
+    expect(quickMatch(check, "zzzz")).toBeNull();
+    const r = await eng.submit("p", st.attemptId, "Labrador");
+    expect(r.num).toBe(lab);
+    const json = JSON.stringify(check);
+    expect(json).not.toMatch(/labrador|poodle|mudi/i);
+    // resuming hands back the found numbers
+    const again = await eng.start("p", 1, 1, "ranked");
+    expect(again.found).toEqual([lab]);
   });
 });
