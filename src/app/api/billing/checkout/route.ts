@@ -3,6 +3,8 @@ import { stripe } from "@/server/billing";
 import { siteUrl } from "@/server/email";
 import { UNLIMITED } from "@/game/rules/plans";
 import { GameError } from "@/game/service/types";
+import Stripe from "stripe";
+import * as Sentry from "@sentry/nextjs";
 
 // POST /api/billing/checkout -> { url } of a Stripe Checkout page for Digly Unlimited.
 // Needs an account, so the purchase has somewhere to live.
@@ -18,7 +20,9 @@ export async function POST() {
     limit(`checkout:${p.id}`, 10, 60 * 60_000);
 
     const priceId = process.env.STRIPE_PRICE_ID;
-    const session = await s.checkout.sessions.create({
+    let session;
+    try {
+      session = await s.checkout.sessions.create({
       mode: "payment",
       line_items: [
         priceId
@@ -39,7 +43,14 @@ export async function POST() {
       allow_promotion_codes: true,
       success_url: `${siteUrl()}/?unlimited=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl()}/?unlimited=cancel`,
-    });
+      });
+    } catch (e) {
+      // pass Stripe's own reason through (e.g. account not activated, bad price id)
+      console.error("stripe checkout failed", e);
+      Sentry.captureException(e);
+      const msg = e instanceof Stripe.errors.StripeError ? e.message : "Stripe didn't answer. Try again in a minute.";
+      throw new GameError("not_open", `Checkout couldn't start: ${msg}`);
+    }
     if (!session.url) throw new Error("Stripe returned no checkout URL");
     return { url: session.url };
   });
