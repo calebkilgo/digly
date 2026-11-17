@@ -129,6 +129,7 @@ export interface ChallengeService {
 
 export interface Account {
   username: string | null; // null while playing as a guest
+  admin?: boolean; // can use the testing tools
 }
 
 export class GameError extends Error {

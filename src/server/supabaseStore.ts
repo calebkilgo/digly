@@ -59,8 +59,8 @@ export class SupabaseStore implements Store {
   }
 
   async getPlayer(id: string): Promise<PlayerInfo | null> {
-    const data = check(await this.db.from("players").select("id,username").eq("id", id).maybeSingle());
-    return data ? { id: data.id as string, username: (data.username as string | null) ?? null } : null;
+    const data = check(await this.db.from("players").select("id,username,is_admin").eq("id", id).maybeSingle());
+    return data ? { id: data.id as string, username: (data.username as string | null) ?? null, isAdmin: data.is_admin === true } : null;
   }
 
   async claimAccount(id: string, a: { username: string; passwordHash: string; email: string | null }) {
@@ -96,6 +96,12 @@ export class SupabaseStore implements Store {
 
   async deleteSession(tokenHash: string) {
     check(await this.db.from("sessions").delete().eq("token_hash", tokenHash));
+  }
+
+  async deleteAttempts(playerId: string, day: number | null) {
+    let q = this.db.from("attempts").delete().eq("player_id", playerId);
+    if (day !== null) q = q.eq("day", day).eq("mode", "ranked");
+    check(await q);
   }
 
   async answerStats(slug: string, beforeDay: number) {

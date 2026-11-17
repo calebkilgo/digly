@@ -2,7 +2,7 @@ import type { AttemptMode } from "../service/types";
 import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Store } from "./store";
 
 export interface MemoryData {
-  players: Record<string, { name: string; username?: string; passwordHash?: string; email?: string | null }>;
+  players: Record<string, { name: string; username?: string; passwordHash?: string; email?: string | null; isAdmin?: boolean }>;
   sessions?: Record<string, { playerId: string; expiresAt: number }>;
   attempts: Record<string, AttemptRow>;
   answers: Record<string, string[]>;
@@ -32,7 +32,7 @@ export class MemoryStore implements Store {
 
   async getPlayer(id: string): Promise<PlayerInfo | null> {
     const p = this.data.players[id];
-    return p ? { id, username: p.username ?? null } : null;
+    return p ? { id, username: p.username ?? null, isAdmin: !!p.isAdmin } : null;
   }
 
   async claimAccount(id: string, a: { username: string; passwordHash: string; email: string | null }) {
@@ -138,6 +138,17 @@ export class MemoryStore implements Store {
       totals.set(a.playerId, t);
     }
     return [...totals.values()].sort((a, b) => b.points - a.points || b.unique - a.unique).slice(0, limit);
+  }
+
+  async deleteAttempts(playerId: string, day: number | null) {
+    for (const [id, a] of Object.entries(this.data.attempts)) {
+      if (a.playerId !== playerId) continue;
+      if (day !== null && (a.day !== day || a.mode !== "ranked")) continue;
+      delete this.data.attempts[id];
+      delete this.data.answers[id];
+      delete this.data.rejects[id];
+    }
+    this.changed();
   }
 
   async answerStats(slug: string, beforeDay: number) {

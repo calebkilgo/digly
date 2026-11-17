@@ -65,8 +65,12 @@ export class RemoteService implements ChallengeService {
     await call("/api/account", { method: "POST", body: { action: "logout" } });
   }
 
-  // Guests are a cookie, so a reset is a fresh guest.
-  async reset() {
-    await call("/api/me", { method: "DELETE" });
+  // admin-only testing tools; they remove your own runs and keep you logged in
+  async resetDay(day: number) {
+    await call("/api/admin/reset", { method: "POST", body: { scope: "day", day } });
+  }
+
+  async resetAll() {
+    await call("/api/admin/reset", { method: "POST", body: { scope: "all" } });
   }
 }

@@ -9,7 +9,7 @@ export async function GET() {
   return handle(async () => {
     const pid = await playerId(false);
     const p = pid ? await getEngine().engine.storeRef().getPlayer(pid) : null;
-    return { username: p?.username ?? null };
+    return { username: p?.username ?? null, admin: !!p?.username && !!p?.isAdmin };
   });
 }
 
@@ -51,7 +51,8 @@ export async function POST(req: Request) {
       const ok = await checkPassword(String(body.password ?? ""), acct?.passwordHash ?? (await dummyHash()));
       if (!acct || !ok) throw new GameError("bad_login", "Wrong username or password.");
       await startSession(acct.playerId);
-      return { username: acct.username };
+      const p = await store.getPlayer(acct.playerId);
+      return { username: acct.username, admin: !!p?.isAdmin };
     }
 
     throw new GameError("bad_request", "Unknown action");

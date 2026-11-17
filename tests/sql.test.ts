@@ -72,3 +72,16 @@ describe("migration 0002", () => {
     await db.query("insert into sessions (token_hash, player_id, expires_at) values ('abc', $1, now() + interval '1 day')", [P]);
   });
 });
+
+describe("migration 0003", () => {
+  it("adds an admin flag that defaults to off", async () => {
+    const db = new PGlite();
+    await db.exec(SQL);
+    await db.exec(SQL2);
+    await db.exec(readFileSync(new URL("../supabase/migrations/0003_admin.sql", import.meta.url), "utf8"));
+    await db.query("insert into players (id, username) values ($1, 'calebk'), ($2, 'other')", [P, Q]);
+    await db.query("update public.players set is_admin = true where lower(username) = lower('CalebK')");
+    const r = await db.query<{ username: string; is_admin: boolean }>("select username, is_admin from players order by username");
+    expect(r.rows).toEqual([{ username: "calebk", is_admin: true }, { username: "other", is_admin: false }]);
+  });
+});

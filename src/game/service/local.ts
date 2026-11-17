@@ -44,7 +44,7 @@ export class LocalService implements ChallengeService {
   // The offline preview fakes accounts on this device so the flow can be tried.
   async account(): Promise<Account> {
     const p = await this.store.getPlayer(ME);
-    return { username: p?.username ?? null };
+    return { username: p?.username ?? null, admin: true };
   }
   async signUp(username: string, password: string): Promise<Account> {
     if (!/^[A-Za-z0-9_]{3,16}$/.test(username)) throw new GameError("bad_request", "Usernames are 3 to 16 letters, numbers or underscores.");
@@ -62,7 +62,7 @@ export class LocalService implements ChallengeService {
   async resetDay(day: number) {
     this.store.resetDay(day);
   }
-  async reset() {
+  async resetAll() {
     this.store.reset();
   }
 }

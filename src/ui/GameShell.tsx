@@ -64,6 +64,7 @@ export function GameShell() {
   const [status, setStatus] = useState<DayStatus | null>(null);
   const [netError, setNetError] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
+  const [admin, setAdmin] = useState(false);
   const [accountSheet, setAccountSheet] = useState<{ start: "signup" | "login"; reason?: string } | null>(null);
   const [settings, updateSettings] = useSettings();
   const systemRm = useSystemReducedMotion();
@@ -109,6 +110,7 @@ export function GameShell() {
       void service.account().then(
         (a) => {
           setUsername(a.username);
+          setAdmin(!!a.admin);
           identify(a.username);
         },
         () => {},
@@ -129,6 +131,7 @@ export function GameShell() {
     async (u: string, p: string) => {
       const a = await service!.logIn(u, p);
       setUsername(a.username);
+      setAdmin(!!a.admin);
       identify(a.username);
       track("logged_in");
       await refresh();
@@ -138,6 +141,7 @@ export function GameShell() {
   const logOut = useCallback(async () => {
     await service?.logOut();
     setUsername(null);
+    setAdmin(false);
     identify(null);
     track("logged_out");
     await refresh();
@@ -385,24 +389,19 @@ export function GameShell() {
           update={updateSettings}
           systemRm={systemRm}
           onBack={() => go("home")}
-          resetNote={service?.kind === "remote" ? "On the live site a reset logs you out and starts a fresh guest." : undefined}
+          admin={admin}
           username={username}
           onAccount={(start) => setAccountSheet({ start })}
           onLogOut={logOut}
           onResetToday={async () => {
-            if (service?.resetDay) await service.resetDay(today);
-            else {
-              await service?.reset();
-              setUsername(null);
-            }
+            await service!.resetDay(today);
             const p = { ...progress, ranked: { ...progress.ranked } };
             delete p.ranked[today];
             commit(p);
             await refresh();
           }}
           onResetAll={async () => {
-            await service?.reset();
-            setUsername(null);
+            await service!.resetAll();
             commit(EMPTY_PROGRESS);
             await refresh();
           }}

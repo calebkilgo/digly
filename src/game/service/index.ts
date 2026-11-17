@@ -1,6 +1,7 @@
 import type { ChallengeService } from "./types";
 
-export type AnyService = ChallengeService & { reset(): Promise<void>; resetDay?(day: number): Promise<void> };
+// testing tools: admins only on the live site, open in the offline preview
+export type AnyService = ChallengeService & { resetDay(day: number): Promise<void>; resetAll(): Promise<void> };
 
 // The deployed site always talks to the server. Only the static preview build
 // (NEXT_PUBLIC_DIGLY_BACKEND=local) loads the in-browser engine, and the

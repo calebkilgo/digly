@@ -257,3 +257,14 @@ describe("instant answer check", () => {
     expect(again.found).toEqual([lab]);
   });
 });
+
+describe("admin reset", () => {
+  it("removes only that player's runs for the day and reopens the dig", async () => {
+    await play("p", 1, ["pug"]);
+    await play("q", 1, []);
+    await store.deleteAttempts("p", DAY);
+    expect((await eng.status("p", DAY)).next).toBe(1);
+    expect((await eng.status("q", DAY)).next).toBe(2);
+    expect(await code(eng.start("p", DAY, 1, "ranked"))).toBe("ok");
+  });
+});

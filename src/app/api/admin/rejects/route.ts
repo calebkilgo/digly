@@ -1,9 +1,9 @@
 import { timingSafeEqual } from "node:crypto";
-import { getEngine, handle } from "@/server/game";
+import { getEngine, handle, requireAdmin } from "@/server/game";
 import { GameError } from "@/game/service/types";
 import { SEEDS } from "@/game/data/seeds";
 
-// GET /api/admin/rejects?slug=dog-breeds&key=...  (needs DIGLY_ADMIN_KEY)
+// GET /api/admin/rejects?slug=dog-breeds  (logged in as an admin, or &key=DIGLY_ADMIN_KEY)
 // The most common inputs that didn't match, plus how many have played the
 // category. Real answers that show up here go into data/answers/<slug>.txt.
 export async function GET(req: Request) {
@@ -12,7 +12,8 @@ export async function GET(req: Request) {
     const want = process.env.DIGLY_ADMIN_KEY ?? "";
     const got = url.searchParams.get("key") ?? "";
     const okKey = want.length >= 16 && got.length === want.length && timingSafeEqual(Buffer.from(got), Buffer.from(want));
-    if (!okKey) throw new GameError("forbidden", "Admin key required");
+    // either the admin key in the URL, or logged in as an admin
+    if (!okKey) await requireAdmin();
     const { engine } = getEngine();
     const slug = url.searchParams.get("slug");
     if (!slug) return { slugs: SEEDS.map((s) => s.slug) };

@@ -19,6 +19,7 @@ export interface AttemptRow {
 export interface PlayerInfo {
   id: string;
   username: string | null;
+  isAdmin?: boolean;
 }
 
 export interface BoardTotal {
@@ -54,6 +55,8 @@ export interface Store {
   finishAttempt(id: string, f: { finishedAt: number; score: number; points: number; uniqueCount: number }): Promise<boolean>;
   // accounts only: guests aren't posted to the board
   dayBoard(day: number, limit: number): Promise<BoardTotal[]>;
+  // testing tools: remove a player's own attempts (one day's ranked, or everything)
+  deleteAttempts(playerId: string, day: number | null): Promise<void>;
   // ranked attempts at a category before a day, and how many found each answer
   answerStats(slug: string, beforeDay: number): Promise<{ plays: number; counts: Record<string, number> }>;
   // most common inputs that didn't match, for growing the answer lists

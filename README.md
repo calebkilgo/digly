@@ -123,6 +123,16 @@ npm run answers -- /tmp/corpora
 - Rate limits: 5 sign-ups per hour per IP, 20 logins per 15 min per IP and 10 per username. Some usernames are reserved ("you", "guest", "admin" and similar).
 - Payments (Vault and Plus) will hang off the account.
 
+## Admin tools
+
+Options shows an Admin tools box (reset today's dig, clear all progress) only to accounts with `players.is_admin = true`. Set it in Supabase SQL:
+
+```sql
+update public.players set is_admin = true where lower(username) = lower('YOUR_USERNAME');
+```
+
+Resets go through `/api/admin/reset`. It needs a logged-in admin session and only deletes that admin's own runs, so you stay logged in. The rejects page `/api/admin/rejects` also accepts an admin login instead of the key. The offline preview shows the tools to everyone.
+
 ## Error and usage tracking
 
 - Sentry: browser and server errors, plus API failures. Off until `NEXT_PUBLIC_SENTRY_DSN` is set.
@@ -153,7 +163,7 @@ npm run answers -- /tmp/corpora
 3. Project Settings > API: copy the Project URL and the `service_role` key.
 4. Vercel > Project > Settings > Environment Variables: add `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` for Production and Preview. Redeploy.
 5. Check `https://<your-site>/api/dig`. It should say `"backend":"supabase"`.
-6. Run each new file in `supabase/migrations/` in order. 0002 adds accounts and rarity stats.
+6. Run each new file in `supabase/migrations/` in order. 0002 adds accounts and rarity stats; 0003 adds the admin flag.
 
 For local dev put the same two lines in `.env.local`.
 

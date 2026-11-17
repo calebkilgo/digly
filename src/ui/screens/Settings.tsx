@@ -12,7 +12,7 @@ export function SettingsScreen(props: {
   onBack: () => void;
   onResetToday: () => Promise<void>;
   onResetAll: () => Promise<void>;
-  resetNote?: string;
+  admin: boolean;
   username: string | null;
   onAccount: (start: "signup" | "login") => void;
   onLogOut: () => Promise<void>;
@@ -91,11 +91,12 @@ export function SettingsScreen(props: {
           )}
         </div>
       </div>
+      {props.admin && (
       <div className="setting px dark" style={{ flexDirection: "column", alignItems: "stretch" }}>
         <div>
-          <div className="t">Prototype tools</div>
+          <div className="t">Admin tools</div>
           <div className="d" style={{ color: "#cdb68b" }}>
-            For testing only.{props.resetNote ? ` ${props.resetNote}` : ""}
+            Only you see this. Resets remove your own runs and keep you logged in.
           </div>
         </div>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
@@ -126,6 +127,7 @@ export function SettingsScreen(props: {
           {msg}
         </div>
       </div>
+      )}
     </ScreenFrame>
   );
 }

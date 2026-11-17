@@ -67,6 +67,18 @@ export async function playerId(create = true): Promise<string | null> {
   return id;
 }
 
+// Admins are accounts with players.is_admin = true, set by hand in Supabase.
+// Needs a real login session: a guest cookie alone never counts.
+export async function requireAdmin() {
+  const jar = await cookies();
+  const sid = jar.get(SID)?.value;
+  const store = getEngine().engine.storeRef();
+  const pid = sid ? await store.sessionPlayer(tokenHash(sid), Date.now()) : null;
+  const p = pid ? await store.getPlayer(pid) : null;
+  if (!p?.isAdmin) throw new GameError("forbidden", "Admins only");
+  return p.id;
+}
+
 export async function startSession(pid: string) {
   const jar = await cookies();
   const token = newToken();
