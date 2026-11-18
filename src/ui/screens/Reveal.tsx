@@ -222,9 +222,9 @@ export function RevealScreen(props: {
   );
 }
 
-// the clean-dig bonus or the empty-slot penalty, in a few words
+// the clean-dig bonus, or how many slots stayed empty
 function bonusNote(found: number) {
   if (found >= SCORING.best) return ` · +${SCORING.cleanBonus} clean dig`;
-  if (found === 0) return ` · cave-in ${SCORING.best * SCORING.emptySlot + SCORING.caveIn}`;
-  return ` · ${(SCORING.best - found) * SCORING.emptySlot} empty`;
+  if (found === 0) return " · no finds";
+  return ` · ${SCORING.best - found} empty`;
 }

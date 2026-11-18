@@ -163,8 +163,6 @@ export function SummaryScreen(props: {
         })}
       </section>
 
-      {props.service && <SuggestBox service={props.service} />}
-
       <div className="results-dock px dark">
         <button className="btn btn-y wide" onClick={() => (sfx.button(), track("answers_viewed"), setSheet("answers"))}>
           See the rarest answers
@@ -187,53 +185,8 @@ export function SummaryScreen(props: {
   );
 }
 
-// A one-line box for prompt ideas. Works for guests too.
-function SuggestBox({ service }: { service: ChallengeService }) {
-  const [text, setText] = useState("");
-  const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
-  const [err, setErr] = useState("");
-  if (state === "sent") return <p className="suggest-done px">Thanks! Your idea is in the pile.</p>;
-  const send = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (text.trim().length < 2 || state === "sending") return;
-    setState("sending");
-    try {
-      await service.suggest(text.trim());
-      track("prompt_suggested");
-      setState("sent");
-    } catch (x) {
-      setErr(x instanceof Error ? x.message : "Couldn't send that.");
-      setState("error");
-    }
-  };
-  return (
-    <form className="suggest px" onSubmit={send}>
-      <label htmlFor="suggest-in">Got an idea for a prompt?</label>
-      <div className="suggest-row">
-        <input
-          id="suggest-in"
-          value={text}
-          maxLength={120}
-          placeholder="e.g. Board games from the 80s"
-          autoComplete="off"
-          enterKeyHint="send"
-          onChange={(e) => setText(e.target.value)}
-        />
-        <button className="btn btn-sm btn-y" disabled={text.trim().length < 2 || state === "sending"}>
-          {state === "sending" ? "…" : "Send"}
-        </button>
-      </div>
-      {state === "error" && (
-        <div role="alert" className="suggest-err">
-          {err}
-        </div>
-      )}
-    </form>
-  );
-}
-
 function breakdownNote(found: number) {
   if (found >= SCORING.best) return `+${SCORING.cleanBonus} clean dig`;
-  if (found === 0) return "cave-in";
+  if (found === 0) return "no finds";
   return `${SCORING.best - found} empty`;
 }

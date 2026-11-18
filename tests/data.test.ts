@@ -6,8 +6,9 @@ const idx = (slug: string) => new AnswerIndex(parseAnswerBlock(SEEDS.find((s) =>
 
 describe("generated answer data", () => {
   it("has 45 categories split across the three levels", () => {
-    expect(SEEDS).toHaveLength(45);
-    const per = [1, 2, 3].map((l) => SEEDS.filter((s) => s.level === l).length);
+    const active = SEEDS.filter((s) => !s.retired);
+    expect(active).toHaveLength(45);
+    const per = [1, 2, 3].map((l) => active.filter((s) => s.level === l).length);
     expect(per).toEqual([13, 18, 14]);
     for (const s of SEEDS) expect(s.answers.length, s.slug).toBeGreaterThan(100);
   });
@@ -22,7 +23,7 @@ describe("generated answer data", () => {
       ["dinosaurs", "trex", "Tyrannosaurus"],
       ["nfl-teams", "cowboys", "Dallas Cowboys"],
       ["nfl-teams", "49ers", "San Francisco 49ers"],
-      ["knots", "reef knot", "Square Knot"],
+      ["snakes", "rattler", "Rattlesnake"],
       ["horse-breeds", "arabian horse", "Arabian"],
       ["vegetables", "aubergine", "Eggplant"],
       ["vegetables", "carrots", "Carrot"],
@@ -32,8 +33,8 @@ describe("generated answer data", () => {
       ["cocktails", "pina colada", "Pina Colada"],
       ["egyptian-gods", "amon ra", "Amun"],
       ["gemstones", "diamonds", "Diamond"],
-      ["countries", "usa", "United States"],
-      ["countries", "holland", "Netherlands"],
+      ["sea-creatures", "killer whale", "Orca"],
+      ["candy", "reeses", "Reese's"],
       ["world-capitals", "washington dc", "Washington, D.C."],
       ["nba-teams", "lakers", "Los Angeles Lakers"],
       ["mlb-teams", "yankees", "New York Yankees"],
@@ -42,9 +43,9 @@ describe("generated answer data", () => {
       ["us-presidents", "adams", ""],
       ["scientists", "einstein", "Albert Einstein"],
       ["norse-myth", "thor", "Thor"],
-      ["animals", "puppy", "Dog"],
-      ["jobs", "cop", "Police Officer"],
-      ["body-parts", "teeth", "Tooth"],
+      ["clothing", "trousers", "Pants"],
+      ["kitchen-tools", "skillet", "Frying Pan"],
+      ["olympic-sports", "ping pong", "Table Tennis"],
       ["music-genres", "hip hop", "Hip Hop"],
       ["board-games", "settlers of catan", "Catan"],
       ["cheeses", "gouda", "Gouda"],
@@ -62,7 +63,7 @@ describe("generated answer data", () => {
   });
 
   it("starting estimates put the obvious answers at the bottom", () => {
-    for (const [slug, common] of [["vegetables", "Carrot"], ["dinosaurs", "Tyrannosaurus"], ["sports", "Soccer"], ["gemstones", "Diamond"]]) {
+    for (const [slug, common] of [["vegetables", "Carrot"], ["dinosaurs", "Tyrannosaurus"], ["olympic-sports", "Swimming"], ["gemstones", "Diamond"]]) {
       const a = idx(slug).answers.find((x) => x.canonical === common)!;
       expect(a.rarity, slug).toBeLessThan(5);
     }
@@ -81,7 +82,7 @@ describe("rotation", () => {
 
   it("runs forever on its own: every category once per cycle, no back-to-back repeats", () => {
     for (const l of [1, 2, 3] as const) {
-      const n = SEEDS.filter((s) => s.level === l).length;
+      const n = SEEDS.filter((s) => s.level === l && !s.retired).length;
       const cycle = Array.from({ length: n }, (_, i) => slugFor(30 + i, l));
       expect(new Set(cycle).size).toBe(n);
       for (let d = 31; d < 30 + 365 * 5; d++) expect(slugFor(d, l)).not.toBe(slugFor(d - 1, l));

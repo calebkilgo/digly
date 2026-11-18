@@ -30,7 +30,7 @@ import { BoardScreen } from "./screens/Board";
 import { VaultScreen } from "./screens/Vault";
 import { LogbookScreen } from "./screens/Logbook";
 import { SettingsScreen } from "./screens/Settings";
-import { AccountSheet, ResetSheet } from "./sheets";
+import { AccountSheet, ResetSheet, SuggestSheet } from "./sheets";
 import { identify, track } from "@/lib/track";
 
 export type Screen = "home" | "pregame" | "play" | "reveal" | "summary" | "board" | "vault" | "logbook" | "settings";
@@ -72,6 +72,7 @@ export function GameShell() {
   const [resetToken, setResetToken] = useState<string | null>(null);
   const [unlimited, setUnlimited] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [suggestOpen, setSuggestOpen] = useState(false);
 
   // arriving from a password reset email: ?reset=TOKEN
   useEffect(() => {
@@ -396,6 +397,7 @@ export function GameShell() {
           onPlay={() => openPregame("ranked", today)}
           onViewToday={viewToday}
           onNav={go}
+          onSuggest={() => setSuggestOpen(true)}
         />
       )}
       {screen === "pregame" && run && (
@@ -539,6 +541,15 @@ export function GameShell() {
             await refresh();
           }}
           onClose={() => setResetToken(null)}
+        />
+      )}
+      {suggestOpen && service && (
+        <SuggestSheet
+          onSend={async (t) => {
+            await service.suggest(t);
+            track("prompt_suggested");
+          }}
+          onClose={() => setSuggestOpen(false)}
         />
       )}
       {toast && (

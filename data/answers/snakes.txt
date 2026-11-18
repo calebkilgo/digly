@@ -1,0 +1,127 @@
+# snakes: Name | alias = rating (1 common .. 100 rare). Blank = estimated.
+Cobra | king cobra = 1
+Python = 2
+Rattlesnake | rattler = 3
+Anaconda = 4
+Boa Constrictor | boa = 5
+Black Mamba | mamba = 6
+Garter Snake = 7
+Viper = 8
+Copperhead = 9
+Cottonmouth | water moccasin = 10
+Coral Snake = 11
+Corn Snake = 12
+King Snake | kingsnake = 13
+Taipan = 14
+Ball Python | royal python
+Reticulated Python
+Burmese Python
+Green Mamba
+Sea Snake
+Adder
+Asp
+Puff Adder
+Gaboon Viper
+Pit Viper
+Bushmaster
+Fer-de-Lance
+Eastern Brown Snake | brown snake
+Tiger Snake
+Death Adder
+Inland Taipan
+Krait
+Russell's Viper
+Saw-scaled Viper
+Boomslang
+Milk Snake
+Rat Snake
+Black Rat Snake
+Gopher Snake
+Bull Snake
+Hognose Snake | hognose
+Racer | black racer
+Coachwhip
+Whip Snake
+Grass Snake
+Smooth Snake
+Ribbon Snake
+Water Snake
+Green Tree Python
+Emerald Tree Boa
+Rainbow Boa
+Rosy Boa
+Rubber Boa
+Sand Boa
+Carpet Python
+Children's Python
+Blood Python
+Diamondback | eastern diamondback, western diamondback
+Sidewinder
+Timber Rattlesnake
+Mojave Rattlesnake
+Massasauga
+Pygmy Rattlesnake
+Horned Viper
+Rhinoceros Viper
+Eyelash Viper
+Bamboo Viper
+Temple Viper
+Malayan Pit Viper
+Jararaca
+Lancehead
+Golden Lancehead
+Blind Snake
+Thread Snake
+Worm Snake
+Ringneck Snake
+Brown Tree Snake
+Flying Snake
+Vine Snake
+Twig Snake
+Egg-eating Snake
+Mangrove Snake
+Cat Snake
+Wolf Snake
+Kukri Snake
+Indigo Snake
+Mud Snake
+Rainbow Snake
+Pine Snake
+Glossy Snake
+Night Snake
+Lyre Snake
+Long-nosed Snake
+Scarlet Snake
+Shovel-nosed Snake
+Cape Cobra
+Spitting Cobra
+Monocled Cobra
+Indian Cobra
+Egyptian Cobra
+Mozambique Spitting Cobra
+Rinkhals
+Mulga Snake
+Red-bellied Black Snake
+Dugite
+Western Brown Snake
+Coastal Taipan
+Banded Krait
+Many-banded Krait
+Yellow-bellied Sea Snake
+Beaked Sea Snake
+Olive Sea Snake
+Elephant Trunk Snake
+Wart Snake
+Dwarf Boa
+Titanoboa
+Sunbeam Snake
+Pipe Snake
+Shieldtail
+Wagler's Pit Viper
+Habu
+Mamushi
+Urutu
+Cantil
+Nose-horned Viper
+Asp Viper
+Meadow Viper

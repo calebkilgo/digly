@@ -26,5 +26,5 @@ export function levelInfo(level: number): LevelInfo {
 }
 
 export function digTotal(levelPoints: number[]): number {
-  return Math.max(SCORING.gameFloor, levelPoints.reduce((s, p) => s + p, 0));
+  return Math.max(0, levelPoints.reduce((s, p) => s + p, 0));
 }

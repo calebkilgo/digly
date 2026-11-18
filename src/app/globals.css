@@ -476,11 +476,13 @@ input {
   .home-layer .spacer {
     display: none;
   }
-  .home-panel {
+  .home-col {
     grid-column: 2;
     grid-row: 2;
     align-self: center;
-    margin: 0;
+  }
+  .home-col .home-panel {
+    margin: 0 0 12px;
   }
   .rail {
     grid-column: 1;
@@ -2149,12 +2151,17 @@ input {
   .pregame .rung .how { display: none !important; }
 }
 
-/* prompt idea box on the results screen */
+/* "Suggest a prompt" button under the daily card, and its sheet */
+.home-col {
+  display: flex;
+  flex-direction: column;
+}
+.suggest-btn {
+  align-self: center;
+  margin: -4px auto 12px;
+  font-size: 14px;
+}
 .suggest {
-  margin: 8px var(--b) 0;
-  padding: 8px 10px;
-  background: var(--paper);
-  color: var(--ink);
   display: flex;
   flex-direction: column;
   gap: 5px;

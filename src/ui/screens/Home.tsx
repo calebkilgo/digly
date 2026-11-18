@@ -42,6 +42,7 @@ export function HomeScreen(props: {
   onPlay: () => void;
   onViewToday: () => void;
   onNav: (s: Screen) => void;
+  onSuggest: () => void;
 }) {
   const { scene, dig, progress, today } = props;
   const top = useRef<HTMLDivElement>(null);
@@ -90,7 +91,8 @@ export function HomeScreen(props: {
 
       <div className="spacer" />
 
-      <section className="home-panel px" ref={panel} aria-labelledby="today-title">
+      <div className="home-col" ref={panel}>
+      <section className="home-panel px" aria-labelledby="today-title">
         <div className="order-head">
           <h2 className="card-title" id="today-title">
             Daily Dig
@@ -137,6 +139,10 @@ export function HomeScreen(props: {
         </div>
         {props.netError && <p className="fine">{props.netError}</p>}
       </section>
+      <button className="btn btn-sm suggest-btn" onClick={tap(props.onSuggest)}>
+        Suggest a prompt
+      </button>
+      </div>
 
       <nav className="rail" ref={rail} aria-label="Workshop">
         <button className="btn tool" onClick={tap(() => props.onNav("board"))}>

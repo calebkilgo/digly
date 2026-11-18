@@ -1,0 +1,169 @@
+# title: Volcanoes
+# level: 3
+# domain: geography
+# noun: volcanoes
+# rule: Named volcanoes, active or not, anywhere on Earth.
+# rule: "Mount" can be left off.
+# prefix: mount, mt, mont, monte, volcan, cerro, nevado
+# add-prefix: mount
+Mount Vesuvius | vesuvius
+Mount St. Helens | mount saint helens, st helens, saint helens
+Mount Fuji | fuji, fujiyama, fuji san
+Mount Etna | etna
+Kilauea
+Mauna Loa
+Mauna Kea
+Krakatoa | krakatau
+Mount Kilimanjaro | kilimanjaro
+Mount Pinatubo | pinatubo
+Yellowstone | yellowstone caldera
+Eyjafjallajokull
+Mount Rainier | rainier
+Popocatepetl | popo
+Stromboli
+Mount Tambora | tambora
+Mount Pelee | pelee
+Mount Hood | hood
+Mount Shasta | shasta
+Cotopaxi
+Mount Erebus | erebus
+Mount Ararat | ararat
+Hekla
+Mount Mayon | mayon
+Mount Merapi | merapi
+Taal
+Mount Ruapehu | ruapehu
+Mount Taranaki | taranaki, mount egmont
+Mount Tongariro | tongariro
+Ngauruhoe | mount doom
+White Island | whakaari
+Mount Unzen | unzen
+Sakurajima
+Mount Aso | aso
+Mount Ontake | ontake
+Mount Baker | baker
+Mount Adams
+Mount Jefferson
+Lassen Peak | mount lassen, lassen
+Crater Lake | mount mazama, mazama
+Mount Spurr
+Augustine
+Redoubt
+Pavlof
+Mount Katmai | katmai
+Novarupta
+Shishaldin
+Mount Cleveland
+Mount Garibaldi
+Paricutin
+Colima
+Pico de Orizaba | orizaba, citlaltepetl
+Iztaccihuatl
+El Chichon
+Santa Maria
+Fuego | volcan de fuego
+Pacaya
+Arenal
+Irazu
+Poas
+Masaya
+Momotombo
+San Cristobal
+Soufriere Hills | soufriere
+La Soufriere
+Nevado del Ruiz
+Galeras
+Chimborazo
+Tungurahua
+Sangay
+Reventador
+Ojos del Salado
+Llullaillaco
+Villarrica
+Osorno
+Calbuco
+Chaiten
+Lascar
+Misti | el misti
+Ubinas
+Sabancaya
+Huaynaputina
+Teide | mount teide, el teide
+Cumbre Vieja | la palma
+Mount Cameroon
+Nyiragongo
+Nyamuragira
+Ol Doinyo Lengai
+Mount Kenya
+Erta Ale
+Piton de la Fournaise
+Karthala
+Mount Elbrus | elbrus
+Kazbek
+Damavand
+Nemrut
+Thera | santorini
+Methana
+Vulcano
+Campi Flegrei
+Mount Vulture
+Laki
+Katla
+Askja
+Grimsvotn
+Bardarbunga
+Surtsey
+Fagradalsfjall
+Snaefellsjokull
+Beerenberg
+Klyuchevskaya Sopka | klyuchevskaya
+Bezymianny
+Shiveluch
+Tolbachik
+Avachinsky
+Kronotsky
+Mount Agung | agung
+Mount Rinjani | rinjani
+Mount Bromo | bromo
+Mount Semeru | semeru
+Mount Kelud | kelud
+Mount Sinabung | sinabung
+Toba | lake toba
+Mount Apo
+Kanlaon
+Mount Hibok-Hibok
+Mount Bulusan
+Rabaul
+Mount Lamington
+Manam
+Ambrym
+Yasur
+Mount Terror
+Deception Island
+Hunga Tonga | hunga tonga hunga haapai
+Mount Tarawera | tarawera
+Rangitoto
+Haleakala
+Hualalai
+Diamond Head
+Axial Seamount
+Loihi | kamaehuakanaloa
+Newberry
+Three Sisters
+Mount Bachelor
+Medicine Lake
+Valles Caldera
+Long Valley
+Sunset Crater
+Capulin
+Mount Edziza
+Wells Gray
+Mount Meager
+Changbaishan | paektu, mount paektu
+Halla | hallasan
+Kuju
+Mount Iwate
+Mount Asama | asama
+Mount Usu
+Showa-shinzan
+Mount Zao

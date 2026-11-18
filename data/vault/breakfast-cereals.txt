@@ -1,0 +1,120 @@
+# title: Breakfast cereals
+# level: 3
+# domain: food
+# noun: cereals
+# rule: Breakfast cereals by brand name or kind, like Cheerios or granola.
+# rule: Brand owners like Kellogg's don't count on their own.
+Cheerios
+Frosted Flakes | frosties
+Froot Loops | fruit loops
+Lucky Charms
+Cinnamon Toast Crunch
+Cap'n Crunch | captain crunch, capn crunch
+Corn Flakes | cornflakes
+Rice Krispies | rice bubbles
+Cocoa Puffs
+Honey Nut Cheerios
+Raisin Bran
+Special K
+Frosted Mini-Wheats | mini wheats, frosted mini wheats
+Trix
+Fruity Pebbles
+Cocoa Pebbles
+Apple Jacks
+Honey Bunches of Oats
+Reese's Puffs | reeses puffs
+Cookie Crisp
+Kix
+Life
+Golden Grahams
+Corn Pops
+Honey Smacks | sugar smacks, smacks
+Count Chocula
+Franken Berry | frankenberry
+Boo Berry
+Wheaties
+Chex | rice chex, corn chex, wheat chex
+Cocoa Krispies | coco pops
+Crispix
+Grape-Nuts | grape nuts
+Shredded Wheat
+Oatmeal | porridge, oats
+Granola
+Muesli
+Cream of Wheat
+Grits
+Bran Flakes
+All-Bran | all bran
+Fiber One
+Total
+Product 19
+Kashi
+Basic 4
+Crunchy Nut
+Weetabix
+Shreddies
+Alpen
+Ready Brek
+Multi Grain Cheerios
+Apple Cinnamon Cheerios
+Chocolate Cheerios
+Honey Nut Chex
+Cinnamon Life
+Peanut Butter Crunch
+Crunch Berries
+Oops! All Berries | oops all berries
+Smorz
+Waffle Crisp
+Oreo O's | oreo os
+Krave
+Pops
+Smart Start
+Mueslix
+Cracklin' Oat Bran | cracklin oat bran
+Honeycomb
+Golden Crisp | super golden crisp, sugar crisp
+Alpha-Bits | alpha bits
+Post Toasties
+Raisin Nut Bran
+Great Grains
+Banana Nut Crunch
+Puffins
+Cascadian Farm
+Nature's Path
+Heritage Flakes
+Ezekiel Cereal
+French Toast Crunch
+Cinnamon Chex
+Chocolate Chex
+Mr. T Cereal
+Ghostbusters Cereal
+Kaboom
+Quisp
+Quake
+Freakies
+C-3PO's
+Nerds Cereal
+Pac-Man Cereal
+Donkey Kong Crunch
+Hidden Treasures
+Pop-Tarts Crunch
+Hershey's Cookies 'n' Creme
+Wheat Honeys
+Cheerios Veggie Blends
+Cheerios Oat Crunch
+Puffed Rice
+Puffed Wheat
+Corn Bran
+Bran Buds
+Honey Graham Oh's | oh's
+Toasty O's
+Malt-O-Meal
+Frosted Cheerios
+Berry Burst Cheerios
+Cinnamon Crunch Cheerios
+Bircher Muesli
+Steel-Cut Oats | steel cut oats
+Just Right
+Sultana Bran
+Nutri-Grain | nutrigrain
+Weet-Bix | weetbix

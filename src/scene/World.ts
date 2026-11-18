@@ -105,27 +105,29 @@ export class World {
   private get mountain() {
     const k = this.k;
     const hx = this.homeX;
-    return { left: hx - 180 * k, peak: hx + 160 * k, right: hx + 560 * k, height: 340 * k, mouth: hx - 70 * k, back: hx + 70 * k, tunnelH: 128 * k };
+    return { left: hx - 260 * k, peak: hx + 250 * k, right: hx + 1100 * k, height: 620 * k, mouth: hx - 70 * k, back: hx + 80 * k, tunnelH: 128 * k };
   }
 
   // Mountain height above the surface at x (0 off the mountain). It rises
-  // as a cut cliff at the tunnel mouth, with a low foothill in front of it.
+  // from a cut rock face at the tunnel mouth, with a rocky foothill in front.
   private mountainAt(x: number) {
     const m = this.mountain;
     const k = this.k;
-    const cliff = m.tunnelH + 26 * k;
+    const cliff = m.tunnelH + 70 * k;
     let h = 0;
     if (x < m.mouth) {
-      const foot = m.mouth - 110 * k;
-      h = x > foot ? ((x - foot) / (m.mouth - foot)) * 46 * k : 0;
+      const t = (x - m.left) / (m.mouth - m.left);
+      h = t > 0 ? t * t * 90 * k : 0;
     } else if (x < m.peak) {
-      h = cliff + ((x - m.mouth) / (m.peak - m.mouth)) * (m.height - cliff);
+      const t = (x - m.mouth) / (m.peak - m.mouth);
+      h = cliff + (m.height - cliff) * Math.pow(t, 0.8);
     } else if (x < m.right) {
-      h = ((m.right - x) / (m.right - m.peak)) * m.height;
+      const t = (x - m.peak) / (m.right - m.peak);
+      // long back slope with a shoulder partway down
+      h = m.height * (1 - t) + Math.sin(t * Math.PI) * 120 * k * (t > 0.35 ? 1 : t / 0.35);
     }
     if (h <= 0) return 0;
-    // a lumpy ridge so it doesn't read as a perfect triangle
-    return Math.max(0, h + Math.sin(x * 0.031) * 5 * k + Math.sin(x * 0.011 + 2) * 10 * k);
+    return Math.max(0, h + Math.sin(x * 0.029) * 7 * k + Math.sin(x * 0.0093 + 2) * 16 * k);
   }
 
   // Night sky, distant hills, grass and the mountain, seen when the home
@@ -174,27 +176,67 @@ export class World {
       const h = [0, 1, 1, 2][Math.floor(r() * 4)];
       if (h) g.rect(x, sy - (4 + h) * u, u, h * u).fill(0x5fb247);
     }
-    // the mountain, stepped in pixel columns with an ink edge and a snow cap
+    // a pale far peak behind, for depth
     const m = this.mountain;
-    const rock = 0x7a6a8a;
-    const rockLo = 0x5a4d6e;
+    const k = this.k;
+    for (let x = snap(m.peak - 40 * k); x < m.right + 300 * k; x += step) {
+      const t = (x - (m.peak + 380 * k)) / (420 * k);
+      const h = Math.max(0, (1 - Math.abs(t)) * 480 * k + Math.sin(x * 0.02) * 8 * k);
+      if (h > 0) g.rect(x, snap(sy - h), step, snap(h)).fill(0x2a2f55);
+    }
+    // the mountain, stepped in pixel columns: lit face, shaded back slope,
+    // rock layers, then a jagged snow cap
+    const rock = 0x76688a;
+    const rockLo = 0x574a6c;
+    const seam = 0x463a5a;
     const snow = 0xf6ebd9;
+    const snowLo = 0xc9c4dc;
+    const snowLine = m.height - 150 * k;
     for (let x = snap(m.left); x < m.right; x += step) {
-      const h = snap(this.mountainAt(x + step / 2));
+      const hRaw = this.mountainAt(x + step / 2);
+      const h = snap(hRaw);
       if (h <= 0) continue;
       const yTop = sy - h;
+      const lit = x < m.peak;
       g.rect(x, yTop - u, step, h + u).fill(INK);
-      g.rect(x, yTop, step, h).fill(x < m.peak ? rock : rockLo);
-      const capH = h - (m.height - 70 * this.k);
-      if (capH > 0) g.rect(x, yTop, step, snap(Math.min(capH, h))).fill(snow);
+      g.rect(x, yTop, step, h).fill(lit ? rock : rockLo);
+      // rock layers: tilted bands every ~34k
+      for (let b = 1; b * 34 * k < h; b++) {
+        const yb = snap(sy - b * 34 * k - Math.sin(x * 0.004 + b) * 10 * k);
+        if (yb > yTop + 2 * u) g.rect(x, yb, step, u).fill(seam);
+      }
+      // snow, with a ragged lower edge
+      const capH = hRaw - snowLine + Math.sin(x * 0.07) * 14 * k + Math.sin(x * 0.023) * 10 * k;
+      if (capH > 0) {
+        g.rect(x, yTop, step, snap(Math.min(capH, h))).fill(lit ? snow : snowLo);
+      }
     }
-    // a few rock seams so it reads as stone
-    for (let i = 0; i < 26; i++) {
+    // boulders at the foot and on the slopes
+    for (let i = 0; i < 40; i++) {
       const x = snap(m.left + r() * (m.right - m.left));
       const h = this.mountainAt(x);
-      if (h < 30 * this.k) continue;
-      const y = snap(sy - r() * (h - 12 * this.k));
-      g.rect(x, y, snap(4 + r() * 10) * 2, u).fill(0x4a3d5a);
+      if (h < 20 * k || h > snowLine) continue;
+      const y = snap(sy - r() * (h - 16 * k));
+      const bw = snap((3 + r() * 4) * u);
+      g.rect(x - u, y - u, bw + 2 * u, bw * 0.6 + 2 * u).fill(INK);
+      g.rect(x, y, bw, snap(bw * 0.6)).fill(0x8a7c9c);
+      g.rect(x, y, bw, u).fill(0xa093b0);
+    }
+    // pine trees on the ground and the low slopes
+    const pine = (x: number, base: number, size: number) => {
+      const s2 = Math.max(3, Math.round(size));
+      for (let row = 0; row < s2 * 2; row++) {
+        const half = Math.floor((row % s2) / 2) + 1 + Math.floor(row / s2);
+        g.rect(snap(x) - half * u, snap(base - (s2 * 2 - row) * u - 2 * u), half * 2 * u, u).fill(row % s2 === 0 ? 0x2f6b3a : 0x245a30);
+      }
+      g.rect(snap(x) - u, snap(base - 2 * u), 2 * u, 2 * u).fill(0x5e3a18);
+    };
+    for (let i = 0; i < 26; i++) {
+      const x = x0 + r() * (x1 - x0);
+      if (Math.abs(x - m.mouth) < 150 * k) continue; // keep the mine yard clear
+      const h = this.mountainAt(x);
+      if (h > snowLine * 0.45) continue;
+      pine(x, sy - h + 2 * u, 3 + r() * 3);
     }
   }
 
@@ -514,7 +556,7 @@ export class World {
     const mt = this.mountain;
     const sy = this.surfaceY;
     const chamber = (gr: Graphics, grow: number, color: number) => {
-      gr.roundRect(mt.mouth - grow, sy - mt.tunnelH - grow, mt.back - mt.mouth + grow * 2, mt.tunnelH + 8 * k + grow * 2, 18 * k).fill(color);
+      gr.rect(mt.mouth - grow, sy - mt.tunnelH - grow, mt.back - mt.mouth + grow * 2, mt.tunnelH + 8 * k + grow * 2).fill(color);
       if (d) {
         gr.ellipse(d.x, d.y, d.rx + grow, d.ry + grow).fill(color);
       }
@@ -534,23 +576,45 @@ export class World {
         gr.stroke({ width: wdt, color: col, cap: "round", join: "round" });
       }
     }
-    // timber supports along the tunnel, and a frame around its mouth
+    // timber: a plank ceiling, sets of posts and caps, and a heavy portal
+    // frame at the mouth
     const u = PX;
     const wood = 0x8a5a2b;
     const woodLo = 0x5e3a18;
-    const frame = (x: number, big: boolean) => {
-      const pw = (big ? 4 : 3) * u;
-      const ph = mt.tunnelH + (big ? 4 * u : -2 * u);
-      const top = sy - ph;
-      t.rect(x - u, top - u, pw + 2 * u, ph + u).fill(INK);
-      t.rect(x, top, pw, ph).fill(big ? wood : woodLo);
-      return { top, pw };
-    };
-    for (let x = mt.mouth + 34 * k; x < mt.back - 20 * k; x += 46 * k) frame(Math.round(x / u) * u, false);
-    const f = frame(Math.round((mt.mouth - 2 * u) / u) * u, true);
-    t.rect(mt.mouth - 6 * u, f.top - 5 * u, 16 * u, 6 * u).fill(INK);
-    t.rect(mt.mouth - 5 * u, f.top - 4 * u, 14 * u, 4 * u).fill(wood);
-    t.rect(mt.mouth - 5 * u, f.top - u, 14 * u, u).fill(woodLo);
+    const steel = 0xb8c4d3;
+    const snapU = (v: number) => Math.round(v / u) * u;
+    const ceil = snapU(sy - mt.tunnelH);
+    t.rect(mt.mouth, ceil, mt.back - mt.mouth, 3 * u).fill(woodLo);
+    for (let x = snapU(mt.mouth + 8 * k); x < mt.back; x += 12 * u) t.rect(x, ceil, u, 3 * u).fill(INK);
+    for (let x = snapU(mt.mouth + 40 * k); x < mt.back - 16 * k; x += snapU(48 * k)) {
+      t.rect(x - u, ceil + 3 * u, 5 * u, sy - ceil - 3 * u).fill(INK);
+      t.rect(x, ceil + 3 * u, 3 * u, sy - ceil - 3 * u).fill(woodLo);
+      t.rect(x - 3 * u, ceil + 3 * u, 9 * u, 2 * u).fill(wood);
+    }
+    // portal: a thick post at the mouth and a header beam over the opening
+    const px0 = snapU(mt.mouth - 3 * u);
+    t.rect(px0 - u, ceil - 6 * u, 7 * u, sy - ceil + 6 * u).fill(INK);
+    t.rect(px0, ceil - 5 * u, 5 * u, sy - ceil + 5 * u).fill(wood);
+    t.rect(px0 + 4 * u, ceil - 5 * u, u, sy - ceil + 5 * u).fill(woodLo);
+    t.rect(px0 - 4 * u, ceil - 9 * u, snapU(60 * k) + 8 * u, 5 * u).fill(INK);
+    t.rect(px0 - 3 * u, ceil - 8 * u, snapU(60 * k) + 6 * u, 3 * u).fill(wood);
+    // rails on ties from the back of the tunnel out into the yard
+    const railFrom = snapU(mt.mouth - 150 * k);
+    for (let x = railFrom; x < mt.back - 4 * u; x += 5 * u) t.rect(x, sy - u, 3 * u, 2 * u).fill(woodLo);
+    t.rect(railFrom, sy - 2 * u, mt.back - railFrom - 4 * u, u).fill(steel);
+    // a mine cart parked outside
+    const cx = snapU(mt.mouth - 110 * k);
+    const cw = 22 * u;
+    const ch = 10 * u;
+    t.rect(cx - u, sy - ch - 5 * u, cw + 2 * u, ch + 2 * u).fill(INK);
+    t.rect(cx, sy - ch - 4 * u, cw, ch).fill(0x6b6f80);
+    t.rect(cx, sy - ch - 4 * u, cw, 2 * u).fill(0x9aa0b4);
+    for (const gx of [cx + 3 * u, cx + cw - 7 * u]) {
+      t.rect(gx - u, sy - 5 * u, 6 * u, 5 * u).fill(INK);
+      t.rect(gx, sy - 4 * u, 4 * u, 3 * u).fill(0x3a3e4e);
+    }
+    // ore heaped in the cart
+    for (let i = 0; i < 6; i++) t.rect(cx + (2 + i * 3) * u, sy - ch - (6 + (i % 2)) * u, 3 * u, 3 * u).fill(i % 3 === 0 ? 0xffc928 : 0x8a7c9c);
     // the floor where Digly parks
     t.ellipse(hx, sy, 60 * k, 8 * k).fill({ color: CAVE.rim, alpha: 0.6 });
     if (d) t.ellipse(d.x, d.y + d.ry * 0.82, d.rx * 0.9, d.ry * 0.14).fill({ color: CAVE.rim, alpha: 0.6 });

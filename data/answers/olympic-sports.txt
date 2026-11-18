@@ -1,0 +1,124 @@
+# olympic-sports: Name | alias = rating (1 common .. 100 rare). Blank = estimated.
+Swimming = 1
+Gymnastics = 2
+Track and Field | athletics = 3
+Basketball = 4
+Soccer | football = 5
+Volleyball = 6
+Tennis = 7
+Boxing = 8
+Wrestling = 9
+Diving = 10
+Ice Hockey | hockey = 11
+Figure Skating = 12
+Skiing = 13
+Snowboarding = 14
+Archery
+Fencing
+Judo
+Taekwondo
+Karate
+Weightlifting
+Cycling
+BMX
+Mountain Biking
+Rowing
+Canoeing
+Kayaking
+Sailing
+Surfing
+Skateboarding
+Sport Climbing | climbing, rock climbing
+Breaking | breakdancing
+Equestrian | horse riding
+Dressage
+Show Jumping
+Eventing
+Shooting
+Golf
+Rugby | rugby sevens
+Baseball
+Softball
+Handball
+Field Hockey
+Water Polo
+Table Tennis | ping pong
+Badminton
+Beach Volleyball
+Triathlon
+Modern Pentathlon | pentathlon
+Marathon
+Decathlon
+Heptathlon
+Pole Vault
+High Jump
+Long Jump
+Triple Jump
+Shot Put
+Discus
+Javelin
+Hammer Throw
+Hurdles
+Sprint | 100 meters, 100m
+Relay
+Steeplechase
+Race Walking | racewalking
+Trampoline
+Rhythmic Gymnastics
+Artistic Swimming | synchronized swimming
+Marathon Swimming
+Alpine Skiing | downhill skiing, slalom, giant slalom
+Cross-Country Skiing | cross country skiing
+Ski Jumping
+Nordic Combined
+Biathlon
+Freestyle Skiing
+Moguls
+Aerials
+Ski Cross
+Halfpipe
+Slopestyle
+Big Air
+Speed Skating
+Short Track
+Curling
+Bobsled | bobsleigh
+Luge
+Skeleton
+Ski Mountaineering
+Tug of War
+Cricket
+Polo
+Lacrosse
+Croquet
+Rackets
+Jeu de Paume
+Pelota
+Motorboating
+Roque
+Squash
+Flag Football
+Kickboxing
+Coastal Rowing
+Keirin
+Omnium
+Madison
+Pommel Horse
+Rings
+Vault
+Parallel Bars
+Balance Beam
+Uneven Bars
+Floor Exercise
+Sabre
+Epee
+Foil
+Greco-Roman Wrestling | greco roman
+Freestyle Wrestling
+Kayak Cross
+Canoe Slalom
+Sprint Canoe
+Trap Shooting | trap
+Skeet
+Air Rifle
+Air Pistol

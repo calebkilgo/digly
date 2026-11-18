@@ -93,17 +93,16 @@ describe("scoring", () => {
     expect(bestN(a).map((x) => x.name)).toEqual(["d", "b", "e"]);
   });
 
-  it("level score = (best 3 + clean bonus + penalties) x multiplier", () => {
+  it("level score = (best 3 + clean bonus) x multiplier, never negative", () => {
     const P = SCORING.points;
     const full = levelScore([ans("a", "ruby", 2), ans("b", "diamond", 1), ans("c", "gold", 0)], 3);
     expect(full.raw).toBe(P.ruby + P.diamond + P.gold + SCORING.cleanBonus);
     expect(full.points).toBe(Math.round(full.raw * SCORING.multipliers[3]));
     const one = levelScore([ans("a", "gold", 0)], 1);
-    expect(one.raw).toBe(P.gold + 2 * SCORING.emptySlot);
+    expect(one.raw).toBe(P.gold);
     const none = levelScore([], 2);
-    expect(none.raw).toBe(3 * SCORING.emptySlot + SCORING.caveIn);
-    expect(none.points).toBeLessThan(0);
-    expect(gameScore([-50, -20, 10])).toBe(0);
+    expect(none.points).toBe(0);
+    expect(gameScore([0, 0, 10])).toBe(10);
   });
 
   it("maps z to tiers and display scores to tiers the same way", () => {

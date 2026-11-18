@@ -20,8 +20,13 @@ const LEGACY: Record<1 | 2 | 3, string[]> = {
 const STRIDE = { 1: [1, 0], 2: [3, 1], 3: [5, 2] } as const;
 
 function pool(level: 1 | 2 | 3, cycleStart: number) {
-  return SEEDS.filter((s) => s.level === level && (s.since ?? 0) <= cycleStart).map((s) => s.slug);
+  return SEEDS.filter((s) => s.level === level && !s.retired && (s.since ?? 0) <= cycleStart).map((s) => s.slug);
 }
+
+// Days whose category changed after people had started playing them.
+const PINNED: Record<number, Partial<Record<1 | 2 | 3, string>>> = {
+  30: { 1: "jobs" },
+};
 
 function order(slugs: string[], level: number, cycleStart: number) {
   const r = mulberry32(hash(AUTO_FROM, level, cycleStart));
@@ -47,6 +52,8 @@ export function slugFor(day: number, level: 1 | 2 | 3): string {
 }
 
 function compute(day: number, level: 1 | 2 | 3): string {
+  const pin = PINNED[day]?.[level];
+  if (pin) return pin;
   if (day <= LEGACY_LAST_DAY) {
     const p = LEGACY[level];
     const [m, c] = STRIDE[level];

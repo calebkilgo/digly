@@ -136,8 +136,6 @@ CATS = {
         ["Basil", "Oregano", "Cinnamon", "Black Pepper", "Salt", "Paprika", "Thyme", "Rosemary", "Parsley", "Garlic Powder", "Cumin", "Ginger", "Nutmeg", "Mint", "Turmeric"]),
     "flowers": ([], None,
         ["Rose", "Tulip", "Daisy", "Sunflower", "Lily", "Orchid", "Daffodil", "Lavender", "Carnation", "Dandelion", "Poppy", "Violet", "Lilac", "Hibiscus", "Marigold"]),
-    "sports": ([], None,
-        ["Soccer", "Basketball", "Baseball", "American Football", "Tennis", "Golf", "Hockey", "Volleyball", "Swimming", "Boxing", "Track and Field", "Rugby", "Cricket", "Wrestling", "Lacrosse"]),
     "car-brands": ([], None,
         ["Toyota", "Ford", "Honda", "Chevrolet", "BMW", "Tesla", "Mercedes-Benz", "Audi", "Nissan", "Volkswagen", "Hyundai", "Kia", "Jeep", "Subaru", "Ferrari"]),
     "cat-breeds": ([("animals/cats.json",)], strip_suffix(["cat"]),
@@ -156,20 +154,10 @@ CATS = {
         ["Tyrannosaurus", "Triceratops", "Velociraptor", "Stegosaurus", "Brachiosaurus", "Brontosaurus", "Spinosaurus", "Diplodocus", "Ankylosaurus", "Allosaurus", "Parasaurolophus", "Iguanodon"]),
     "horse-breeds": ([("animals/horses.json",)], strip_suffix(["horse"]),
         ["Arabian", "Thoroughbred", "Clydesdale", "Mustang", "Quarter Horse", "Appaloosa", "Shetland Pony", "Friesian", "Pinto", "Palomino", "Morgan", "Paint", "Percheron", "Shire", "Andalusian"]),
-    "knots": ([("technology/knots.json",)], None,
-        ["Square Knot", "Bowline", "Slip Knot", "Figure Eight", "Granny Knot", "Overhand Knot", "Clove Hitch", "Windsor", "Half Hitch", "Hangman's Knot", "Sheet Bend", "Bow Tie", "Shoelace Knot"]),
     "constellations": ([], None,
         ["Orion", "Ursa Major", "Leo", "Scorpius", "Taurus", "Gemini", "Cassiopeia", "Ursa Minor", "Aries", "Cancer", "Virgo", "Libra", "Sagittarius", "Pisces", "Aquarius", "Capricornus", "Draco", "Pegasus", "Andromeda"]),
     "egyptian-gods": ([("mythology/egyptian_gods.json",)], None,
         ["Ra", "Anubis", "Osiris", "Isis", "Horus", "Set", "Thoth", "Bastet", "Hathor", "Amun", "Sobek", "Ptah", "Sekhmet", "Nut", "Geb"]),
-    "animals": ([("animals/common.json",)], None,
-        ["Dog", "Cat", "Lion", "Elephant", "Tiger", "Giraffe", "Horse", "Cow", "Monkey", "Bear", "Zebra", "Pig", "Rabbit", "Wolf", "Fox"]),
-    "countries": ([("geography/countries.json",)], None,
-        ["United States", "Canada", "Mexico", "China", "Russia", "France", "Germany", "Japan", "Brazil", "India", "Italy", "Spain", "United Kingdom", "Australia", "Egypt"]),
-    "jobs": ([("humans/occupations.json",)], None,
-        ["Teacher", "Doctor", "Nurse", "Lawyer", "Firefighter", "Police Officer", "Engineer", "Chef", "Farmer", "Pilot", "Dentist", "Accountant", "Scientist", "Artist", "Plumber"]),
-    "body-parts": ([("humans/bodyParts.json",)], None,
-        ["Head", "Arm", "Leg", "Hand", "Foot", "Eye", "Nose", "Mouth", "Ear", "Finger", "Toe", "Heart", "Brain", "Knee", "Elbow"]),
     "world-capitals": ([("geography/countries_with_capitals.json", "countries", "capital")], None,
         ["London", "Paris", "Tokyo", "Washington, D.C.", "Beijing", "Moscow", "Rome", "Berlin", "Madrid", "Ottawa", "Canberra", "Cairo", "Mexico City", "Athens", "Dublin"]),
     "nba-teams": ([("sports/nba_teams.json", "nba_teams", "name")], nfl,
@@ -195,6 +183,10 @@ CATS = {
     "roman-gods": ([("mythology/roman_deities.json",)], None,
         ["Jupiter", "Juno", "Neptune", "Pluto", "Mars", "Venus", "Minerva", "Apollo", "Diana", "Mercury", "Vulcan", "Cupid", "Saturn", "Bacchus", "Ceres"]),
 }
+# retired from the rotation, kept so days already played can still load
+CATS["jobs"] = ([("humans/occupations.json",)], None,
+    ["Teacher", "Doctor", "Nurse", "Lawyer", "Firefighter", "Police Officer", "Engineer", "Chef", "Farmer", "Pilot", "Dentist", "Accountant", "Scientist", "Artist", "Plumber"])
+
 # junk in the public lists
 BLOCK = {
     "dinosaurs": {"Mollusc", "Fish", "Birds", "Fossil", "Turtle", "Dinosaur", "Crocodile", "Mammal", "Pterosaur", "Theropod", "Ichthyosaur", "Cetacea", "Plesiosaur"},
@@ -203,7 +195,8 @@ BLOCK = {
 }
 
 # categories that keep their hand file as-is
-for slug in ["african-countries", "bones", "dances", "elements", "european-countries", "greek-myth", "languages", "us-states"]:
+for slug in ["african-countries", "bones", "dances", "elements", "european-countries", "greek-myth", "languages", "us-states",
+             "sea-creatures", "kitchen-tools", "clothing", "candy", "olympic-sports", "snakes"]:
     CATS[slug] = ([], None, [])
 CATS["cheeses"] = ([("foods/curds.json",)], None, [])
 CATS["birds"] = ([(birds,)], None, [])

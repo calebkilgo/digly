@@ -2,20 +2,17 @@
 //
 // Every level: 40 seconds, name as many valid answers as you can, your best 3
 // count. Each answer has a tier (from how niche it is within that prompt).
-// Level score = (points of best 3 + clean-dig bonus + penalties) x level multiplier.
-// Game score = sum of the three levels, never below 0.
+// Level score = (points of best 3 + clean-dig bonus) x level multiplier.
+// Nothing ever takes points away: an empty level just scores 0.
 
 export type TierKey = "copper" | "gold" | "diamond" | "ruby" | "platinum";
 
 export const SCORING = {
   seconds: 40,
   best: 3,
-  points: { copper: 10, gold: 25, diamond: 45, ruby: 75, platinum: 120 } as Record<TierKey, number>,
+  points: { copper: 20, gold: 50, diamond: 150, ruby: 350, platinum: 1000 } as Record<TierKey, number>,
   multipliers: { 1: 1, 2: 1.5, 3: 3.5 } as Record<1 | 2 | 3, number>, // tuned from 1 / 1.25 / 2 by the simulation
-  cleanBonus: 15, // all 3 slots filled
-  emptySlot: -5, // per empty slot
-  caveIn: -15, // extra, when a level has no valid answers at all
-  gameFloor: 0,
+  cleanBonus: 30, // all 3 slots filled
   // tier cutoffs on the z-score of an answer's difficulty within its prompt
   tierZ: { gold: -1.0, diamond: 0.3, ruby: 1.8 }, // ~16% copper, 46% gold, 35% diamond, 3.6% ruby
 };
@@ -40,7 +37,7 @@ export const TIERS: Tier[] = [
   { key: "ruby", label: "Ruby", min: 96, blurb: "very niche" },
   { key: "diamond", label: "Diamond", min: 62, blurb: "niche" },
   { key: "gold", label: "Gold", min: 16, blurb: "a bit niche" },
-  { key: "copper", label: "Copper", min: 1, blurb: "the obvious ones" },
+  { key: "copper", label: "Bronze", min: 1, blurb: "the obvious ones" },
 ];
 const BY_KEY = Object.fromEntries(TIERS.map((t) => [t.key, t])) as Record<TierKey, Tier>;
 
@@ -74,8 +71,7 @@ export function bestN<T extends Scored>(accepted: T[], n = SCORING.best): T[] {
 export interface LevelBreakdown {
   gems: number; // points from the best answers
   bonus: number; // clean-dig bonus
-  penalty: number; // empty slots and cave-in (zero or negative)
-  raw: number; // gems + bonus + penalty
+  raw: number; // gems + bonus
   points: number; // raw x multiplier, rounded
   multiplier: number;
 }
@@ -84,14 +80,13 @@ export function levelScore(best: Scored[], level: 1 | 2 | 3): LevelBreakdown {
   const n = Math.min(best.length, SCORING.best);
   const gems = best.slice(0, SCORING.best).reduce((s, a) => s + pointsOf(a), 0);
   const bonus = n === SCORING.best ? SCORING.cleanBonus : 0;
-  const penalty = (SCORING.best - n) * SCORING.emptySlot + (n === 0 ? SCORING.caveIn : 0);
-  const raw = gems + bonus + penalty;
+  const raw = gems + bonus;
   const multiplier = SCORING.multipliers[level];
-  return { gems, bonus, penalty, raw, points: Math.round(raw * multiplier), multiplier };
+  return { gems, bonus, raw, points: Math.round(raw * multiplier), multiplier };
 }
 
 export function gameScore(levelPoints: number[]) {
-  return Math.max(SCORING.gameFloor, levelPoints.reduce((s, p) => s + p, 0));
+  return Math.max(0, levelPoints.reduce((s, p) => s + p, 0));
 }
 
 // Rough share of players who find an answer with this display score.

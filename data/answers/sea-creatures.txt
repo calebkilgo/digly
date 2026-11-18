@@ -1,0 +1,121 @@
+# sea-creatures: Name | alias = rating (1 common .. 100 rare). Blank = estimated.
+Shark = 1
+Whale = 2
+Dolphin = 3
+Octopus = 4
+Jellyfish = 5
+Starfish | sea star = 6
+Crab = 7
+Seahorse | sea horse = 8
+Lobster = 9
+Sea Turtle | turtle = 10
+Squid = 11
+Clownfish | clown fish = 12
+Stingray | sting ray, ray = 13
+Shrimp | prawn = 14
+Seal
+Sea Lion
+Walrus
+Orca | killer whale
+Manta Ray | manta
+Eel | moray eel, moray
+Sea Urchin | urchin
+Coral
+Clam
+Oyster
+Mussel
+Scallop
+Sea Anemone | anemone
+Sea Cucumber
+Barracuda
+Swordfish
+Marlin
+Tuna
+Salmon
+Cod
+Halibut
+Flounder
+Sardine
+Anchovy
+Mackerel
+Herring
+Pufferfish | puffer fish, blowfish
+Angelfish
+Butterflyfish
+Parrotfish
+Grouper
+Snapper
+Sea Bass
+Mahi-mahi | mahi mahi, dorado
+Sailfish
+Hammerhead Shark | hammerhead
+Great White Shark | great white
+Whale Shark
+Tiger Shark
+Bull Shark
+Blue Whale
+Humpback Whale | humpback
+Sperm Whale
+Narwhal
+Beluga
+Manatee
+Dugong
+Sea Otter | otter
+Penguin
+Krill
+Plankton
+Nautilus
+Cuttlefish
+Sea Slug | nudibranch
+Hermit Crab
+King Crab
+Horseshoe Crab
+Barnacle
+Sponge | sea sponge
+Sand Dollar
+Conch
+Sea Snake
+Lionfish
+Anglerfish
+Moonfish | opah
+Sunfish | mola mola, ocean sunfish
+Flying Fish
+Triggerfish
+Wrasse
+Damselfish
+Tang | blue tang
+Goby
+Blenny
+Coelacanth
+Hagfish
+Lamprey
+Gulper Eel
+Viperfish
+Oarfish
+Giant Squid
+Colossal Squid
+Vampire Squid
+Box Jellyfish
+Portuguese Man o' War | portuguese man of war, man o war
+Sea Pen
+Sea Lily | crinoid
+Brittle Star
+Isopod | giant isopod
+Mantis Shrimp
+Spider Crab
+Leopard Seal
+Elephant Seal
+Fur Seal
+Harbor Seal
+Bottlenose Dolphin
+Porpoise
+Pilot Whale
+Gray Whale
+Minke Whale
+Right Whale
+Bowhead Whale
+Fin Whale
+Remora
+Wahoo
+Tarpon
+Bonefish

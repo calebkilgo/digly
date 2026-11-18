@@ -1,0 +1,139 @@
+# candy: Name | alias = rating (1 common .. 100 rare). Blank = estimated.
+M&M's | m and ms, mms, m and m = 1
+Snickers = 2
+Skittles = 3
+Kit Kat | kitkat = 4
+Reese's | reeses, reeses peanut butter cups, peanut butter cups = 5
+Twix = 6
+Hershey's | hersheys, hershey bar = 7
+Starburst = 8
+Milky Way = 9
+Sour Patch Kids = 10
+Butterfinger = 11
+Jolly Ranchers | jolly rancher = 12
+Gummy Bears | gummi bears = 13
+Tootsie Roll | tootsie rolls = 14
+Three Musketeers | 3 musketeers
+Nerds
+Laffy Taffy
+Airheads
+Twizzlers
+Red Vines
+Swedish Fish
+Hershey's Kisses | kisses
+Almond Joy
+Mounds
+Baby Ruth
+PayDay
+Whoppers
+Milk Duds
+Junior Mints
+Mike and Ike
+Hot Tamales
+Lemonheads
+Sweethearts
+Candy Corn
+Jelly Beans
+Jelly Belly
+Life Savers | lifesavers
+Smarties
+Pez
+Warheads
+Blow Pops
+Tootsie Pops
+Dum Dums
+Ring Pop
+Push Pop
+Fun Dip
+Pixy Stix
+Pop Rocks
+Ferrero Rocher
+Lindt
+Toblerone
+Cadbury | cadbury dairy milk, dairy milk
+Cadbury Creme Egg | creme egg
+Galaxy
+Mars
+Bounty
+Crunch | nestle crunch
+100 Grand
+Heath
+Rolo
+Caramello
+Kinder Bueno | bueno
+Kinder Egg | kinder surprise
+York Peppermint Pattie | peppermint pattie
+Andes Mints
+Mentos
+Tic Tac
+Altoids
+Werther's Original | werthers
+Haribo
+Peeps
+Cotton Candy | candy floss
+Candy Cane
+Lollipop
+Gobstopper | everlasting gobstopper, jawbreaker
+Atomic Fireball | fireball
+Necco Wafers
+Good & Plenty | good and plenty
+Charleston Chew
+Bit-O-Honey | bit o honey
+Mary Jane
+Zagnut
+Clark Bar
+Chunky
+Goobers
+Raisinets
+Sno-Caps
+Dots
+Chuckles
+Swedish Berries
+Sour Punch
+Trolli
+Fruit Gushers | gushers
+Fruit by the Foot
+Fruit Roll-Ups
+Bazooka | bazooka gum
+Bubblicious
+Hubba Bubba
+Big League Chew
+Ice Breakers
+Brach's
+Russell Stover
+See's Candies
+Godiva
+Ghirardelli
+Whitman's
+Hershey's Cookies 'n' Creme
+Take 5
+Kinder Chocolate
+Aero
+Crunchie
+Flake
+Twirl
+Wispa
+Double Decker
+Picnic
+Yorkie
+Lion Bar
+Maltesers
+Wine Gums
+Jelly Babies
+Fruit Pastilles
+Love Hearts
+Sherbet Lemons
+Turkish Delight
+Fudge
+Toffee
+Brittle | peanut brittle
+Saltwater Taffy | taffy
+Marzipan
+Nougat
+Licorice | liquorice
+Rock Candy
+Gumdrops
+Butterscotch
+Caramel
+Truffle
+Bonbon

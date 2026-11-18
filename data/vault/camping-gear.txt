@@ -1,4 +1,5 @@
 # title: Camping gear
+# prompt: Name as much camping gear as you can.
 # level: 1
 # domain: everyday objects
 # noun: items

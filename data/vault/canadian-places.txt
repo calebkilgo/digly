@@ -1,4 +1,5 @@
 # title: Canadian cities and provinces
+# prompt: Name as many Canadian cities and provinces as you can.
 # level: 2
 # domain: geography
 # noun: places
@@ -107,7 +108,6 @@ Dawson City
 Inuvik
 Tofino
 Penticton
-Vernon
 Squamish
 Chilliwack
 Coquitlam

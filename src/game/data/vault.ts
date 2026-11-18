@@ -12,6 +12,7 @@ export interface VaultGame {
 export interface VaultSeed {
   slug: string;
   title: string; // the prompt players see
+  prompt: string; // the full sentence shown while digging
   level: 1 | 2 | 3;
   domain: string;
   noun: string;
@@ -32,7 +33,7 @@ export const VAULT_CHALLENGES: ChallengeSeed[] = VAULT_SEEDS.map((v) => ({
   title: v.title,
   level: v.level,
   theme: THEME[v.domain] ?? "culture",
-  prompt: `Name as many ${v.noun} as you can.`,
+  prompt: v.prompt,
   noun: v.noun,
   rules: v.rules,
   scoringVersion: 1,

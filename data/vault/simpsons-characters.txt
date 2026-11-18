@@ -1,0 +1,139 @@
+# title: Simpsons characters
+# prompt: Name as many characters from The Simpsons as you can.
+# level: 3
+# domain: pop culture
+# noun: characters
+# rule: Characters from the TV show The Simpsons.
+# rule: First or last names are enough when only one character has them.
+# surname
+# firstname
+Homer Simpson
+Marge Simpson
+Bart Simpson
+Lisa Simpson
+Maggie Simpson
+Ned Flanders | flanders
+Mr. Burns | montgomery burns, monty burns
+Waylon Smithers | smithers
+Krusty the Clown | krusty
+Milhouse Van Houten | milhouse
+Moe Szyslak | moe
+Apu Nahasapeemapetilon | apu
+Barney Gumble | barney
+Chief Wiggum | clancy wiggum, wiggum
+Ralph Wiggum | ralph
+Principal Skinner | seymour skinner, skinner
+Edna Krabappel | mrs krabappel, krabappel
+Groundskeeper Willie | willie
+Nelson Muntz | nelson
+Sideshow Bob | bob terwilliger
+Comic Book Guy
+Patty Bouvier | patty
+Selma Bouvier | selma
+Grampa Simpson | abe simpson, grandpa simpson, abraham simpson
+Mona Simpson
+Lenny Leonard | lenny
+Carl Carlson | carl
+Otto Mann | otto
+Dr. Hibbert | julius hibbert, hibbert
+Dr. Nick | dr nick riviera
+Reverend Lovejoy | lovejoy, timothy lovejoy
+Helen Lovejoy
+Kent Brockman | brockman
+Mayor Quimby | quimby
+Fat Tony
+Troy McClure | troy mcclure
+Lionel Hutz | hutz
+Professor Frink | frink
+Hans Moleman | moleman
+Cletus | cletus spuckler
+Brandine
+Sideshow Mel
+Superintendent Chalmers | chalmers
+Disco Stu
+Squeaky-Voiced Teen | squeaky voiced teen
+Gil | gil gunderson
+Jimbo Jones | jimbo
+Kearney
+Dolph
+Martin Prince | martin
+Sherri and Terri | sherri, terri
+Rod Flanders | rod
+Todd Flanders | todd
+Maude Flanders | maude
+Lunchlady Doris | doris
+Bleeding Gums Murphy
+Itchy
+Scratchy
+Santa's Little Helper | santas little helper
+Snowball II | snowball
+Blinky
+Mr. Teeny
+Kang
+Kodos
+Duffman
+Rainier Wolfcastle | wolfcastle, mcbain
+Bumblebee Man
+Crazy Cat Lady
+Old Jewish Man
+Jasper | jasper beardsley
+Agnes Skinner
+Manjula
+Herman
+Snake | snake jailbird
+Legs
+Louie
+Johnny Tightlips
+Luann Van Houten | luann
+Kirk Van Houten | kirk
+Database
+Uter
+Wendell
+Lewis
+Allison Taylor
+Jessica Lovejoy
+Ms. Hoover | elizabeth hoover
+Mrs. Muntz
+Judge Snyder
+Blue-Haired Lawyer | blue haired lawyer
+Artie Ziff
+Lurleen Lumpkin
+Herb Powell
+Jacqueline Bouvier
+Ling Bouvier
+Plopper | spider pig
+Larry Burns
+Arnie Pye
+Scott Christian
+Raphael
+Sea Captain | captain mccallister
+Captain Lance Murdock
+Rich Texan
+Drederick Tatum
+Cookie Kwan
+Lindsey Naegle
+Gunter and Ernst
+Baby Gerald
+Eddie
+Lou
+Akira
+Luigi
+Gino
+Frank Grimes | grimey, frank grimes
+Mr. Largo | dewey largo
+Coach Krupt
+Hank Scorpio
+Poochie
+Roy
+Mindy Simmons
+Laura Powers
+Becky
+Ruth Powers
+Professor Lombardo
+Lyle Lanley
+Hugo Simpson
+Cecil Terwilliger
+Francine
+Bill and Marty
+Doctor Marvin Monroe | marvin monroe
+Jebediah Springfield

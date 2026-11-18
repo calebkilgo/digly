@@ -362,3 +362,52 @@ export function ResetSheet(props: { onReset: (password: string) => Promise<unkno
     </Sheet>
   );
 }
+
+// A prompt idea from the player. Works for guests too.
+export function SuggestSheet({ onSend, onClose }: { onSend: (text: string) => Promise<void>; onClose: () => void }) {
+  const [text, setText] = useState("");
+  const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [err, setErr] = useState("");
+  const send = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (text.trim().length < 2 || state === "sending") return;
+    setState("sending");
+    try {
+      await onSend(text.trim());
+      setState("sent");
+    } catch (x) {
+      setErr(x instanceof Error ? x.message : "Couldn't send that.");
+      setState("error");
+    }
+  };
+  return (
+    <Sheet title="Suggest a prompt" onClose={onClose}>
+      {state === "sent" ? (
+        <p className="note">Thanks! Your idea is in the pile.</p>
+      ) : (
+        <form className="suggest" onSubmit={send}>
+          <label htmlFor="suggest-in">Got an idea for a category? Keep it to a few words.</label>
+          <div className="suggest-row">
+            <input
+              id="suggest-in"
+              value={text}
+              maxLength={120}
+              placeholder="e.g. Board games from the 80s"
+              autoComplete="off"
+              enterKeyHint="send"
+              onChange={(e) => setText(e.target.value)}
+            />
+            <button className="btn btn-sm btn-y" disabled={text.trim().length < 2 || state === "sending"}>
+              {state === "sending" ? "…" : "Send"}
+            </button>
+          </div>
+          {state === "error" && (
+            <div role="alert" className="suggest-err">
+              {err}
+            </div>
+          )}
+        </form>
+      )}
+    </Sheet>
+  );
+}

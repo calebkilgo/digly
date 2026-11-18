@@ -19,6 +19,7 @@ export interface ChallengeSeed {
   scoringVersion: number;
   answers: string;
   since?: number; // first day number this category can be dug (default: any)
+  retired?: boolean; // out of the rotation; kept so days already played still load
 }
 
 export const SEEDS: ChallengeSeed[] = [
@@ -181,7 +182,7 @@ const more = (slug: string, level: 1 | 2 | 3, theme: Theme, title: string, noun:
 
 SEEDS.push(
   more("vegetables", 1, "food", "Vegetables", "vegetables", ["Culinary vegetables count, including beans and roots.", "Fruits like apples don't."]),
-  more("sports", 1, "sports", "Sports", "sports", ["Organized sports and athletic events.", "Board and card games don't count, chess aside."]),
+  more("olympic-sports", 1, "sports", "Olympic sports", "Olympic sports", ["Sports and events from any Summer or Winter Olympics, past or present."]),
   more("car-brands", 1, "culture", "Car brands", "car brands", ["Car makers, past or present.", "Model names like Mustang don't count."]),
   more("flowers", 1, "biology", "Flowers", "flowers", ["Common names of flowering plants."]),
   more("herbs-spices", 1, "food", "Herbs & spices", "herbs and spices", ["Single herbs, spices and named blends."]),
@@ -193,13 +194,13 @@ SEEDS.push(
   more("programming-languages", 2, "science", "Programming languages", "programming languages", ["Languages you can write programs in.", "Markup like HTML doesn't count."]),
   more("dinosaurs", 3, "biology", "Dinosaurs", "dinosaurs", ["Dinosaur genera.", "Pterosaurs and sea reptiles don't count."]),
   more("horse-breeds", 3, "biology", "Horse breeds", "horse breeds", ["Breeds and well-known types, ponies included."]),
-  more("knots", 3, "culture", "Knots", "knots", ["Named knots, hitches and bends."]),
+  more("snakes", 3, "biology", "Snakes", "snakes", ["Kinds of snake by common name.", "Lizards and eels don\'t count."]),
   more("constellations", 3, "science", "Constellations", "constellations", ["The 88 official constellations.", "Asterisms like the Big Dipper don't count."]),
   more("egyptian-gods", 3, "culture", "Egyptian gods", "Egyptian gods", ["Gods and goddesses of ancient Egypt."]),
-  more("animals", 1, "biology", "Animals", "animals", ["Any animal, wild or tame.", "Breeds count as their animal."]),
-  more("countries", 1, "geography", "Countries", "countries", ["Countries of the world. Common short names work."]),
-  more("jobs", 1, "culture", "Jobs", "jobs", ["Real jobs and professions, past or present."]),
-  more("body-parts", 1, "biology", "Body parts", "parts of the human body", ["Outside or inside: limbs, organs, bones and more."], "Name as many parts of the human body as you can."),
+  more("sea-creatures", 1, "biology", "Sea creatures", "sea creatures", ["Animals that live in the ocean.", "Seabirds don\'t count."]),
+  more("kitchen-tools", 1, "culture", "Kitchen tools", "kitchen tools", ["Utensils, cookware and appliances used for cooking."]),
+  more("clothing", 1, "culture", "Clothing", "pieces of clothing", ["Things people wear, including shoes and hats."], "Name as many pieces of clothing as you can."),
+  more("candy", 1, "food", "Candy", "candies", ["Candy bars, sweets and chocolates by name or kind."], "Name as many kinds of candy as you can."),
   more("world-capitals", 2, "geography", "World capitals", "capital cities", ["Capitals of the world's countries."], "Name as many capital cities as you can."),
   more("nba-teams", 2, "sports", "NBA teams", "NBA teams", ["Current NBA teams. The nickname alone is enough."]),
   more("mlb-teams", 2, "sports", "MLB teams", "MLB teams", ["Current MLB teams. The nickname alone is enough."]),
@@ -212,4 +213,6 @@ SEEDS.push(
   more("norse-myth", 3, "culture", "Norse mythology", "figures, places and things from Norse mythology", ["Gods, giants, creatures, realms and treasures."], "Name as much from Norse mythology as you can."),
   more("art-movements", 3, "culture", "Art movements", "art movements", ["Movements, schools and styles of art."]),
   more("roman-gods", 3, "culture", "Roman gods", "Roman gods", ["Gods and goddesses of ancient Rome."]),
+  // Retired 2026-11-18 for being too broad. Day 30 had already started with it.
+  { ...more("jobs", 1, "culture", "Jobs", "jobs", ["Real jobs and professions, past or present."]), retired: true },
 );

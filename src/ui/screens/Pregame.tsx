@@ -71,7 +71,7 @@ export function PregameScreen(props: { scene: DiglyScene | null; run: Run; onBac
           <li>
             <span className="pip px">3</span>
             <span>
-              Name as many as you can. <b>Your best 3 count.</b> Fill all 3 for a bonus; an empty level costs you.
+              Name as many as you can. <b>Your best 3 count.</b> Fill all 3 for a bonus.
             </span>
           </li>
           <li>

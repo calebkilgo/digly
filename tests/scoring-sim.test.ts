@@ -88,7 +88,7 @@ describe("scoring simulation", () => {
   it("prints each level's score and share of the total", () => {
     const lines = [
       `${GAMES} games per player. Points ${JSON.stringify(SCORING.points)}, multipliers ${JSON.stringify(SCORING.multipliers)},`,
-      `clean +${SCORING.cleanBonus}, empty ${SCORING.emptySlot}/slot, cave-in ${SCORING.caveIn}.`,
+      `clean +${SCORING.cleanBonus}, no penalties.`,
       "",
       "player                  L1    L2    L3   game   L1%  L2%  L3%",
       ...rows.map(({ p, s }) => `${p.name.padEnd(20)} ${n(s.l1)} ${n(s.l2)} ${n(s.l3)} ${n(s.game)}  ${pct(s.share[0])} ${pct(s.share[1])} ${pct(s.share[2])}`),

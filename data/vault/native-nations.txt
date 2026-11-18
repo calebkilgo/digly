@@ -1,4 +1,5 @@
 # title: Native American nations
+# prompt: Name as many Native American nations as you can.
 # level: 2
 # domain: history
 # noun: nations

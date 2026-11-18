@@ -1,0 +1,161 @@
+# title: Broadway musicals
+# level: 3
+# domain: music and art
+# noun: musicals
+# rule: Stage musicals that played on Broadway, any year.
+# rule: Musicals made only as films don't count.
+Hamilton
+The Lion King | lion king
+Wicked
+The Phantom of the Opera | phantom of the opera, phantom
+Les Miserables | les mis
+Cats
+Chicago
+Rent
+Grease
+Annie
+The Sound of Music | sound of music
+West Side Story
+Mamma Mia! | mamma mia
+Hairspray
+Dear Evan Hansen
+The Book of Mormon | book of mormon
+Mary Poppins
+Beauty and the Beast
+Aladdin
+Frozen
+Fiddler on the Roof
+Into the Woods
+Sweeney Todd
+A Chorus Line | chorus line
+Cabaret
+Oklahoma! | oklahoma
+Hello, Dolly! | hello dolly
+My Fair Lady
+The King and I | king and i
+Jesus Christ Superstar
+Evita
+Joseph and the Amazing Technicolor Dreamcoat | joseph
+Little Shop of Horrors
+The Music Man | music man
+Guys and Dolls
+South Pacific
+Carousel
+Hadestown
+Six
+Come From Away
+Mean Girls
+Legally Blonde
+School of Rock
+Matilda
+Kinky Boots
+Waitress
+Beetlejuice
+Moulin Rouge! | moulin rouge
+Jersey Boys
+Avenue Q
+Spring Awakening
+In the Heights
+Next to Normal
+Spamalot
+The Producers | producers
+Shrek the Musical | shrek
+Newsies
+Hair
+Godspell
+Pippin
+Company
+Follies
+A Little Night Music
+Sunday in the Park with George
+Assassins
+Gypsy
+Funny Girl
+Anything Goes
+Kiss Me, Kate | kiss me kate
+Show Boat
+Porgy and Bess
+Man of La Mancha
+Camelot
+Brigadoon
+Bye Bye Birdie
+How to Succeed in Business Without Really Trying | how to succeed
+The Pajama Game
+Damn Yankees
+Sweet Charity
+Mame
+Dreamgirls
+La Cage aux Folles
+Miss Saigon
+Starlight Express
+Sunset Boulevard
+Aspects of Love
+Chess
+Blood Brothers
+Billy Elliot
+The Color Purple | color purple
+Memphis
+Once
+Fun Home
+The Band's Visit
+Bright Star
+Anastasia
+The Prom
+Tootsie
+Back to the Future
+Mrs. Doubtfire
+Some Like It Hot
+& Juliet | and juliet
+Kimberly Akimbo
+Shucked
+Suffs
+The Outsiders
+Hell's Kitchen
+Water for Elephants
+Merrily We Roll Along
+Parade
+Ragtime
+Titanic
+The Secret Garden
+Big River
+Urinetown
+Thoroughly Modern Millie
+Bring It On
+Footloose
+Saturday Night Fever
+Rock of Ages
+American Idiot
+Once on This Island
+The Wiz | wiz
+Little Women
+Spider-Man: Turn Off the Dark | spider man turn off the dark
+Tarzan
+The Little Mermaid
+Aida
+The Scottsboro Boys
+Bonnie and Clyde
+Jekyll and Hyde
+Sister Act
+Catch Me If You Can
+Elf
+A Christmas Story
+Charlie and the Chocolate Factory
+Groundhog Day
+Something Rotten!
+Hedwig and the Angry Inch | hedwig
+The Great Comet | natasha pierre and the great comet of 1812
+SpongeBob SquarePants | spongebob
+Jagged Little Pill
+Tina
+MJ the Musical | mj
+Ain't Too Proud
+The Drowsy Chaperone
+Grey Gardens
+Flower Drum Song
+Pacific Overtures
+Passion
+42nd Street
+Annie Get Your Gun
+On the Town
+Wonderful Town
+Candide

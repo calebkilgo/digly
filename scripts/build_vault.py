@@ -8,6 +8,8 @@ data/vault/games.txt lists the 50 Vault games, one per line:
 
 data/vault/<slug>.txt holds one prompt. Header lines start with "#":
   # title: Trees               the prompt players see (8 words or fewer)
+  # prompt: Name as many ...   the full sentence shown while digging (optional;
+                               by default "Name as many <title> as you can.")
   # level: 1                   1, 2 or 3
   # domain: nature
   # noun: trees                used in "You found 12 trees"
@@ -16,6 +18,7 @@ data/vault/<slug>.txt holds one prompt. Header lines start with "#":
   # prefix: mount, mont        words that can be left off the front
   # add-prefix: mount          also accept the name with this word in front
   # surname                    also accept a person's last name on its own
+  # firstname                  also accept a person's first name on its own
 
 Then one answer per line, most commonly named first:
   Name | alias, alias = rating
@@ -38,9 +41,18 @@ META = ROOT / "src" / "game" / "data" / "vaultMeta.generated.ts"
 
 ORDER_WEIGHT = 0.7  # rest is word frequency
 
+# titles and filler that shouldn't count as a name on their own
+NOT_NAMES = {
+    "lord", "lady", "madam", "madame", "mrs", "mr", "ms", "miss", "professor", "sir", "dr", "doctor",
+    "aunt", "uncle", "king", "queen", "prince", "princess", "duke", "duchess", "earl", "captain",
+    "saint", "old", "mad", "nearly", "moaning", "little", "big", "grand", "jr", "sr", "ii", "iii",
+    "of", "de", "von", "van", "the", "and", "chief", "mayor", "principal", "officer", "comic", "bumblebee",
+    "judge", "lawyer", "man", "guy", "lady", "teen", "clown", "helper", "superintendent", "reverend", "coach", "groundskeeper",
+}
+
 
 def header(text):
-    meta = {"rules": [], "strip": [], "prefix": [], "add_prefix": [], "surname": False}
+    meta = {"rules": [], "strip": [], "prefix": [], "add_prefix": [], "surname": False, "firstname": False}
     for line in text.splitlines():
         m = re.match(r"^#\s*([a-z-]+)\s*(?::\s*(.*))?$", line.strip())
         if not m:
@@ -52,6 +64,8 @@ def header(text):
             meta[k.replace("-", "_")] += [w.strip().lower() for w in v.split(",") if w.strip()]
         elif k == "surname":
             meta["surname"] = True
+        elif k == "firstname":
+            meta["firstname"] = True
         else:
             meta[k] = v
     return meta
@@ -73,8 +87,10 @@ def variants(name, meta):
     for w in meta["add_prefix"]:
         if not any(n.startswith(p + " ") for p in meta["prefix"] + [w]):
             out.append(f"{w} {n}")
-    if meta["surname"] and len(words) > 1:
+    if meta["surname"] and len(words) > 1 and words[-1] not in NOT_NAMES:
         out.append(words[-1])
+    if meta["firstname"] and len(words) > 1 and words[0] not in NOT_NAMES:
+        out.append(words[0])
     # possessives: "Newton's laws" -> "newton laws" too
     if re.search(r"\w['’]s?\b", name):
         for v in [n, *out]:
@@ -164,9 +180,11 @@ def main():
     ]
     for slug, meta, lines in seeds:
         body = "\n".join(lines).replace("`", "'").replace("${", "$ {")
+        t = meta["title"]
         head = {
             "slug": slug,
-            "title": meta["title"],
+            "title": t,
+            "prompt": meta.get("prompt") or f"Name as many {t[:1].lower() + t[1:]} as you can.",
             "level": int(meta["level"]),
             "domain": meta["domain"],
             "noun": meta.get("noun") or meta["title"].lower(),

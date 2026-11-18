@@ -36,7 +36,7 @@ const TAU = Math.PI * 2;
 // swing is a full turn: down behind him, up over his head, then hard into the
 // ground in front.
 const REST = 0;
-const OVERHEAD = 4.15; // pick straight above his hip
+const OVERHEAD = 4.15; // pick straight above his hip (valid answers skip ahead to here)
 const SWING_SHARE = 0.82; // part of each swing spent turning; the rest it sits planted
 
 // Digly the miner. Units inside are sprite pixels; the scene scales the root
@@ -177,8 +177,8 @@ export class Miner {
       }
       this.angleVel = 0;
     } else {
-      let target = REST;
-      if (this.state === "victory") target = OVERHEAD + Math.sin(this.t * 10) * 0.3;
+      // celebrating, idle or watching: the pick rests on the ground
+      const target = REST;
       // come back to rest the short way round
       this.angle = ((this.angle % TAU) + TAU) % TAU;
       if (this.angle - target > Math.PI) this.angle -= TAU;

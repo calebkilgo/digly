@@ -82,7 +82,7 @@ export const FRAMES = {
 
 export type FrameName = keyof typeof FRAMES;
 
-// The pickaxe on its own (he has no arms): it circles around his waist.
+// The pickaxe on its own (he has no arms): it circles around his front hip.
 export const ARM = [
   ".....hh.....",
   ".....Hq.....",
@@ -99,8 +99,8 @@ export const ARM = [
   "....mmmm....",
 ];
 // where ARM's top-left corner sits on the body, in body pixels
-export const ARM_AT = { x: 4, y: 12 };
-// the pivot (his waist) and the pick's striking point, in ARM pixels
+export const ARM_AT = { x: 6.5, y: 14.5 }; // puts the pivot on his front hip, at body pixel (7, 18)
+// the pivot (his front hip) and the pick's striking point, in ARM pixels
 export const ARM_PIVOT = { x: 0.5, y: 3.5 };
 export const ARM_TIP = { x: 6, y: 12.5 };
 

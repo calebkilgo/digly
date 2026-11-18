@@ -1,0 +1,146 @@
+# title: Spacecraft and space missions
+# prompt: Name as many spacecraft and space missions as you can.
+# level: 3
+# domain: science
+# noun: missions
+# rule: Named spacecraft, rockets, space stations and space programs.
+# rule: Telescopes in space count. Fictional ships don't.
+Apollo 11 | apollo
+Apollo 13
+Space Shuttle | shuttle
+Challenger
+Columbia
+Discovery
+Endeavour | endeavor
+Atlantis
+International Space Station | iss, space station
+Hubble | hubble space telescope
+Voyager 1 | voyager
+Voyager 2
+Sputnik | sputnik 1
+Mir
+Skylab
+Gemini | project gemini
+Mercury | project mercury
+Saturn V | saturn 5
+Falcon 9
+Falcon Heavy
+Starship
+Dragon | crew dragon, spacex dragon
+James Webb | james webb space telescope, jwst, webb
+Curiosity
+Perseverance
+Opportunity
+Spirit
+Sojourner
+Ingenuity
+Pathfinder | mars pathfinder
+Viking 1 | viking
+Viking 2
+Pioneer 10 | pioneer
+Pioneer 11
+New Horizons
+Cassini | cassini huygens
+Juno
+Galileo
+Rosetta
+Philae
+Artemis | artemis 1, artemis i
+Orion
+Vostok 1 | vostok
+Soyuz
+Salyut
+Tiangong
+Shenzhou
+Chang'e | change
+Luna 2 | luna
+Lunokhod
+Apollo 8
+Apollo 1
+Apollo 12
+Apollo 17
+Gemini 4
+Friendship 7
+Freedom 7
+Kepler | kepler space telescope
+Spitzer
+Chandra
+TESS
+Parker Solar Probe | parker
+Dawn
+Messenger
+Magellan
+Mariner 4 | mariner
+Mariner 10
+Venera
+Vega
+Giotto
+Ulysses
+SOHO
+Deep Impact
+Stardust
+Genesis
+Hayabusa
+Hayabusa2
+OSIRIS-REx | osiris rex
+Lucy
+Psyche
+DART
+Mars Odyssey
+Mars Express
+Mars Reconnaissance Orbiter | mro
+MAVEN
+InSight
+Phoenix
+Mars Global Surveyor
+Lunar Reconnaissance Orbiter | lro
+LCROSS
+Chandrayaan
+Mangalyaan | mars orbiter mission
+Tianwen-1 | tianwen
+Zhurong
+Yutu
+Hope | emirates mars mission
+Gaia
+Planck
+Herschel
+Euclid
+Hipparcos
+BepiColombo
+JUICE
+Europa Clipper
+Clementine
+Lunar Prospector
+Surveyor
+Ranger
+Explorer 1
+Vanguard
+Starlink
+Space Launch System | sls
+Atlas V | atlas
+Delta IV | delta
+Titan
+Ariane 5 | ariane
+Long March
+Proton
+N1
+Energia
+Buran
+Electron
+New Shepard
+New Glenn
+Antares
+Cygnus
+Progress
+Starliner
+SpaceShipOne
+SpaceShipTwo
+X-15
+Kosmos
+Luna 9
+Luna 3
+Zond
+Apollo-Soyuz | apollo soyuz
+Sputnik 2 | laika
+Mercury-Redstone | redstone
+Gemini 8

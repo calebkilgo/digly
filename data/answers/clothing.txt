@@ -1,0 +1,132 @@
+# clothing: Name | alias = rating (1 common .. 100 rare). Blank = estimated.
+Shirt | t shirt, tee shirt, tshirt = 1
+Pants | trousers = 2
+Jeans = 3
+Dress = 4
+Skirt = 5
+Jacket = 6
+Socks | sock = 7
+Shoes | shoe = 8
+Hat = 9
+Sweater | jumper = 10
+Shorts = 11
+Coat = 12
+Hoodie | hooded sweatshirt = 13
+Scarf = 14
+Gloves | glove
+Belt
+Tie | necktie
+Underwear | boxers, briefs, panties
+Bra
+Pajamas | pyjamas, pjs
+Sweatpants | joggers
+Leggings
+Blouse
+Vest | waistcoat
+Suit
+Tuxedo
+Boots
+Sneakers | trainers, tennis shoes
+Sandals
+Flip Flops | thongs
+Slippers
+High Heels | heels
+Cardigan
+Blazer
+Raincoat
+Parka
+Overcoat
+Trench Coat
+Poncho
+Cape
+Robe | bathrobe
+Gown
+Tank Top | singlet, vest top
+Polo Shirt | polo
+Turtleneck
+Sweatshirt
+Overalls | dungarees
+Jumpsuit
+Romper
+Onesie
+Swimsuit | bathing suit, swimsuit
+Bikini
+Swim Trunks | trunks
+Wetsuit
+Kimono
+Sari | saree
+Kilt
+Toga
+Sarong
+Tunic
+Beanie
+Cap | baseball cap
+Mittens
+Earmuffs
+Bow Tie
+Suspenders | braces
+Cufflinks
+Camisole
+Corset
+Bodysuit
+Tights | pantyhose, stockings
+Capris
+Chinos
+Khakis
+Cargo Pants
+Culottes
+Miniskirt
+Maxi Dress
+Sundress
+Apron
+Uniform
+Lab Coat
+Scrubs
+Fleece
+Windbreaker
+Puffer Jacket | puffer
+Bomber Jacket
+Denim Jacket | jean jacket
+Leather Jacket
+Peacoat
+Anorak
+Shawl
+Stole
+Pashmina
+Bandana
+Headband
+Sweatband
+Leg Warmers
+Loafers
+Oxfords
+Moccasins
+Clogs
+Espadrilles
+Wellies | rain boots, wellingtons
+Flats | ballet flats
+Mules
+Crocs
+Hiking Boots
+Cowboy Boots
+Dashiki
+Hanbok
+Cheongsam | qipao
+Dirndl
+Lederhosen
+Caftan | kaftan
+Abaya
+Burqa
+Hijab
+Thobe
+Lungi
+Leotard
+Tutu
+Garter
+Negligee
+Petticoat
+Crop Top
+Henley
+Jersey
+Gilet
+Smock
+Pinafore

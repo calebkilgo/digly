@@ -1,0 +1,192 @@
+# title: Shakespeare characters
+# prompt: Name as many characters from Shakespeare's plays as you can.
+# level: 3
+# domain: language
+# noun: characters
+# rule: Characters from any of Shakespeare's plays.
+Romeo
+Juliet
+Hamlet
+Macbeth
+Lady Macbeth
+Othello
+King Lear | lear
+Julius Caesar | caesar
+Ophelia
+Iago
+Mercutio
+Tybalt
+Puck | robin goodfellow
+Falstaff | john falstaff
+Brutus
+Mark Antony | antony, marc antony
+Cleopatra
+Desdemona
+Prospero
+Caliban
+Ariel
+Shylock
+Portia
+Horatio
+Polonius
+Laertes
+Claudius
+Gertrude
+Banquo
+Macduff
+Duncan
+Benvolio
+Friar Lawrence | friar laurence
+Nurse | the nurse
+Oberon
+Titania
+Bottom | nick bottom
+Lysander
+Demetrius
+Hermia
+Helena
+Viola
+Orsino
+Olivia
+Malvolio
+Sebastian
+Rosalind
+Orlando
+Jaques
+Touchstone
+Beatrice
+Benedick
+Hero
+Claudio
+Petruchio
+Katherina | kate, katharina
+Bianca
+Henry V | prince hal, henry the fifth
+Richard III | richard the third
+Cordelia
+Goneril
+Regan
+Edmund
+Edgar
+Gloucester
+Cassius
+Calpurnia
+Octavius
+Rosencrantz
+Guildenstern
+Fortinbras
+Yorick
+Miranda
+Ferdinand
+Antonio
+Bassanio
+Gratiano
+Jessica
+Lorenzo
+Nerissa
+Cassio
+Emilia
+Roderigo
+Brabantio
+Hecate
+Fleance
+Malcolm
+Donalbain
+Lady Capulet
+Lord Capulet | capulet
+Lord Montague | montague
+Paris
+Theseus
+Hippolyta
+Egeus
+Quince | peter quince
+Flute
+Snout
+Snug
+Starveling
+Feste
+Sir Toby Belch | toby belch
+Sir Andrew Aguecheek | aguecheek
+Maria
+Dogberry
+Don Pedro
+Don John
+Leonato
+Celia
+Oliver
+Duke Senior
+Lucentio
+Baptista
+Grumio
+Tranio
+Coriolanus
+Volumnia
+Titus Andronicus | titus
+Lavinia
+Tamora
+Aaron
+Timon
+Pericles
+Marina
+Imogen
+Cymbeline
+Leontes
+Hermione
+Perdita
+Paulina
+Autolycus
+Troilus
+Cressida
+Pandarus
+Achilles
+Hector
+Ajax
+Ulysses
+Thersites
+Hotspur | harry percy
+Bardolph
+Pistol
+Nym
+Mistress Quickly | mistress quickly
+Henry IV
+Henry VI
+Richard II
+King John
+Henry VIII
+Cardinal Wolsey | wolsey
+Joan la Pucelle | joan of arc
+Queen Margaret
+Bolingbroke
+John of Gaunt | gaunt
+Sycorax
+Stephano
+Trinculo
+Gonzalo
+Alonso
+Angelo
+Isabella
+Mariana
+Lucio
+Bertram
+Parolles
+Proteus
+Valentine
+Silvia
+Julia
+Launce | crab
+Speed
+Antipholus
+Dromio
+Adriana
+Egeon
+Holofernes
+Costard
+Armado | don armado
+Berowne | biron
+Shallow | justice shallow
+Ford
+Page
+Doctor Caius
+Sir Hugh Evans
+Fenton
+Anne Page
