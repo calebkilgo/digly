@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store, type Suggestion, type SuggestionStatus, type AdminStats, type AdminLogEntry } from "@/game/engine/store";
+import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store, type Suggestion, type SuggestionStatus, type AdminStats, type AdminLogEntry, type AnswerEdit } from "@/game/engine/store";
 import type { AttemptMode, LevelNo } from "@/game/service/types";
 
 interface DbAttempt {
@@ -275,6 +275,33 @@ export class SupabaseStore implements Store {
       detail: r.detail,
       at: Date.parse(r.created_at),
     }));
+  }
+
+  async listAnswerEdits(slug: string) {
+    const data = check(await this.db.from("answer_edits").select("slug, key, action, name, aliases, rating, actor, updated_at").eq("slug", slug));
+    return (data as { slug: string; key: string; action: "add" | "remove"; name: string; aliases: string[] | null; rating: number; actor: string; updated_at: string }[]).map((r) => ({
+      slug: r.slug,
+      key: r.key,
+      action: r.action,
+      name: r.name,
+      aliases: r.aliases ?? [],
+      rating: Number(r.rating),
+      actor: r.actor,
+      at: Date.parse(r.updated_at),
+    }));
+  }
+
+  async putAnswerEdit(e: AnswerEdit) {
+    check(
+      await this.db.from("answer_edits").upsert(
+        { slug: e.slug, key: e.key, action: e.action, name: e.name, aliases: e.aliases, rating: e.rating, actor: e.actor, updated_at: new Date(e.at).toISOString() },
+        { onConflict: "slug,key" },
+      ),
+    );
+  }
+
+  async deleteAnswerEdit(slug: string, key: string) {
+    check(await this.db.from("answer_edits").delete().eq("slug", slug).eq("key", key));
   }
 
   async topRejects(slug: string, limit: number) {

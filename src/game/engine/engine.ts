@@ -1,4 +1,4 @@
-import { AnswerIndex, CORRECTED, parseAnswerBlock, type AnswerRecord } from "../rules/answerIndex";
+import { AnswerIndex, CORRECTED, answerKey, applyAnswerEdits, parseAnswerBlock, type AnswerRecord } from "../rules/answerIndex";
 import { bestN, levelScore, type Scored } from "../rules/scoring";
 import { liveRarity, type LiveRarity } from "../rules/rarity";
 import { buildQuickCheck, type QuickCheck } from "../rules/quickCheck";
@@ -21,10 +21,12 @@ import {
   type BoardRow,
 } from "../service/types";
 import { digSlots } from "../service/slots";
-import { StoreConflict, type AttemptRow, type Store } from "./store";
+import { StoreConflict, type AnswerEdit, type AttemptRow, type Store } from "./store";
 
 const MAX_SUBMISSIONS = 400; // anti-abuse cap per attempt
 const MAX_LEN = 60;
+// how long a server keeps its copy of the admin answer edits before checking again
+const EDITS_TTL_MS = 30_000;
 // Submissions travel over the network, so the server accepts a little past
 // the clock. The client stops sending at zero on its own.
 export const SERVER_GRACE_MS = 1500;
@@ -47,6 +49,7 @@ interface Indexed {
 export class DigEngine {
   private indexes = new Map<string, Indexed>();
   private rarities = new Map<string, Map<string, LiveRarity>>();
+  private edits = new Map<string, { at: number; sig: string; list: AnswerEdit[] }>();
   private seq = 0;
 
   constructor(
@@ -78,16 +81,45 @@ export class DigEngine {
     if (!x) {
       const seed = this.findSeed(slug);
       if (!seed) throw new GameError("not_found", `Unknown challenge ${slug}`);
-      const index = new AnswerIndex(parseAnswerBlock(seed.answers, slug));
+      const edits = this.edits.get(slug)?.list ?? [];
+      let index: AnswerIndex;
+      try {
+        index = new AnswerIndex(parseAnswerBlock(applyAnswerEdits(seed.answers, edits), slug));
+      } catch (e) {
+        // a bad edit shouldn't take the category down
+        console.error("digly: answer edits failed, using the list in the code", e);
+        index = new AnswerIndex(parseAnswerBlock(seed.answers, slug));
+      }
       x = { index, byId: new Map(index.answers.map((a) => [a.id, a])), num: new Map(index.answers.map((a, i) => [a.id, i])) };
       this.indexes.set(slug, x);
     }
     return x;
   }
 
+  // Picks up answer list changes from the admin panel. Cheap when nothing changed.
+  private async fresh(slug: string, force = false) {
+    const hit = this.edits.get(slug);
+    if (!force && hit && this.now() - hit.at < EDITS_TTL_MS) return;
+    let list: AnswerEdit[];
+    try {
+      list = await this.store.listAnswerEdits(slug);
+    } catch (e) {
+      console.error("digly: answer edits unavailable", e);
+      list = hit?.list ?? [];
+    }
+    list.sort((a, b) => a.at - b.at || a.key.localeCompare(b.key));
+    const sig = JSON.stringify(list.map((e) => [e.key, e.action, e.name, e.aliases, e.rating]));
+    if ((hit?.sig ?? "[]") !== sig) {
+      this.indexes.delete(slug);
+      for (const k of [...this.rarities.keys()]) if (k.startsWith(`${slug}:`)) this.rarities.delete(k);
+    }
+    this.edits.set(slug, { at: this.now(), sig, list });
+  }
+
   // Rarity for a category as scored on a given day: built from ranked play on
   // earlier days only, so it never changes while that day is being played.
   async rarity(slug: string, day: number): Promise<Map<string, LiveRarity>> {
+    await this.fresh(slug);
     const key = `${slug}:${day}`;
     const hit = this.rarities.get(key);
     if (hit) return hit;
@@ -257,6 +289,7 @@ export class DigEngine {
   }
 
   private async startPayload(row: AttemptRow, ch: PublicChallenge, now: number): Promise<AttemptStart> {
+    await this.fresh(row.slug);
     const { byId, num } = this.indexed(row.slug);
     const ids = await this.store.listAnswers(row.id);
     return {
@@ -287,6 +320,7 @@ export class DigEngine {
     if (!trimmed) return { status: "empty" };
     if ((await this.store.bumpSubmissions(row.id)) > MAX_SUBMISSIONS) return { status: "rejected" };
 
+    await this.fresh(row.slug);
     const match = this.indexed(row.slug).index.lookup(trimmed);
     if (!match) {
       await this.store.addReject(row.id, trimmed);
@@ -306,6 +340,7 @@ export class DigEngine {
   }
 
   private async close(row: AttemptRow) {
+    await this.fresh(row.slug);
     const { byId } = this.indexed(row.slug);
     const live = await this.rarity(row.slug, row.day);
     const accepted = (await this.store.listAnswers(row.id)).map((id) => byId.get(id)).filter((a): a is AnswerRecord => !!a);
@@ -325,6 +360,7 @@ export class DigEngine {
 
   // Rebuilt from the stored answers every time, so finish() is idempotent.
   private async result(row: AttemptRow): Promise<AttemptResult> {
+    await this.fresh(row.slug);
     const { index, byId } = this.indexed(row.slug);
     const live = await this.rarity(row.slug, row.day);
     const reveal = (a: AnswerRecord) => {
@@ -373,6 +409,7 @@ export class DigEngine {
       await this.close(row);
       row = (await this.store.getAttempt(attemptId))!;
     }
+    await this.fresh(row.slug);
     const { index } = this.indexed(row.slug);
     const live = await this.rarity(row.slug, row.day);
     const got = new Set(await this.store.listAnswers(row.id));
@@ -422,5 +459,96 @@ export class DigEngine {
 
   answerCount(slug: string) {
     return this.indexed(slug).index.answers.length;
+  }
+
+  // ---- admin: answer lists ----
+
+  // The list as players get it, plus answers an admin removed (so they can be put back).
+  async answerList(slug: string) {
+    const seed = this.findSeed(slug);
+    if (!seed) throw new GameError("not_found", "Unknown category");
+    await this.fresh(slug, true);
+    const edits = new Map((this.edits.get(slug)?.list ?? []).map((e) => [e.key, e]));
+    const base = new Set(parseAnswerBlock(seed.answers, slug).map((a) => answerKey(a.canonical)));
+    const { index } = this.indexed(slug);
+    const live = await this.rarity(slug, this.today());
+    const rows = index.answers.map((a) => {
+      const key = answerKey(a.canonical);
+      const e = edits.get(key);
+      return {
+        key,
+        name: a.canonical,
+        aliases: a.aliases,
+        rating: Math.round(a.curated),
+        tier: live.get(a.id)?.tier ?? "copper",
+        status: !e ? "list" : base.has(key) ? "changed" : "added",
+        by: e?.actor ?? null,
+      };
+    });
+    for (const e of edits.values()) {
+      if (e.action !== "remove") continue;
+      rows.push({ key: e.key, name: e.name, aliases: e.aliases, rating: e.rating, tier: "copper", status: "removed", by: e.actor });
+    }
+    return { slug, title: seed.title, level: seed.level, count: index.answers.length, answers: rows };
+  }
+
+  // Adds an answer, changes one, or removes one. Checked against the whole list first.
+  async editAnswer(actor: string, slug: string, input: { action: string; name: string; aliases?: string[]; rating?: number; replaces?: string }) {
+    const seed = this.findSeed(slug);
+    if (!seed) throw new GameError("not_found", "Unknown category");
+    const action = input.action === "remove" ? "remove" : input.action === "add" ? "add" : null;
+    if (!action) throw new GameError("bad_request", "Unknown action");
+    const name = String(input.name ?? "").replace(/\s+/g, " ").trim();
+    if (name.length < 1 || name.length > 60 || /[|=#\n,]/.test(name)) throw new GameError("bad_request", "Names are 1 to 60 characters, without | = # or commas.");
+    const key = answerKey(name);
+    if (!key) throw new GameError("bad_request", "That name has no letters or numbers.");
+    const aliases = (input.aliases ?? [])
+      .map((a) => String(a).replace(/\s+/g, " ").trim())
+      .filter(Boolean)
+      .slice(0, 20);
+    if (aliases.some((a) => a.length > 60 || /[|=#\n,]/.test(a))) throw new GameError("bad_request", "Other spellings are up to 60 characters, without | = # or commas.");
+    const rating = Math.round(Number(input.rating ?? 75));
+    if (!(rating >= 1 && rating <= 100)) throw new GameError("bad_request", "Rarity is 1 (common) to 100 (rare).");
+
+    await this.fresh(slug, true);
+    let list = (this.edits.get(slug)?.list ?? []).filter((e) => e.key !== key);
+    const edit: AnswerEdit = { slug, key, action, name, aliases, rating, actor, at: this.now() };
+    // renamed in the editor: the old spelling goes away
+    let old: AnswerEdit | "undo" | null = null;
+    const was = action === "add" && input.replaces ? String(input.replaces) : "";
+    if (was && was !== key) {
+      const base = parseAnswerBlock(seed.answers, slug).find((a) => answerKey(a.canonical) === was);
+      if (base) base.curated = Math.max(1, Math.min(100, Math.round(base.curated)));
+      list = list.filter((e) => e.key !== was);
+      old = base ? { slug, key: was, action: "remove", name: base.canonical, aliases: base.aliases, rating: base.curated, actor, at: this.now() } : "undo";
+      if (old !== "undo") list.push(old);
+    }
+    if (action === "remove") {
+      const hit = this.indexed(slug).index.answers.find((a) => answerKey(a.canonical) === key);
+      if (!hit) throw new GameError("not_found", "That answer isn't in the list.");
+      edit.name = hit.canonical;
+      edit.aliases = hit.aliases;
+      edit.rating = Math.max(1, Math.min(100, Math.round(hit.curated)));
+    }
+    try {
+      new AnswerIndex(parseAnswerBlock(applyAnswerEdits(seed.answers, [...list, edit]), slug));
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      const clash = msg.match(/^Alias collision: "(.+)" maps to (.+) and (.+)$/);
+      if (clash) throw new GameError("bad_request", `"${clash[1]}" already counts for ${clash[2] === name ? clash[3] : clash[2]}.`);
+      throw new GameError("bad_request", msg.startsWith("Duplicate") ? "That answer is already in the list." : msg);
+    }
+    await this.store.putAnswerEdit(edit);
+    if (old === "undo") await this.store.deleteAnswerEdit(slug, was);
+    else if (old) await this.store.putAnswerEdit(old);
+    await this.fresh(slug, true);
+    return edit;
+  }
+
+  // Undoes an admin edit: the answer goes back to how the code has it.
+  async undoAnswerEdit(slug: string, key: string) {
+    if (!this.findSeed(slug)) throw new GameError("not_found", "Unknown category");
+    await this.store.deleteAnswerEdit(slug, String(key));
+    await this.fresh(slug, true);
   }
 }

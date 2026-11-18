@@ -291,29 +291,55 @@ export class World {
       const s2 = r() < 0.15 ? 2 : 1;
       g.rect(x, y, s2 * u, s2 * u).fill({ color: 0xf6ebd9, alpha: 0.35 + r() * 0.55 });
     }
-    const mx = snap(this.homeX - 170 * k);
-    const my = snap(sy - 330 * k);
-    const moon = ["..MMM..", ".MMMMm.", "MMMMMmm", "MMMMMmm", "MMMMMmm", ".MMMmm.", "..mmm.."];
-    moon.forEach((row, j) =>
-      [...row].forEach((ch, i) => {
-        const px = mx + i * 2 * u;
-        const py = my + j * 2 * u;
-        if (ch !== "." && py < groundAt(px)) g.rect(px, py, 2 * u, 2 * u).fill(ch === "M" ? 0xfff4d0 : 0xd8cfa8);
-      }),
-    );
-    // pine trees on the ground and lower slope
-    const pine = (x: number, base: number, size: number) => {
-      const s2 = Math.max(3, Math.round(size));
-      for (let row = 0; row < s2 * 2; row++) {
-        const half = Math.floor((row % s2) / 2) + 1 + Math.floor(row / s2);
-        g.rect(snap(x) - half * u, snap(base - (s2 * 2 - row) * u - 2 * u), half * 2 * u, u).fill(row % s2 === 0 ? 0x2f6b3a : 0x245a30);
+    // the moon, in tonight's real phase (lit on the right while waxing, as seen from North America)
+    const N = 13;
+    const R = N / 2;
+    const mu = 2 * u;
+    // phones have the logo and tagline up there, so the moon sits a little lower and closer in
+    const narrow = w < 600;
+    const mx = snap(this.homeX - (narrow ? 150 : 240) * k);
+    const my = snap(sy - (narrow ? 430 : 620) * k);
+    const phase = moonPhase(Date.now());
+    const c = Math.cos(2 * Math.PI * phase);
+    const craters = new Set(["4,3", "5,3", "8,5", "3,7", "4,7", "7,9", "8,9", "9,8", "6,6"]);
+    for (let j = 0; j < N; j++) {
+      for (let i = 0; i < N; i++) {
+        const x = (i + 0.5 - R) / R;
+        const y = (j + 0.5 - R) / R;
+        if (x * x + y * y > 1) continue;
+        const edge = Math.sqrt(1 - y * y) * c;
+        const lit = phase < 0.5 ? x > edge : x < -edge;
+        const px = mx + i * mu;
+        const py = my + j * mu;
+        if (py >= groundAt(px)) continue;
+        if (lit) g.rect(px, py, mu, mu).fill(craters.has(`${i},${j}`) ? 0xe2d7ad : 0xfff4d0);
+        else g.rect(px, py, mu, mu).fill({ color: 0x3a4166, alpha: 0.85 });
       }
-      g.rect(snap(x) - u, snap(base - 2 * u), 2 * u, 2 * u).fill(0x5e3a18);
+    }
+    // pine trees on the ground and lower slope, sized against the miner (27 px tall)
+    const pine = (x: number, base: number, height: number) => {
+      const cx = snap(x);
+      const trunk = 6;
+      const crown = Math.round(height) - trunk;
+      const tiers = crown > 40 ? 4 : 3;
+      const th = crown / tiers;
+      g.rect(cx - 2 * u, snap(base - trunk * u), 4 * u, trunk * u).fill(0x4a2e14);
+      g.rect(cx, snap(base - trunk * u), 2 * u, trunk * u).fill(0x5e3a18);
+      for (let row = 0; row < crown; row++) {
+        const t = Math.min(tiers - 1, Math.floor(row / th));
+        const local = row - t * th;
+        const half = Math.max(1, Math.round(1 + t * 2.2 + local * 0.75));
+        const y = snap(base - (trunk + crown - row) * u);
+        g.rect(cx - half * u - u, y, half * 2 * u + 2 * u, u).fill(0x183a22); // dark edge
+        g.rect(cx - half * u, y, half * 2 * u, u).fill(0x245a30);
+        g.rect(cx - half * u, y, Math.max(1, Math.round(half * 0.8)) * u, u).fill(local < 1.5 && t > 0 ? 0x245a30 : 0x2f6b3a); // moonlit side
+      }
     };
     for (let i = 0; i < 26; i++) {
       const x = x0 + r() * (x1 - x0);
       if (x > m.ledgeL - 40 * k && x < m.right) continue;
-      pine(x, sy - this.mountainAt(x) + 2 * u, 3 + r() * 3);
+      if (Math.abs(x - (m.foot - 60 * k)) < 40 * k) continue; // keep the cart clear
+      pine(x, sy - this.mountainAt(x) + 2 * u, 34 + r() * 18);
     }
     // a mine cart on the ground at the foot of the slope
     const cx = snap(m.foot - 60 * k);
@@ -672,4 +698,12 @@ export class World {
     this.lantern.clear();
   }
 
+}
+
+// Where the moon is in its cycle: 0 new, 0.25 first quarter, 0.5 full, 0.75 last quarter.
+// Counted from the new moon of 6 Jan 2000, 18:14 UTC.
+export function moonPhase(now: number) {
+  const days = (now - Date.UTC(2000, 0, 6, 18, 14)) / 86_400_000;
+  const p = (days / 29.530588853) % 1;
+  return p < 0 ? p + 1 : p;
 }

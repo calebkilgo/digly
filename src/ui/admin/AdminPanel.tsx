@@ -33,6 +33,23 @@ interface Overview {
   stats: { players: number; accounts: number; unlimited: number; diggersToday: number; finishedToday: number };
   categories: { level: number; slug: string; title: string }[];
 }
+interface AnswerRow {
+  key: string;
+  name: string;
+  aliases: string[];
+  rating: number;
+  tier: string;
+  status: "list" | "added" | "changed" | "removed";
+  by: string | null;
+}
+interface AnswerList {
+  slug: string;
+  title: string;
+  level: number;
+  count: number;
+  answers: AnswerRow[];
+}
+const TIER_NAMES: Record<string, string> = { copper: "Bronze", gold: "Gold", diamond: "Diamond", ruby: "Ruby", platinum: "Platinum" };
 interface Category {
   slug: string;
   title: string;
@@ -49,6 +66,9 @@ const ACTIONS: Record<string, string> = {
   idea_planned: "planned idea:",
   idea_added: "marked as added:",
   idea_dismissed: "dismissed idea:",
+  answer_add: "saved answer",
+  answer_remove: "removed answer",
+  answer_undo: "undid the change to",
 };
 
 async function api<T>(path: string, body?: unknown): Promise<T> {
@@ -134,13 +154,15 @@ export function AdminPanel({ me }: { me: string }) {
         <div className={s.cols}>
           <div>
             <Ideas ideas={ideas} onChange={refresh} />
-            <Missing />
+            <Missing onAdd={refresh} />
           </div>
           <div>
             <Admins me={me} admins={admins} onChange={refresh} />
             <Log log={log} />
           </div>
         </div>
+
+        <Answers synced={synced} onChange={refresh} />
       </div>
     </div>
   );
@@ -238,7 +260,7 @@ function Ideas({ ideas, onChange }: { ideas: Idea[]; onChange: () => Promise<voi
 
 // The most common things players typed that didn't count, per category.
 // Real answers that show up here belong in the answer lists.
-function Missing() {
+function Missing({ onAdd }: { onAdd: () => Promise<void> }) {
   const [cats, setCats] = useState<Category[]>([]);
   const [slug, setSlug] = useState("");
   const [data, setData] = useState<{ plays: number; answersInList: number; rejects: { text: string; n: number }[] } | null>(null);
@@ -283,12 +305,265 @@ function Missing() {
                 {data.rejects.slice(0, 60).map((r) => (
                   <tr key={r.text}>
                     <td>{r.text}</td>
-                    <td>{r.n}×</td>
+                    <td>
+                      {r.n}×{" "}
+                      <button
+                        className={`${s.btn} ${s.ghost}`}
+                        onClick={async () => {
+                          const name = prompt(`Add to ${cats.find((c) => c.slug === slug)?.title ?? slug} as:`, r.text);
+                          if (!name?.trim()) return;
+                          setErr("");
+                          try {
+                            await api("/api/admin/answers", { slug, action: "add", name: name.trim(), aliases: name.trim().toLowerCase() === r.text ? [] : [r.text], rating: 75 });
+                            setData({ ...data, answersInList: data.answersInList + 1, rejects: data.rejects.filter((x) => x.text !== r.text) });
+                            await onAdd();
+                          } catch (e) {
+                            setErr(e instanceof Error ? e.message : "Couldn't add that.");
+                          }
+                        }}
+                      >
+                        Add
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           )}
+        </>
+      )}
+      {err && <div className={s.error}>{err}</div>}
+    </section>
+  );
+}
+
+// Every category's answer list: search it, add answers, change or remove them.
+// Changes live in the database, so the game and the other admins pick them up
+// within about 30 seconds, no redeploy needed.
+function Answers({ synced, onChange }: { synced: number | null; onChange: () => Promise<void> }) {
+  const [cats, setCats] = useState<Category[]>([]);
+  const [slug, setSlug] = useState("");
+  const [list, setList] = useState<AnswerList | null>(null);
+  const [q, setQ] = useState("");
+  const [show, setShow] = useState<"all" | "edited" | "removed">("all");
+  const [form, setForm] = useState({ name: "", aliases: "", rating: "75" });
+  const [editing, setEditing] = useState<string | null>(null);
+  const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    api<{ categories: Category[] }>("/api/admin/rejects").then(
+      (r) => setCats(r.categories),
+      () => setErr("Couldn't load categories."),
+    );
+  }, []);
+
+  const load = useCallback(async (which: string) => {
+    if (!which) return;
+    try {
+      const r = await api<AnswerList>(`/api/admin/answers?slug=${encodeURIComponent(which)}`);
+      setList((cur) => (cur && cur.slug !== which ? cur : r));
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Couldn't load that list.");
+    }
+  }, []);
+
+  useEffect(() => {
+    setList(null);
+    setEditing(null);
+    setForm({ name: "", aliases: "", rating: "75" });
+    void load(slug);
+  }, [slug, load]);
+
+  // follow the panel's refresh so changes from other admins show up
+  useEffect(() => {
+    if (slug && synced) void load(slug);
+  }, [synced, slug, load]);
+
+  const send = async (body: Record<string, unknown>) => {
+    setErr("");
+    setBusy(true);
+    try {
+      await api("/api/admin/answers", { slug, ...body });
+      await load(slug);
+      await onChange();
+      return true;
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Couldn't save that.");
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const save = async () => {
+    const name = form.name.trim();
+    if (!name) return;
+    const aliases = form.aliases.split(",").map((a) => a.trim()).filter(Boolean);
+    const ok = await send({ action: "add", name, aliases, rating: Number(form.rating), ...(editing ? { replaces: editing } : {}) });
+    if (ok) {
+      setForm({ name: "", aliases: "", rating: "75" });
+      setEditing(null);
+    }
+  };
+
+  const needle = q.trim().toLowerCase();
+  const rows = (list?.answers ?? []).filter((a) => {
+    if (show === "edited" && (a.status === "list" || a.status === "removed")) return false;
+    if (show === "removed" && a.status !== "removed") return false;
+    if (!needle) return true;
+    return a.name.toLowerCase().includes(needle) || a.aliases.some((x) => x.includes(needle));
+  });
+  const edited = (list?.answers ?? []).filter((a) => a.status === "added" || a.status === "changed").length;
+  const removed = (list?.answers ?? []).filter((a) => a.status === "removed").length;
+  const exact = needle && list?.answers.some((a) => a.status !== "removed" && (a.name.toLowerCase() === needle || a.aliases.includes(needle)));
+
+  return (
+    <section className={s.section}>
+      <h2>
+        Answer lists
+        {list && (
+          <span className={s.small}>
+            {list.count} answers · {edited} added or changed · {removed} removed
+          </span>
+        )}
+      </h2>
+      <select className={s.select} value={slug} onChange={(e) => setSlug(e.target.value)} style={{ width: "100%" }}>
+        <option value="">Pick a category…</option>
+        {cats.map((c) => (
+          <option key={c.slug} value={c.slug}>
+            {c.vault ? "Vault · " : ""}L{c.level} · {c.title}
+          </option>
+        ))}
+      </select>
+
+      {slug && !list && !err && <div className={s.small} style={{ marginTop: 10 }}>Loading…</div>}
+
+      {list && (
+        <>
+          <form
+            className={s.form}
+            onSubmit={(e) => {
+              e.preventDefault();
+              void save();
+            }}
+          >
+            <input className={s.input} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Answer, e.g. White Oak" aria-label="Answer" />
+            <input
+              className={s.input}
+              value={form.aliases}
+              onChange={(e) => setForm({ ...form, aliases: e.target.value })}
+              placeholder="Other spellings, comma separated"
+              aria-label="Other spellings"
+            />
+            <input
+              className={s.input}
+              style={{ flex: "0 0 64px" }}
+              type="number"
+              min={1}
+              max={100}
+              value={form.rating}
+              onChange={(e) => setForm({ ...form, rating: e.target.value })}
+              title="Rarity: 1 is the most common, 100 the rarest"
+              aria-label="Rarity 1 to 100"
+            />
+            <button className={s.btn} disabled={busy || !form.name.trim()}>
+              {editing ? "Save" : "Add"}
+            </button>
+            {editing && (
+              <button
+                type="button"
+                className={`${s.btn} ${s.ghost}`}
+                onClick={() => {
+                  setEditing(null);
+                  setForm({ name: "", aliases: "", rating: "75" });
+                }}
+              >
+                Cancel
+              </button>
+            )}
+          </form>
+          <div className={s.small} style={{ marginBottom: 10 }}>
+            Rarity is 1 for answers almost everyone gives up to 100 for ones almost nobody does. Live play adjusts it over time.
+          </div>
+
+          <div className={s.form}>
+            <input className={s.input} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search answers and spellings" aria-label="Search answers" />
+          </div>
+          <div className={s.tabs}>
+            {(["all", "edited", "removed"] as const).map((t) => (
+              <button key={t} className={`${s.tab} ${show === t ? s.tabOn : ""}`} onClick={() => setShow(t)}>
+                {t === "all" ? "All" : t === "edited" ? `Added or changed (${edited})` : `Removed (${removed})`}
+              </button>
+            ))}
+          </div>
+          {needle && !exact && (
+            <div className={s.small} style={{ marginBottom: 8 }}>
+              &ldquo;{q.trim()}&rdquo; doesn&apos;t count yet.{" "}
+              <button className={`${s.btn} ${s.ghost}`} onClick={() => setForm({ name: q.trim(), aliases: "", rating: "75" })}>
+                Fill it in above
+              </button>
+            </div>
+          )}
+
+          {rows.length === 0 ? (
+            <div className={s.small}>No matches.</div>
+          ) : (
+            <table className={`${s.table} ${s.answers}`}>
+              <tbody>
+                {rows.slice(0, 400).map((a) => (
+                  <tr key={`${a.status}-${a.key}`} className={a.status === "removed" ? s.gone : ""}>
+                    <td>
+                      {a.name}
+                      {a.status !== "list" && <span className={s.pill}>{a.status}{a.by ? ` by ${a.by}` : ""}</span>}
+                      {a.aliases.length > 0 && <div className={s.small}>{a.aliases.join(", ")}</div>}
+                    </td>
+                    <td className={s.num}>{a.rating}</td>
+                    <td className={s.num}>{a.status === "removed" ? "" : TIER_NAMES[a.tier] ?? a.tier}</td>
+                    <td>
+                      {a.status === "removed" ? (
+                        <button className={`${s.btn} ${s.ghost}`} disabled={busy} onClick={() => void send({ action: "undo", key: a.key, name: a.name })}>
+                          Put back
+                        </button>
+                      ) : (
+                        <>
+                          <button
+                            className={`${s.btn} ${s.ghost}`}
+                            disabled={busy}
+                            onClick={() => {
+                              setEditing(a.key);
+                              setForm({ name: a.name, aliases: a.aliases.join(", "), rating: String(a.rating) });
+                            }}
+                          >
+                            Edit
+                          </button>{" "}
+                          {a.status !== "list" && (
+                            <>
+                              <button className={`${s.btn} ${s.ghost}`} disabled={busy} title="Go back to how the code has it" onClick={() => void send({ action: "undo", key: a.key, name: a.name })}>
+                                Undo
+                              </button>{" "}
+                            </>
+                          )}
+                          {a.status !== "added" && (
+                            <button
+                              className={`${s.btn} ${s.ghost}`}
+                              disabled={busy}
+                              onClick={() => {
+                                if (confirm(`Remove "${a.name}" from ${list.title}? It stops counting for everyone.`)) void send({ action: "remove", name: a.name });
+                              }}
+                            >
+                              Remove
+                            </button>
+                          )}
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+          {rows.length > 400 && <div className={s.small}>Showing 400 of {rows.length}. Search to narrow it down.</div>}
         </>
       )}
       {err && <div className={s.error}>{err}</div>}

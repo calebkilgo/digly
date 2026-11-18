@@ -449,3 +449,43 @@ describe("Digly Unlimited in the store", () => {
     expect((await store.getPlayer("p"))!.unlimited).toBe(true);
   });
 });
+
+describe("admin answer edits", () => {
+  it("add, change, remove and undo reach play without a restart", async () => {
+    const slug = seedFor(DAY, 1).slug;
+    const made = "Zzqx Testanswer";
+    const st = await eng.start("p", DAY, 1, "ranked");
+    expect((await eng.submit("p", st.attemptId, made)).status).toBe("rejected");
+
+    await eng.editAnswer("ann", slug, { action: "add", name: made, aliases: ["zzqx"], rating: 90 });
+    expect((await eng.submit("p", st.attemptId, "zzqx")).status).toBe("accepted");
+    const list = await eng.answerList(slug);
+    expect(list.answers.find((a) => a.name === made)?.status).toBe("added");
+
+    // a second server sees it once its cache runs out
+    const other = new DigEngine(store, { now: () => clock, newId: () => `o${++n}` });
+    const st2 = await other.start("q", DAY, 1, "ranked");
+    expect((await other.submit("q", st2.attemptId, made)).status).toBe("accepted");
+
+    // rename through the editor: the old spelling stops counting
+    const key = list.answers.find((a) => a.name === made)!.key;
+    await eng.editAnswer("ann", slug, { action: "add", name: "Zzqx Renamed", rating: 90, replaces: key });
+    const after = await eng.answerList(slug);
+    expect(after.answers.some((a) => a.name === made)).toBe(false);
+
+    const first = after.answers.find((a) => a.status === "list")!;
+    await eng.editAnswer("ann", slug, { action: "remove", name: first.name });
+    const st3 = await eng.start("r", DAY, 1, "ranked");
+    expect((await eng.submit("r", st3.attemptId, first.name)).status).toBe("rejected");
+    await eng.undoAnswerEdit(slug, first.key);
+    expect((await eng.submit("r", st3.attemptId, first.name)).status).toBe("accepted");
+  });
+
+  it("refuses names that clash or break the list", async () => {
+    const slug = seedFor(DAY, 1).slug;
+    const first = (await eng.answerList(slug)).answers[0];
+    expect(await code(eng.editAnswer("ann", slug, { action: "add", name: "x = 5" }))).toBe("bad_request");
+    expect(await code(eng.editAnswer("ann", slug, { action: "add", name: "Fresh One", aliases: [first.name] }))).toBe("bad_request");
+    expect(await code(eng.editAnswer("ann", slug, { action: "remove", name: "Not In The List Qq" }))).toBe("not_found");
+  });
+});

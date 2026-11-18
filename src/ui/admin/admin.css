@@ -214,3 +214,22 @@
   text-align: right;
   color: #9aa1b2;
 }
+.adm-answers td {
+  vertical-align: top;
+}
+.adm-answers td.adm-num {
+  text-align: right;
+  color: #9aa1b2;
+  padding: 6px 10px;
+  white-space: nowrap;
+}
+.adm-answers td:last-child {
+  white-space: nowrap;
+}
+.adm-answers .adm-pill {
+  margin-left: 8px;
+}
+.adm-gone td:first-child {
+  text-decoration: line-through;
+  color: #6b7285;
+}

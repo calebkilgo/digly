@@ -1,5 +1,5 @@
 import type { AttemptMode } from "../service/types";
-import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store, type Suggestion, type SuggestionStatus, type AdminStats, type AdminLogEntry } from "./store";
+import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store, type Suggestion, type SuggestionStatus, type AdminStats, type AdminLogEntry, type AnswerEdit } from "./store";
 
 export interface MemoryData {
   players: Record<string, { name: string; username?: string; passwordHash?: string; email?: string | null; isAdmin?: boolean; unlimited?: boolean }>;
@@ -11,6 +11,7 @@ export interface MemoryData {
   rejects: Record<string, string[]>;
   suggestions?: Suggestion[];
   adminLog?: AdminLogEntry[];
+  answerEdits?: AnswerEdit[];
 }
 
 const empty = (): MemoryData => ({ players: {}, attempts: {}, answers: {}, rejects: {} });
@@ -278,6 +279,22 @@ export class MemoryStore implements Store {
 
   async listAdminLog(limit: number) {
     return [...(this.data.adminLog ?? [])].reverse().slice(0, limit);
+  }
+
+  async listAnswerEdits(slug: string) {
+    return (this.data.answerEdits ?? []).filter((e) => e.slug === slug).map((e) => ({ ...e, aliases: [...e.aliases] }));
+  }
+
+  async putAnswerEdit(e: AnswerEdit) {
+    const list = (this.data.answerEdits ??= []).filter((x) => !(x.slug === e.slug && x.key === e.key));
+    list.push({ ...e, aliases: [...e.aliases] });
+    this.data.answerEdits = list;
+    this.changed();
+  }
+
+  async deleteAnswerEdit(slug: string, key: string) {
+    this.data.answerEdits = (this.data.answerEdits ?? []).filter((x) => !(x.slug === slug && x.key === key));
+    this.changed();
   }
 
   async topRejects(slug: string, limit: number) {

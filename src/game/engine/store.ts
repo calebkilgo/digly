@@ -97,6 +97,23 @@ export interface Store {
   setAdminByUsername(username: string, admin: boolean): Promise<string | null>;
   addAdminLog(e: AdminLogEntry): Promise<void>;
   listAdminLog(limit: number): Promise<AdminLogEntry[]>;
+  // admin changes to a category's answer list, laid over the list in the code
+  listAnswerEdits(slug: string): Promise<AnswerEdit[]>;
+  putAnswerEdit(e: AnswerEdit): Promise<void>;
+  deleteAnswerEdit(slug: string, key: string): Promise<void>;
+}
+
+// One row per answer an admin touched. "add" also covers changing an answer
+// that's already in the list; "remove" takes it out. Deleting the row undoes it.
+export interface AnswerEdit {
+  slug: string;
+  key: string; // compact(normalize(name))
+  action: "add" | "remove";
+  name: string;
+  aliases: string[];
+  rating: number;
+  actor: string;
+  at: number;
 }
 
 export type SuggestionStatus = "new" | "planned" | "added" | "dismissed";

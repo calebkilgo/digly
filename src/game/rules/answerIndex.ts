@@ -234,6 +234,27 @@ function singularForms(key: string): string[] {
 
 // Compact seed format, one answer per line:
 //   Canonical Name | alias one, alias two = 42
+// The key an admin edit is filed under: same as the part of the answer id after the prefix.
+export function answerKey(name: string) {
+  return compact(normalize(name));
+}
+
+// Lays admin edits over an answer block. An edit replaces the line with the same
+// key; "add" lines go on the end.
+export function applyAnswerEdits(block: string, edits: { key: string; action: "add" | "remove"; name: string; aliases: string[]; rating: number }[]) {
+  if (!edits.length) return block;
+  const touched = new Set(edits.map((e) => e.key));
+  const lines = block.split("\n").filter((line) => {
+    const m = line.trim().match(/^([^#|=][^|=]*?)\s*(?:\||=)/);
+    return !m || !touched.has(answerKey(m[1]));
+  });
+  for (const e of edits) {
+    if (e.action !== "add") continue;
+    lines.push(`${e.name}${e.aliases.length ? ` | ${e.aliases.join(", ")}` : ""} = ${e.rating}`);
+  }
+  return lines.join("\n");
+}
+
 export function parseAnswerBlock(block: string, prefix: string): AnswerRecord[] {
   const out: AnswerRecord[] = [];
   for (const line of block.split("\n")) {
