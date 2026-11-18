@@ -96,13 +96,40 @@ export class World {
     this.redrawSky();
   }
 
-  // ground level, in world pixels (the home chamber floor is at 96k)
+  // ground level, in world pixels: the floor his boots stand on at home
   get surfaceY() {
-    return Math.round(-150 * this.k);
+    return Math.round(96 * this.k);
   }
 
-  // Night sky, grass and the mine's entrance, seen when the home screen
-  // zooms out. Drawn three screens wide so it still fills the view zoomed out.
+  // the mountain he tunnels into, and the tunnel's mouth and back end
+  private get mountain() {
+    const k = this.k;
+    const hx = this.homeX;
+    return { left: hx - 180 * k, peak: hx + 160 * k, right: hx + 560 * k, height: 340 * k, mouth: hx - 70 * k, back: hx + 70 * k, tunnelH: 128 * k };
+  }
+
+  // Mountain height above the surface at x (0 off the mountain). It rises
+  // as a cut cliff at the tunnel mouth, with a low foothill in front of it.
+  private mountainAt(x: number) {
+    const m = this.mountain;
+    const k = this.k;
+    const cliff = m.tunnelH + 26 * k;
+    let h = 0;
+    if (x < m.mouth) {
+      const foot = m.mouth - 110 * k;
+      h = x > foot ? ((x - foot) / (m.mouth - foot)) * 46 * k : 0;
+    } else if (x < m.peak) {
+      h = cliff + ((x - m.mouth) / (m.peak - m.mouth)) * (m.height - cliff);
+    } else if (x < m.right) {
+      h = ((m.right - x) / (m.right - m.peak)) * m.height;
+    }
+    if (h <= 0) return 0;
+    // a lumpy ridge so it doesn't read as a perfect triangle
+    return Math.max(0, h + Math.sin(x * 0.031) * 5 * k + Math.sin(x * 0.011 + 2) * 10 * k);
+  }
+
+  // Night sky, distant hills, grass and the mountain, seen when the home
+  // screen zooms out. Three screens wide so it still fills the view zoomed out.
   private redrawSky() {
     const g = this.sky.clear();
     const u = PX;
@@ -110,52 +137,65 @@ export class World {
     const x0 = -w;
     const x1 = 2 * w;
     const sy = this.surfaceY;
-    const top = sy - 3000;
+    const top = sy - 4000;
+    const snap = (v: number) => Math.round(v / u) * u;
     // stepped bands, lighter toward the horizon
     const bands = [0x10162b, 0x151c38, 0x1b2347, 0x232b56, 0x2c3466];
-    const bh = 26 * u;
+    const bh = 30 * u;
     g.rect(x0, top, x1 - x0, sy - top).fill(bands[0]);
     bands.forEach((c, i) => g.rect(x0, sy - (bands.length - i) * bh, x1 - x0, bh).fill(c));
     // stars
     const r = mulberry32(hash(this.seed, 5));
-    for (let i = 0; i < 160; i++) {
-      const x = Math.round((x0 + r() * (x1 - x0)) / u) * u;
-      const y = Math.round((sy - 14 * u - r() * 900) / u) * u;
+    for (let i = 0; i < 180; i++) {
+      const x = snap(x0 + r() * (x1 - x0));
+      const y = snap(sy - 40 * u - r() * 1100);
       const s = r() < 0.15 ? 2 : 1;
       g.rect(x, y, s * u, s * u).fill({ color: 0xf6ebd9, alpha: 0.35 + r() * 0.55 });
     }
     // moon
-    const mx = Math.round((this.homeX + Math.min(w * 0.3, 160 * this.k)) / u) * u;
-    const my = Math.round((sy - 110 * this.k) / u) * u;
+    const mx = snap(this.homeX - 170 * this.k);
+    const my = snap(sy - 330 * this.k);
     const moon = ["..MMM..", ".MMMMm.", "MMMMMmm", "MMMMMmm", "MMMMMmm", ".MMMmm.", "..mmm.."];
     moon.forEach((row, j) =>
       [...row].forEach((ch, i) => {
         if (ch !== ".") g.rect(mx + i * 2 * u, my + j * 2 * u, 2 * u, 2 * u).fill(ch === "M" ? 0xfff4d0 : 0xd8cfa8);
       }),
     );
+    // distant hills, flat dark silhouettes
+    const step = 2 * u;
+    for (let x = snap(x0); x < x1; x += step) {
+      const h = 50 * this.k + Math.sin(x * 0.006) * 30 * this.k + Math.sin(x * 0.017 + 1) * 14 * this.k;
+      g.rect(x, snap(sy - h), step, snap(h)).fill(0x1d2140);
+    }
     // grass on the surface
     g.rect(x0, sy - 4 * u, x1 - x0, 4 * u).fill(0x4e9a3a);
     g.rect(x0, sy - u, x1 - x0, u).fill(0x3a7a2c);
-    for (let x = Math.floor(x0 / (2 * u)) * 2 * u; x < x1; x += 2 * u) {
+    for (let x = Math.floor(x0 / step) * step; x < x1; x += step) {
       const h = [0, 1, 1, 2][Math.floor(r() * 4)];
       if (h) g.rect(x, sy - (4 + h) * u, u, h * u).fill(0x5fb247);
     }
-    // the shaft's mouth: a hole in the grass and a wooden frame over it
-    const half = 46 * this.k;
-    const hx = this.homeX;
-    g.rect(hx - half, sy - 4 * u, half * 2, 5 * u).fill(CAVE.back);
-    const post = 4 * u;
-    const ph = 34 * this.k;
-    const wood = 0x8a5a2b;
-    const woodLo = 0x5e3a18;
-    for (const x of [hx - half - post, hx + half]) {
-      g.rect(x - u, sy - ph - u, post + 2 * u, ph + u).fill(INK);
-      g.rect(x, sy - ph, post, ph).fill(wood);
-      g.rect(x + post - u, sy - ph, u, ph).fill(woodLo);
+    // the mountain, stepped in pixel columns with an ink edge and a snow cap
+    const m = this.mountain;
+    const rock = 0x7a6a8a;
+    const rockLo = 0x5a4d6e;
+    const snow = 0xf6ebd9;
+    for (let x = snap(m.left); x < m.right; x += step) {
+      const h = snap(this.mountainAt(x + step / 2));
+      if (h <= 0) continue;
+      const yTop = sy - h;
+      g.rect(x, yTop - u, step, h + u).fill(INK);
+      g.rect(x, yTop, step, h).fill(x < m.peak ? rock : rockLo);
+      const capH = h - (m.height - 70 * this.k);
+      if (capH > 0) g.rect(x, yTop, step, snap(Math.min(capH, h))).fill(snow);
     }
-    g.rect(hx - half - post - 3 * u, sy - ph - 5 * u, half * 2 + post * 2 + 6 * u, 6 * u).fill(INK);
-    g.rect(hx - half - post - 2 * u, sy - ph - 4 * u, half * 2 + post * 2 + 4 * u, 4 * u).fill(wood);
-    g.rect(hx - half - post - 2 * u, sy - ph - u, half * 2 + post * 2 + 4 * u, u).fill(woodLo);
+    // a few rock seams so it reads as stone
+    for (let i = 0; i < 26; i++) {
+      const x = snap(m.left + r() * (m.right - m.left));
+      const h = this.mountainAt(x);
+      if (h < 30 * this.k) continue;
+      const y = snap(sy - r() * (h - 12 * this.k));
+      g.rect(x, y, snap(4 + r() * 10) * 2, u).fill(0x4a3d5a);
+    }
   }
 
   resetPath() {
@@ -470,11 +510,11 @@ export class World {
     const hx = this.homeX;
     const k = this.k;
     const d = this.discovery;
-    // home chamber plus the shaft Digly arrived through
+    // the horizontal tunnel into the mountain where Digly starts
+    const mt = this.mountain;
+    const sy = this.surfaceY;
     const chamber = (gr: Graphics, grow: number, color: number) => {
-      const top = this.surfaceY;
-      gr.roundRect(hx - 46 * k - grow, top, 92 * k + grow * 2, -top + 40 * k, 0).fill(color);
-      gr.ellipse(hx, 4 * k, 150 * k + grow, 104 * k + grow).fill(color);
+      gr.roundRect(mt.mouth - grow, sy - mt.tunnelH - grow, mt.back - mt.mouth + grow * 2, mt.tunnelH + 8 * k + grow * 2, 18 * k).fill(color);
       if (d) {
         gr.ellipse(d.x, d.y, d.rx + grow, d.ry + grow).fill(color);
       }
@@ -483,7 +523,7 @@ export class World {
     chamber(t, 0, CAVE.back);
     chamber(m, 0, 0xffffff);
     if (this.path.length) {
-      const pts = [{ x: hx, y: 40 * k }, ...this.path];
+      const pts = [{ x: hx, y: sy }, ...this.path];
       for (const [gr, wdt, col] of [
         [t, TUNNEL_W * k + 18, CAVE.rim],
         [t, TUNNEL_W * k, CAVE.back],
@@ -494,8 +534,25 @@ export class World {
         gr.stroke({ width: wdt, color: col, cap: "round", join: "round" });
       }
     }
-    // floor of the chamber where Digly parks
-    t.ellipse(hx, 96 * k, 120 * k, 14 * k).fill({ color: CAVE.rim, alpha: 0.6 });
+    // timber supports along the tunnel, and a frame around its mouth
+    const u = PX;
+    const wood = 0x8a5a2b;
+    const woodLo = 0x5e3a18;
+    const frame = (x: number, big: boolean) => {
+      const pw = (big ? 4 : 3) * u;
+      const ph = mt.tunnelH + (big ? 4 * u : -2 * u);
+      const top = sy - ph;
+      t.rect(x - u, top - u, pw + 2 * u, ph + u).fill(INK);
+      t.rect(x, top, pw, ph).fill(big ? wood : woodLo);
+      return { top, pw };
+    };
+    for (let x = mt.mouth + 34 * k; x < mt.back - 20 * k; x += 46 * k) frame(Math.round(x / u) * u, false);
+    const f = frame(Math.round((mt.mouth - 2 * u) / u) * u, true);
+    t.rect(mt.mouth - 6 * u, f.top - 5 * u, 16 * u, 6 * u).fill(INK);
+    t.rect(mt.mouth - 5 * u, f.top - 4 * u, 14 * u, 4 * u).fill(wood);
+    t.rect(mt.mouth - 5 * u, f.top - u, 14 * u, u).fill(woodLo);
+    // the floor where Digly parks
+    t.ellipse(hx, sy, 60 * k, 8 * k).fill({ color: CAVE.rim, alpha: 0.6 });
     if (d) t.ellipse(d.x, d.y + d.ry * 0.82, d.rx * 0.9, d.ry * 0.14).fill({ color: CAVE.rim, alpha: 0.6 });
   }
 
@@ -506,8 +563,8 @@ export class World {
     const g = this.lantern.clear();
     if (!visible) return;
     const k = this.k;
-    const x = this.homeX - 96 * k;
-    const top = -66 * k;
+    const x = this.homeX + 44 * k;
+    const top = this.surfaceY - 124 * k;
     const sw = Math.sin(this.lanternT * 1.3) * 0.08;
     const len = 46 * k;
     const lx = x + Math.sin(sw) * len;

@@ -39,8 +39,8 @@ export function shareText(number: string, r: DigResult, beat: number | null, sit
 // 1080x1080 pixel card, drawn on a canvas.
 export async function shareImage(number: string, r: DigResult, beat: number | null, site = siteName()): Promise<Blob | null> {
   try {
-    await document.fonts.load("400 40px 'Jersey 15'");
-    await document.fonts.load("400 40px 'Tiny5'");
+    await document.fonts.load("700 40px 'Digly Display'");
+    await document.fonts.load("400 40px 'Digly Body'");
   } catch {
     // draw anyway
   }
@@ -74,7 +74,7 @@ export async function shareImage(number: string, r: DigResult, beat: number | nu
   g.fillStyle = "#3a2256";
   g.fillRect(px, py, pw, ph);
 
-  const display = (s: number) => `400 ${s}px 'Jersey 15', 'Tiny5', monospace`;
+  const display = (s: number) => `400 ${s}px 'Digly Display', 'Digly Body', monospace`;
   const text = (s: string, x: number, y: number, size: number, color: string, align: CanvasTextAlign = "center") => {
     g.font = display(size);
     g.textAlign = align;

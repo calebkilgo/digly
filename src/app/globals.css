@@ -1,6 +1,28 @@
 @import "tailwindcss";
-@import "@fontsource/tiny5/400.css";
-@import "@fontsource/jersey-15/400.css";
+/* Silkscreen for headings, numbers and buttons; VT323 for body text. Both are
+   rescaled with size-adjust so they fit the sizes the layout was built for
+   (Silkscreen runs wide, VT323 runs small). */
+@font-face {
+  font-family: "Digly Display";
+  src: url("/fonts/silkscreen-400.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+  size-adjust: 74%;
+}
+@font-face {
+  font-family: "Digly Display";
+  src: url("/fonts/silkscreen-700.woff2") format("woff2");
+  font-weight: 600 900;
+  font-display: swap;
+  size-adjust: 74%;
+}
+@font-face {
+  font-family: "Digly Body";
+  src: url("/fonts/vt323.woff2") format("woff2");
+  font-weight: 400 900;
+  font-display: swap;
+  size-adjust: 128%;
+}
 
 /* ------------------------------------------------------------------------
    Digly pixel UI. Every box has notched pixel corners (four offset shadows),
@@ -28,10 +50,8 @@
   --red-lo: #b8261c;
   --blue: #2f8fff;
   --muted: #8a7fa6;
-  --font: "Tiny5", ui-monospace, monospace;
-  /* Jersey 15: condensed pixel display face for numbers, buttons and titles.
-     Tiny5 and Jersey 15 both draw 5 and S differently, unlike the old fonts. */
-  --display: "Jersey 15", "Tiny5", monospace;
+  --font: "Digly Body", ui-monospace, monospace;
+  --display: "Digly Display", "Digly Body", monospace;
   --app-h: 100dvh;
   --app-top: 0px;
 }
@@ -2177,8 +2197,8 @@ input {
   .home-panel .card-title { font-size: 32px; }
   .home-panel .chip-lv { padding: 5px 4px 6px; gap: 0; flex-direction: row; justify-content: center; align-items: baseline; }
   .home-panel .chip-lv .lv-line { display: none; }
-  .home-panel .chip-lv .lv-n { font-size: 18px; white-space: nowrap; }
-  .home-panel .chip-lv .lv-x { font-size: 18px; margin-left: 5px; white-space: nowrap; }
+  .home-panel .chip-lv .lv-n { font-size: 14px; white-space: nowrap; }
+  .home-panel .chip-lv .lv-x { font-size: 14px; margin-left: 4px; white-space: nowrap; }
   .home-panel .facts { font-size: 15px; gap: 2px; }
   .home-panel .btn-big { padding-top: 8px; padding-bottom: 8px; }
 }

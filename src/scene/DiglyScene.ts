@@ -105,7 +105,7 @@ export class DiglyScene {
     this.particles = new Particles(this.app.renderer);
     this.miner.onStrike = (x, y, power) => this.strike(x, y, power);
 
-    this.worldC.addChild(this.world.strata, this.world.tunnel, this.world.sky);
+    this.worldC.addChild(this.world.strata, this.world.sky, this.world.tunnel);
     this.root.addChild(this.worldC, this.world.back, this.dark);
     this.worldC2.addChild(this.world.tunnelMask, this.world.ruler, this.world.lantern, this.miner.root, this.particles.layer);
     this.root.addChild(this.worldC2, this.vignette, this.reveal.root);
@@ -409,7 +409,9 @@ export class DiglyScene {
       this.depthTarget += creep * dt;
       this.depth = approach(this.depth, this.depthTarget, 7, dt);
       my = floorY + this.depth;
-      mx = this.world.homeX + Math.sin(this.depth / (260 * k)) * Math.min(this.W * 0.1, 90);
+      // zig-zag down: straight diagonal runs that switch direction
+      const zig = (2 / Math.PI) * Math.asin(Math.sin(this.depth / (190 * k)));
+      mx = this.world.homeX + zig * Math.min(this.W * 0.18, 150 * k);
       this.camTarget = my;
       anchorY = top + h * 0.55;
       if (this.depth > 20 * k) this.world.extendPath(mx, my - 40 * k);
