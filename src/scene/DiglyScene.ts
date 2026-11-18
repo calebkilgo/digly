@@ -113,7 +113,13 @@ export class DiglyScene {
     this.root.addChild(this.worldC2, this.vignette, this.reveal.root);
     this.app.stage.addChild(this.root);
 
-    this.ro = new ResizeObserver(() => this.layout());
+    // Pixi only resizes on window "resize", which iOS doesn't fire when the
+    // keyboard opens (only the visual viewport changes). Resize from the host's
+    // own size instead, so the canvas always matches the space we can see.
+    this.ro = new ResizeObserver(() => {
+      this.app.resize();
+      this.layout();
+    });
     this.ro.observe(host);
     this.layout();
     this.app.ticker.add((t) => this.tick(t.deltaMS / 1000));
@@ -427,7 +433,7 @@ export class DiglyScene {
         // him a little left of center (the depth gauge sits on the right), and give
         // him more headroom since the band between the HUD and keyboard is short
         camXTarget = mx - this.W * 0.44;
-        anchorY = top + h * 0.7;
+        anchorY = top + h * 0.64;
       }
       this.world.extendPath(mx, my - FEET_UP * k);
     } else if (this.mode === "reveal") {
