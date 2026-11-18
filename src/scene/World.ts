@@ -335,11 +335,15 @@ export class World {
         g.rect(cx - half * u, y, Math.max(1, Math.round(half * 0.8)) * u, u).fill(local < 1.5 && t > 0 ? 0x245a30 : 0x2f6b3a); // moonlit side
       }
     };
-    for (let i = 0; i < 26; i++) {
-      const x = x0 + r() * (x1 - x0);
-      if (x > m.ledgeL - 40 * k && x < m.right) continue;
-      if (Math.abs(x - (m.foot - 60 * k)) < 40 * k) continue; // keep the cart clear
-      pine(x, sy - this.mountainAt(x) + 2 * u, 34 + r() * 18);
+    // Placed from the mountain outward with their own random numbers, so the
+    // same trees appear in the same spots at every screen size and on every load.
+    const tr = mulberry32(hash(this.seed, 9));
+    const cartL = m.foot - 60 * k - 18 * k;
+    const cartR = m.foot - 60 * k + 22 * u + 18 * k;
+    for (let x = m.ledgeL - 50 * k; x > x0; x -= (55 + tr() * 45) * k) {
+      const h = 34 + tr() * 18;
+      if (x > cartL && x < cartR) continue; // keep the cart clear
+      pine(x, sy - this.mountainAt(x) + 2 * u, h);
     }
     // a mine cart on the ground at the foot of the slope
     const cx = snap(m.foot - 60 * k);
