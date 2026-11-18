@@ -159,6 +159,11 @@ export class World {
     this.dig = [];
   }
 
+  // where the mine entrance ends (its back post); the dug tunnel starts here
+  get mineEnd() {
+    return Math.round(this.mountain.mouth / PX) * PX + MINE_W * PX;
+  }
+
   digPoint(dist: number): { x: number; y: number } {
     const k = this.k;
     const stepLen = 5 * k;
@@ -178,12 +183,12 @@ export class World {
       if (r() < 0.02) st.dir = -st.dir; // turn around for no reason
       st.a = clamp(st.a, 0.04, 0.85);
       const deep = p.y > this.surfaceY + 90 * k;
-      const left = deep ? this.homeX - Math.min(this.width * 0.4, 380 * k) : m.mouth + 50 * k;
+      const left = deep ? this.homeX - Math.min(this.width * 0.4, 380 * k) : this.mineEnd + 20 * k;
       const right = this.homeX + Math.min(this.width * 0.45, 460 * k);
-      if (p.s < 110 * k) {
-        // first stretch: straight into the mountain
+      if (p.x < this.mineEnd + 10 * k && p.y <= this.floorY) {
+        // first stretch: walk level through the mine entrance to its back post
         st.dir = 1;
-        st.a = Math.min(st.a, 0.22);
+        st.a = p.x < this.mineEnd ? 0 : Math.min(st.a, 0.3);
       }
       if (p.x >= right) st.dir = -1;
       if (p.x <= left) st.dir = 1;
@@ -338,26 +343,87 @@ export class World {
     // Placed from the mountain outward with their own random numbers, so the
     // same trees appear in the same spots at every screen size and on every load.
     const tr = mulberry32(hash(this.seed, 9));
-    const cartL = m.foot - 60 * k - 18 * k;
-    const cartR = m.foot - 60 * k + 22 * u + 18 * k;
-    for (let x = m.ledgeL - 50 * k; x > x0; x -= (55 + tr() * 45) * k) {
-      const h = 34 + tr() * 18;
-      if (x > cartL && x < cartR) continue; // keep the cart clear
-      pine(x, sy - this.mountainAt(x) + 2 * u, h);
+    for (let x = m.foot - 70 * k; x > x0; x -= (110 + tr() * 50) * k) {
+      pine(x, sy - 2 * u, 34 + tr() * 18);
     }
-    // a mine cart on the ground at the foot of the slope
-    const cx = snap(m.foot - 60 * k);
+    // ---- the mine: a timbered entrance in the face, a track down to the grass, the cart inside ----
+    const fy = this.floorY; // the ledge top, where the miner stands
+    const ex = snap(m.mouth); // entrance starts at the foot of the face
+    const eh = 38 * u; // inside height, the miner is 27
+    const ew = MINE_W * u;
+    const timber = 0x8a5a2b;
+    const timberLo = 0x5e3a18;
+    // the opening, drawn over the sky so the face can't notch it
+    // rock over the entrance, so the face comes down to the timber instead of showing sky
+    const capTop = fy - eh - 4 * u;
+    // a ramp from just over the cap up to where the mountain's own face takes over
+    const hx0 = ex - 4 * u;
+    let hx1 = hx0;
+    while (hx1 < ex + ew + 20 * u && ground(hx1) > capTop - 4 * u) hx1 += step;
+    const y0h = capTop - 4 * u;
+    const y1h = ground(hx1);
+    const headTop = (x: number) => snap(y0h + ((x - hx0) / Math.max(step, hx1 - hx0)) * (y1h - y0h));
+    for (let x = hx0; x < hx1; x += step) {
+      const gy = ground(x);
+      const top = Math.min(headTop(x), gy);
+      g.rect(x, top, step, gy - top).fill(rock);
+      g.rect(x, top - u, step, u).fill(INK);
+    }
+    g.rect(ex - 5 * u, headTop(ex - 4 * u) - u, u, fy - headTop(ex - 4 * u) + u).fill(INK);
+    g.rect(ex, fy - eh, ew, eh).fill(0x1a1226);
+    g.rect(ex, fy - eh, ew, 3 * u).fill(0x120c1c);
+    for (let i = 0; i < 9; i++) {
+      const rx = ex + snap((6 + ((i * 37) % 36)) * u);
+      const ry = fy - eh + snap((6 + ((i * 13) % 26)) * u);
+      g.rect(rx, ry, 2 * u, u).fill(0x2a1f38);
+    }
+
+    // track: along the grass, up the slope, along the ledge and into the mine
+    const railTop = (x: number) => (x >= m.ledgeL ? fy - 2 * u : snap(Math.min(sy - 4 * u, sy - this.mountainAt(x) - 2 * u)));
+    const trackR = ex + ew - 4 * u;
+    let prev = railTop(snap(x0));
+    for (let x = snap(x0); x < trackR; x += u) {
+      const y = railTop(x);
+      if (Math.round(x / u) % 5 === 0) g.rect(x - u, y + u, 3 * u, u).fill(timberLo);
+      const y0 = Math.min(y, prev);
+      g.rect(x, y0, u, Math.max(u, Math.abs(y - prev) + u)).fill(0xb8c4d3);
+      prev = y;
+    }
+
+    // timber set: front and back posts with a cap along the roof, a lantern out front
+    const post = (x: number) => {
+      g.rect(x - u, fy - eh - u, 5 * u, eh + u).fill(INK);
+      g.rect(x, fy - eh, 3 * u, eh).fill(timber);
+      g.rect(x + 2 * u, fy - eh, u, eh).fill(timberLo);
+    };
+    post(ex);
+    post(ex + ew - 4 * u);
+    const capL = ex - 6 * u;
+    const capR = ex + ew + 2 * u;
+    g.rect(capL - u, fy - eh - 4 * u, capR - capL + 2 * u, 5 * u).fill(INK);
+    g.rect(capL, fy - eh - 3 * u, capR - capL, 3 * u).fill(timber);
+    g.rect(capL, fy - eh - u, capR - capL, u).fill(timberLo);
+    const lx = capL + u;
+    g.rect(lx + u, fy - eh + u, u, 3 * u).fill(0x3a3e4e); // chain
+    g.rect(lx - u, fy - eh + 4 * u, 5 * u, 6 * u).fill(INK);
+    g.rect(lx, fy - eh + 5 * u, 3 * u, 4 * u).fill(0xffc928);
+    g.rect(lx + u, fy - eh + 6 * u, u, 2 * u).fill(0xfff4b8);
+    g.circle(lx + 1.5 * u, fy - eh + 7 * u, 8 * u).fill({ color: 0xffc928, alpha: 0.08 });
+
+    // the cart, on the track just inside
+    const cx = ex + 18 * u;
     const cw = 22 * u;
     const ch = 10 * u;
-    g.rect(snap(m.foot - 160 * k), sy - 2 * u, snap(150 * k), u).fill(0xb8c4d3);
-    g.rect(cx - u, sy - ch - 5 * u, cw + 2 * u, ch + 2 * u).fill(INK);
-    g.rect(cx, sy - ch - 4 * u, cw, ch).fill(0x6b6f80);
-    g.rect(cx, sy - ch - 4 * u, cw, 2 * u).fill(0x9aa0b4);
+    const rail = fy - 2 * u; // wheels sit on the rail
+    const cb = rail - 4 * u;
+    g.rect(cx - u, cb - ch - u, cw + 2 * u, ch + 2 * u).fill(INK);
+    g.rect(cx, cb - ch, cw, ch).fill(0x6b6f80);
+    g.rect(cx, cb - ch, cw, 2 * u).fill(0x9aa0b4);
     for (const gx of [cx + 3 * u, cx + cw - 7 * u]) {
-      g.rect(gx - u, sy - 5 * u, 6 * u, 5 * u).fill(INK);
-      g.rect(gx, sy - 4 * u, 4 * u, 3 * u).fill(0x3a3e4e);
+      g.rect(gx - u, rail - 5 * u, 6 * u, 5 * u).fill(INK);
+      g.rect(gx, rail - 4 * u, 4 * u, 3 * u).fill(0x3a3e4e);
     }
-    for (let i = 0; i < 6; i++) g.rect(cx + (2 + i * 3) * u, sy - ch - (6 + (i % 2)) * u, 3 * u, 3 * u).fill(i % 3 === 0 ? 0xffc928 : 0x8a7c9c);
+    for (let i = 0; i < 6; i++) g.rect(cx + (2 + i * 3) * u, cb - ch - (2 + (i % 2)) * u, 3 * u, 3 * u).fill(i % 3 === 0 ? 0xffc928 : 0x8a7c9c);
   }
 
   resetPath() {
@@ -681,8 +747,10 @@ export class World {
     chamber(t, 9, CAVE.rim);
     chamber(t, 0, CAVE.back);
     chamber(m, 0, 0xffffff);
-    if (this.path.length) {
-      const pts = this.path;
+    // the entrance is already open, so the dug tunnel only shows from its back post on
+    const end = this.mineEnd - 4 * PX;
+    const pts = this.path.filter((p) => p.x >= end || p.y > this.floorY + 4 * PX);
+    if (pts.length > 1) {
       for (const [gr, wdt, col] of [
         [t, TUNNEL_W * k + 18, CAVE.rim],
         [t, TUNNEL_W * k, CAVE.back],
@@ -706,6 +774,9 @@ export class World {
 
 // Where the moon is in its cycle: 0 new, 0.25 first quarter, 0.5 full, 0.75 last quarter.
 // Counted from the new moon of 6 Jan 2000, 18:14 UTC.
+// inside width of the mine entrance, in art pixels
+const MINE_W = 50;
+
 export function moonPhase(now: number) {
   const days = (now - Date.UTC(2000, 0, 6, 18, 14)) / 86_400_000;
   const p = (days / 29.530588853) % 1;
