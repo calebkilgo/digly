@@ -164,6 +164,12 @@ export class World {
     return Math.round(this.mountain.mouth / PX) * PX + MINE_W * PX;
   }
 
+  // the level run past the back post before the tunnel turns down, so it never
+  // cuts under the cart or the timbers
+  get mineRun() {
+    return this.mineEnd + TUNNEL_W * this.k * 0.9;
+  }
+
   digPoint(dist: number): { x: number; y: number } {
     const k = this.k;
     const stepLen = 5 * k;
@@ -183,13 +189,13 @@ export class World {
       if (r() < 0.02) st.dir = -st.dir; // turn around for no reason
       st.a = clamp(st.a, 0.04, 0.85);
       const deep = p.y > this.surfaceY + 90 * k;
-      const left = deep ? this.homeX - Math.min(this.width * 0.4, 380 * k) : this.mineEnd + 20 * k;
+      const left = deep ? this.homeX - Math.min(this.width * 0.4, 380 * k) : this.mineRun;
       const right = this.homeX + Math.min(this.width * 0.45, 460 * k);
-      if (p.x < this.mineEnd + 10 * k && p.y <= this.floorY) {
-        // first stretch: walk level through the mine entrance to its back post
+      if (p.x < this.mineRun && p.y <= this.floorY) {
+        // first stretch: level through the entrance and on past the back post
         st.dir = 1;
-        st.a = p.x < this.mineEnd ? 0 : Math.min(st.a, 0.3);
-      }
+        st.a = 0;
+      } else if (p.y < this.floorY + 40 * k) st.a = Math.min(st.a, 0.35); // ease into the descent
       if (p.x >= right) st.dir = -1;
       if (p.x <= left) st.dir = 1;
       this.dig.push({ x: p.x + st.dir * Math.cos(st.a) * stepLen, y: p.y + Math.sin(st.a) * stepLen, s: p.s + stepLen });
@@ -321,30 +327,60 @@ export class World {
         else g.rect(px, py, mu, mu).fill({ color: 0x3a4166, alpha: 0.85 });
       }
     }
-    // pine trees on the ground and lower slope, sized against the miner (27 px tall)
-    const pine = (x: number, base: number, height: number) => {
-      const cx = snap(x);
-      const trunk = 6;
-      const crown = Math.round(height) - trunk;
-      const tiers = crown > 40 ? 4 : 3;
-      const th = crown / tiers;
-      g.rect(cx - 2 * u, snap(base - trunk * u), 4 * u, trunk * u).fill(0x4a2e14);
-      g.rect(cx, snap(base - trunk * u), 2 * u, trunk * u).fill(0x5e3a18);
-      for (let row = 0; row < crown; row++) {
-        const t = Math.min(tiers - 1, Math.floor(row / th));
-        const local = row - t * th;
-        const half = Math.max(1, Math.round(1 + t * 2.2 + local * 0.75));
-        const y = snap(base - (trunk + crown - row) * u);
-        g.rect(cx - half * u - u, y, half * 2 * u + 2 * u, u).fill(0x183a22); // dark edge
-        g.rect(cx - half * u, y, half * 2 * u, u).fill(0x245a30);
-        g.rect(cx - half * u, y, Math.max(1, Math.round(half * 0.8)) * u, u).fill(local < 1.5 && t > 0 ? 0x245a30 : 0x2f6b3a); // moonlit side
-      }
-    };
+    // pines on the open ground: different heights, shapes and greens, with needle texture.
     // Placed from the mountain outward with their own random numbers, so the
     // same trees appear in the same spots at every screen size and on every load.
     const tr = mulberry32(hash(this.seed, 9));
-    for (let x = m.foot - 70 * k; x > x0; x -= (110 + tr() * 50) * k) {
-      pine(x, sy - 2 * u, 34 + tr() * 18);
+    const GREENS = [
+      { edge: 0x183a22, mid: 0x245a30, light: 0x2f6b3a, hi: 0x3d8048 },
+      { edge: 0x14302a, mid: 0x1f4a3e, light: 0x2a5e4e, hi: 0x387260 }, // blue spruce
+      { edge: 0x22401c, mid: 0x2f5a26, light: 0x3d7030, hi: 0x4f8a3a }, // warmer
+    ];
+    type Green = (typeof GREENS)[number];
+    const trunk = (cx: number, base: number, h: number, w: number) => {
+      g.rect(cx - Math.floor(w / 2) * u - u, snap(base - h * u), (w + 2) * u, h * u).fill(INK);
+      g.rect(cx - Math.floor(w / 2) * u, snap(base - h * u), w * u, h * u).fill(0x4a2e14);
+      g.rect(cx - Math.floor(w / 2) * u, snap(base - h * u), u, h * u).fill(0x6b4320);
+      for (let i = 1; i < h; i += 3) g.rect(cx + (i % 2 ? 0 : -u), snap(base - i * u), u, u).fill(0x32200e);
+    };
+    // one canopy row, shaded light on the moon side with scattered needles
+    const row = (cx: number, y: number, half: number, pal: Green, lit: number) => {
+      g.rect(cx - half * u - u, y, (half * 2 + 2) * u, u).fill(pal.edge);
+      g.rect(cx - half * u, y, half * 2 * u, u).fill(pal.mid);
+      const lw = Math.max(1, Math.round(half * lit + (tr() - 0.5) * 2));
+      g.rect(cx - half * u, y, Math.min(lw, half * 2) * u, u).fill(pal.light);
+      for (let i = 0; i < Math.max(1, half * 0.6); i++) {
+        const px = Math.floor(tr() * half * 2) - half;
+        const onLit = px < -half + lw;
+        const c = tr() < 0.5 ? (onLit ? pal.hi : pal.edge) : onLit ? pal.mid : pal.light;
+        g.rect(cx + px * u, y, u, u).fill(c);
+      }
+    };
+    const pine = (x: number, base: number, height: number, pal: Green, narrow: number) => {
+      const cx = snap(x);
+      const tk = 5 + Math.floor(tr() * 3);
+      trunk(cx, base, tk, 2);
+      const crown = Math.round(height) - tk;
+      const tiers = Math.max(3, Math.min(6, Math.round(crown / (12 + narrow * 4))));
+      const th = crown / tiers;
+      const grow = 2.2 / (1 + narrow);
+      for (let r2 = 0; r2 < crown; r2++) {
+        const t = Math.min(tiers - 1, Math.floor(r2 / th));
+        const local = r2 - t * th;
+        let half = Math.round(1 + t * grow + local * (0.75 / (1 + narrow * 0.5)));
+        if (local > th - 2) half += tr() < 0.5 ? 1 : 0; // ragged tier ends
+        row(cx, snap(base - (tk + crown - r2) * u), Math.max(1, half), pal, 0.75);
+      }
+      g.rect(cx - u, snap(base - (tk + crown + 1) * u), 2 * u, u).fill(pal.edge); // tip
+    };
+    for (let x = m.foot - 70 * k; x > x0; x -= (100 + tr() * 60) * k) {
+      const pal = GREENS[Math.floor(tr() * GREENS.length)];
+      const kind = tr();
+      const base = sy - 2 * u;
+      if (kind < 0.65) pine(x, base, 36 + tr() * 18, pal, 0);
+      else pine(x, base, 44 + tr() * 16, GREENS[1], 1); // tall narrow spruce
+      // now and then a young one beside it
+      if (tr() < 0.35) pine(x - (34 + tr() * 16) * k, base, 18 + tr() * 8, pal, 0.5);
     }
     // ---- the mine: a timbered entrance in the face, a track down to the grass, the cart inside ----
     const fy = this.floorY; // the ledge top, where the miner stands
@@ -748,8 +784,13 @@ export class World {
     chamber(t, 0, CAVE.back);
     chamber(m, 0, 0xffffff);
     // the entrance is already open, so the dug tunnel only shows from its back post on
+    // while it runs level, the tunnel's floor sits on the ledge line instead of
+    // its middle, then it eases down into the descent
     const end = this.mineEnd - 4 * PX;
-    const pts = this.path.filter((p) => p.x >= end || p.y > this.floorY + 4 * PX);
+    const half = (TUNNEL_W * k) / 2;
+    const pts = this.path
+      .filter((p) => p.x >= end || p.y > this.floorY + 4 * PX)
+      .map((p) => ({ x: p.x, y: p.y - half * clamp(1 - (p.y - this.floorY) / (half * 2), 0, 1) }));
     if (pts.length > 1) {
       for (const [gr, wdt, col] of [
         [t, TUNNEL_W * k + 18, CAVE.rim],
