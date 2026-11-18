@@ -96,7 +96,7 @@ describe("scoring", () => {
   it("level score = (best 3 + clean bonus) x multiplier, never negative", () => {
     const P = SCORING.points;
     const full = levelScore([ans("a", "ruby", 2), ans("b", "diamond", 1), ans("c", "gold", 0)], 3);
-    expect(full.raw).toBe(P.ruby + P.diamond + P.gold + SCORING.cleanBonus);
+    expect(full.raw).toBe(P.ruby + P.diamond + P.gold);
     expect(full.points).toBe(Math.round(full.raw * SCORING.multipliers[3]));
     const one = levelScore([ans("a", "gold", 0)], 1);
     expect(one.raw).toBe(P.gold);

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { AttemptResult, DigResult, PublicChallenge, RevealedAnswer } from "@/game/service/types";
-import { foundLabel, tierOf } from "@/game/rules/scoring";
+import { foundLabel, pointsOf, tierOf } from "@/game/rules/scoring";
 import { sfx } from "@/audio/sfx";
 import { GemIcon } from "./art";
 import { GemLadder } from "./GemLadder";
@@ -42,7 +42,7 @@ function Row({ a, cls }: { a: RevealedAnswer; cls?: string }) {
         <br />
         <span className="p">{foundLabel(a)}</span>
       </span>
-      <span className="r">{a.rarity}</span>
+      <span className="r">{pointsOf(a)}</span>
     </li>
   );
 }

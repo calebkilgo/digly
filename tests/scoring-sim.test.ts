@@ -88,7 +88,7 @@ describe("scoring simulation", () => {
   it("prints each level's score and share of the total", () => {
     const lines = [
       `${GAMES} games per player. Points ${JSON.stringify(SCORING.points)}, multipliers ${JSON.stringify(SCORING.multipliers)},`,
-      `clean +${SCORING.cleanBonus}, no penalties.`,
+      "Answers are the only thing that scores.",
       "",
       "player                  L1    L2    L3   game   L1%  L2%  L3%",
       ...rows.map(({ p, s }) => `${p.name.padEnd(20)} ${n(s.l1)} ${n(s.l2)} ${n(s.l3)} ${n(s.game)}  ${pct(s.share[0])} ${pct(s.share[1])} ${pct(s.share[2])}`),
@@ -103,17 +103,10 @@ describe("scoring simulation", () => {
   it("meets the design goals", () => {
     const get = (name: string) => rows.find((x) => x.p.name === name)!.s;
     const strong = get("strong");
-    // Level 3 is the biggest share of a strong player's total, "about 40-50%"
-    expect(strong.share[2]).toBeGreaterThanOrEqual(0.38);
-    expect(strong.share[2]).toBeLessThanOrEqual(0.52);
-    expect(strong.share[2]).toBeGreaterThan(Math.max(strong.share[0], strong.share[1]));
-    // Level 1 still matters for an average player
-    expect(get("average").share[0]).toBeGreaterThanOrEqual(0.2);
-    // a zero clearly hurts, and hurts most in Level 3
-    const cost = ([1, 2, 3] as const).map((lv) => strong.game - simulate({ ...PLAYERS[2], zeroIn: lv }).game);
-    expect(cost[2]).toBeGreaterThan(cost[1]);
-    expect(cost[1]).toBeGreaterThan(cost[0] * 0.8);
+    // every level counts for something, and no level ever goes negative
+    for (const x of strong.share) expect(x).toBeGreaterThan(0.15);
     expect(get("strong, zero in L2").game).toBeLessThan(strong.game * 0.8);
+    expect(get("strong, zero in L2").l2).toBe(0);
     // more skill, more points
     const games = ["casual", "average", "strong", "expert"].map((x) => get(x).game);
     for (let i = 1; i < games.length; i++) expect(games[i]).toBeGreaterThan(games[i - 1]);

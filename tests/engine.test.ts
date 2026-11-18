@@ -130,7 +130,7 @@ describe("scoring on the server", () => {
     expect(r.top[0]).toMatchObject({ name: "Mudi", rarity: 100, tier: "platinum" });
     const s = levelScore(r.top, 1);
     expect(r.score).toBe(s.raw);
-    expect(r.score).toBe(r.top.reduce((n, t) => n + SCORING.points[t.tier!], 0) + SCORING.cleanBonus);
+    expect(r.score).toBe(r.top.reduce((n, t) => n + SCORING.points[t.tier!], 0));
     expect(r.points).toBe(r.score); // level 1 is x1
     expect(r.rejected).toEqual(["nonsense dog"]);
     expect(r.challenge.level).toBe(1);

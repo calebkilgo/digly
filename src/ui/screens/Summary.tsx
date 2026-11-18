@@ -186,7 +186,7 @@ export function SummaryScreen(props: {
 }
 
 function breakdownNote(found: number) {
-  if (found >= SCORING.best) return `+${SCORING.cleanBonus} clean dig`;
+  if (found >= SCORING.best) return "best 3";
   if (found === 0) return "no finds";
   return `${SCORING.best - found} empty`;
 }

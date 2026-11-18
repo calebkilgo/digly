@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { DiglyScene, RockAnchor } from "@/scene/DiglyScene";
 import type { AttemptResult, RevealedAnswer } from "@/game/service/types";
-import { SCORING, foundLabel, tierOf } from "@/game/rules/scoring";
+import { SCORING, foundLabel, pointsOf, tierOf } from "@/game/rules/scoring";
 import { LEVELS } from "@/game/rules/levels";
 import { hash } from "@/scene/rng";
 import { sfx } from "@/audio/sfx";
@@ -172,7 +172,7 @@ export function RevealScreen(props: {
         return (
           <div className={`rock-label ${t.key === "platinum" ? "platinum" : ""}`} style={pos} key={i}>
             <div className="big-num pts" style={{ color: GEM_FILL[t.key].base }}>
-              {a.rarity}
+              {pointsOf(a)}
             </div>
             <div className="name px">{a.name}</div>
             <div>
@@ -222,9 +222,9 @@ export function RevealScreen(props: {
   );
 }
 
-// the clean-dig bonus, or how many slots stayed empty
+// how many slots stayed empty
 function bonusNote(found: number) {
-  if (found >= SCORING.best) return ` · +${SCORING.cleanBonus} clean dig`;
+  if (found >= SCORING.best) return "";
   if (found === 0) return " · no finds";
   return ` · ${SCORING.best - found} empty`;
 }

@@ -2,8 +2,8 @@
 //
 // Every level: 40 seconds, name as many valid answers as you can, your best 3
 // count. Each answer has a tier (from how niche it is within that prompt).
-// Level score = (points of best 3 + clean-dig bonus) x level multiplier.
-// Nothing ever takes points away: an empty level just scores 0.
+// Level score = points of your best 3 answers x level multiplier. Answers are
+// the only thing that scores; nothing takes points away.
 
 export type TierKey = "copper" | "gold" | "diamond" | "ruby" | "platinum";
 
@@ -11,8 +11,7 @@ export const SCORING = {
   seconds: 40,
   best: 3,
   points: { copper: 20, gold: 50, diamond: 150, ruby: 350, platinum: 1000 } as Record<TierKey, number>,
-  multipliers: { 1: 1, 2: 1.5, 3: 3.5 } as Record<1 | 2 | 3, number>, // tuned from 1 / 1.25 / 2 by the simulation
-  cleanBonus: 30, // all 3 slots filled
+  multipliers: { 1: 1, 2: 1.25, 3: 1.5 } as Record<1 | 2 | 3, number>,
   // tier cutoffs on the z-score of an answer's difficulty within its prompt
   tierZ: { gold: -1.0, diamond: 0.3, ruby: 1.8 }, // ~16% copper, 46% gold, 35% diamond, 3.6% ruby
 };
@@ -70,19 +69,16 @@ export function bestN<T extends Scored>(accepted: T[], n = SCORING.best): T[] {
 
 export interface LevelBreakdown {
   gems: number; // points from the best answers
-  bonus: number; // clean-dig bonus
-  raw: number; // gems + bonus
+  raw: number; // same as gems (kept so callers can show the pre-multiplier total)
   points: number; // raw x multiplier, rounded
   multiplier: number;
 }
 
 export function levelScore(best: Scored[], level: 1 | 2 | 3): LevelBreakdown {
-  const n = Math.min(best.length, SCORING.best);
   const gems = best.slice(0, SCORING.best).reduce((s, a) => s + pointsOf(a), 0);
-  const bonus = n === SCORING.best ? SCORING.cleanBonus : 0;
-  const raw = gems + bonus;
+  const raw = gems;
   const multiplier = SCORING.multipliers[level];
-  return { gems, bonus, raw, points: Math.round(raw * multiplier), multiplier };
+  return { gems, raw, points: Math.round(raw * multiplier), multiplier };
 }
 
 export function gameScore(levelPoints: number[]) {

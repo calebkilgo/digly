@@ -3,7 +3,7 @@
 //   Z helmet shine  Y helmet  y helmet shade  e lamp housing  L headlamp
 //   R hair  S skin  s skin shade  K eye  O shirt  o shirt shade
 //   T overalls  t overalls shade  B button  N boots  n boot shade
-//   (no arms: the pickaxe floats and circles his waist)
+//   (the arm is drawn with the pickaxe, see ARM)
 //   H handle  q handle shade  h handle cap  W steel shine  G steel  g steel dark  m steel mid
 
 export const MPAL: Record<string, number> = {
@@ -82,13 +82,14 @@ export const FRAMES = {
 
 export type FrameName = keyof typeof FRAMES;
 
-// The pickaxe on its own (he has no arms): it circles around his front hip.
+// One arm and the pickaxe, as a single piece that swings around his front
+// hip. The arm runs straight out from his side to the hand on the handle.
 export const ARM = [
   ".....hh.....",
   ".....Hq.....",
-  ".....Hq.....",
-  ".....Hq.....",
-  ".....Hq.....",
+  ".....SS.....",
+  "OOOOOSS.....",
+  "oooooHq.....",
   ".....Hq.....",
   ".....Hq.....",
   ".....Hq.....",
@@ -99,7 +100,7 @@ export const ARM = [
   "....mmmm....",
 ];
 // where ARM's top-left corner sits on the body, in body pixels
-export const ARM_AT = { x: 6.5, y: 14.5 }; // puts the pivot on his front hip, at body pixel (7, 18)
+export const ARM_AT = { x: 6.5, y: 12 }; // puts the pivot on his front side at the waist, body pixel (7, 15.5)
 // the pivot (his front hip) and the pick's striking point, in ARM pixels
 export const ARM_PIVOT = { x: 0.5, y: 3.5 };
 export const ARM_TIP = { x: 6, y: 12.5 };
