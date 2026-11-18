@@ -85,10 +85,14 @@ export function SettingsScreen(props: {
           </div>
           <div className="d" style={{ marginTop: 6 }}>
             {props.unlimited ? (
-              <b>Digly Unlimited: every past dig is open.</b>
+              <>
+                <b>Digly Unlimited: every past dig is open.</b>
+                <br />
+                It belongs to this account only and can&apos;t be refunded or moved to another account.
+              </>
             ) : (
               <button type="button" className="linkish" onClick={props.onUnlimited}>
-                Get Digly Unlimited ($5, one time)
+                Get Digly Unlimited ($5, one time, non-refundable)
               </button>
             )}
           </div>
@@ -134,7 +138,9 @@ export function SettingsScreen(props: {
               <button
                 className="btn btn-sm"
                 onClick={() => {
-                  const pw = window.prompt(`Delete ${props.username} for good? Your scores and history are removed and can't be brought back. Type your password to confirm.`);
+                  const pw = window.prompt(
+                    `Delete ${props.username} for good? Your scores and history are removed and can't be brought back.${props.unlimited ? " Digly Unlimited is removed too. It isn't refunded and can't move to another account." : ""} Type your password to confirm.`,
+                  );
                   if (!pw) return;
                   void props.onDelete(pw).then(
                     () => setAcctMsg("Account deleted."),

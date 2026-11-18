@@ -23,6 +23,8 @@ export async function grantFromSession(store: Store, s: Stripe.Checkout.Session)
     amount: s.amount_total ?? UNLIMITED.priceCents,
     currency: s.currency ?? UNLIMITED.currency,
     paymentIntent: typeof s.payment_intent === "string" ? s.payment_intent : (s.payment_intent?.id ?? null),
+    termsVersion: s.metadata?.terms_version ?? null,
+    termsAcceptedAt: s.metadata?.terms_accepted_at ? Number(s.metadata.terms_accepted_at) : null,
   });
   return true;
 }

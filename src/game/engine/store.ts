@@ -31,6 +31,8 @@ export interface Purchase {
   amount: number;
   currency: string;
   paymentIntent: string | null;
+  termsVersion?: string | null; // the no-refund purchase terms the buyer agreed to
+  termsAcceptedAt?: number | null;
 }
 
 export interface BoardTotal {

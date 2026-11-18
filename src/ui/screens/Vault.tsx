@@ -18,9 +18,14 @@ export function VaultScreen(props: {
   const locked = games.filter((g) => !vaultGameOpen(g, props.unlimited)).length;
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [agreed, setAgreed] = useState(false);
 
   const unlock = async () => {
     sfx.button();
+    if (!agreed) {
+      setErr("Tick the box above the button first.");
+      return;
+    }
     setBusy(true);
     setErr("");
     try {
@@ -42,11 +47,20 @@ export function VaultScreen(props: {
           <div>
             <div className="t">{UNLIMITED.name}</div>
             <div className="d">
-              Open every Vault game and replay any of them as often as you like. One payment of {UNLIMITED.label}, yours for good.
+              Open every Vault game and replay any of them as often as you like. One payment of {UNLIMITED.label}, kept on this account.
               {locked > 0 ? ` ${locked} sealed game${locked === 1 ? "" : "s"} waiting.` : ""}
             </div>
           </div>
-          <button className="btn btn-y" onClick={unlock} disabled={busy}>
+          <label className="agree">
+            <input type="checkbox" checked={agreed} onChange={(e) => (setAgreed(e.target.checked), setErr(""))} />
+            <span>
+              I understand this {UNLIMITED.label} purchase is final and can&apos;t be refunded, and that it stays with this account only.{" "}
+              <a href="/terms#unlimited" target="_blank" rel="noopener">
+                Purchase terms
+              </a>
+            </span>
+          </label>
+          <button className="btn btn-y" onClick={unlock} disabled={busy || !agreed}>
             {busy ? "…" : `Unlock for ${UNLIMITED.label}`}
           </button>
           {err && (
@@ -55,7 +69,7 @@ export function VaultScreen(props: {
             </div>
           )}
           <div className="fine" style={{ color: "#cdb68b", margin: 0 }}>
-            Free: games 1 to {FREE_VAULT_GAMES}. Paid securely through Stripe.
+            Free: games 1 to {FREE_VAULT_GAMES}. Paid securely through Stripe. All sales are final.
           </div>
         </div>
       )}

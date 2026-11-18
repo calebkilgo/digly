@@ -1,15 +1,20 @@
-import { getEngine, handle, limit, playerId } from "@/server/game";
+import { getEngine, handle, limit, playerId, readJson } from "@/server/game";
 import { stripe } from "@/server/billing";
 import { siteUrl } from "@/server/email";
-import { UNLIMITED } from "@/game/rules/plans";
+import { NO_REFUND_LINE, PURCHASE_TERMS_VERSION, UNLIMITED } from "@/game/rules/plans";
 import { GameError } from "@/game/service/types";
 import Stripe from "stripe";
 import * as Sentry from "@sentry/nextjs";
 
 // POST /api/billing/checkout -> { url } of a Stripe Checkout page for Digly Unlimited.
 // Needs an account, so the purchase has somewhere to live.
-export async function POST() {
+export async function POST(req: Request) {
   return handle(async () => {
+    // the buyer has to tick the no-refund box first; the version they saw is kept with the purchase
+    const body = await readJson(req);
+    if (body.agree !== true || body.terms !== PURCHASE_TERMS_VERSION) {
+      throw new GameError("bad_request", "Please accept the purchase terms first. Reload the page if you just did.");
+    }
     const s = stripe();
     if (!s) throw new GameError("not_open", "Payments aren't set up yet.");
     const pid = await playerId(false);
@@ -37,7 +42,9 @@ export async function POST() {
             },
       ],
       client_reference_id: p.id,
-      metadata: { player_id: p.id, product: "unlimited", username: p.username },
+      metadata: { player_id: p.id, product: "unlimited", username: p.username, terms_version: PURCHASE_TERMS_VERSION, terms_accepted_at: String(Date.now()) },
+      // shown right above Stripe's pay button
+      custom_text: { submit: { message: `${NO_REFUND_LINE} This purchase is for the Digly account "${p.username}".` } },
       payment_intent_data: { metadata: { player_id: p.id, product: "unlimited" } },
       customer_email: p.email ?? undefined,
       allow_promotion_codes: true,

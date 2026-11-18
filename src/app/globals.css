@@ -2223,3 +2223,25 @@ input {
   background: #fff;
   color: var(--ink);
 }
+
+/* no-refund agreement on the Vault purchase card */
+.unlock-card .agree {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 16px;
+  line-height: 1.25;
+  color: #fff4dc;
+  cursor: pointer;
+}
+.unlock-card .agree input {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  margin: 1px 0 0;
+  accent-color: #ffc928;
+  cursor: pointer;
+}
+.unlock-card .agree a {
+  color: #ffc928;
+}

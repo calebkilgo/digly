@@ -20,7 +20,7 @@ export class LocalService implements ChallengeService {
     // the offline preview has everything open
     return this.engine.start(ME, day, level, mode, { ...opts, unlimited: true });
   }
-  async checkout(): Promise<string> {
+  async checkout(_termsVersion: string): Promise<string> {
     throw new GameError("bad_request", "Purchases need the live site.");
   }
   async confirmPurchase() {

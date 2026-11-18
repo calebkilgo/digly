@@ -138,7 +138,7 @@ export interface ChallengeService {
   categories(): Promise<CategoryInfo[]>; // admin demo dig
   suggest(text: string): Promise<void>; // a prompt idea, guests too
   suggestions(): Promise<{ text: string; day: number; createdAt: number }[]>; // admin only
-  checkout(): Promise<string>; // URL of the Stripe page for Digly Unlimited
+  checkout(termsVersion: string): Promise<string>; // URL of the Stripe page for Digly Unlimited; needs the purchase terms accepted
   confirmPurchase(sessionId: string): Promise<boolean>;
 }
 

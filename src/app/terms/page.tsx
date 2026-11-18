@@ -45,22 +45,27 @@ export default function Terms() {
       </ul>
       <p>We may suspend or delete accounts that break these rules, and remove their scores.</p>
 
-      <h2>Digly Unlimited</h2>
+      <h2 id="unlimited">Digly Unlimited and refunds</h2>
       <ul>
         <li>
           Digly Unlimited is a one-time purchase (US$5 unless shown otherwise at checkout) that opens every past dig in the Vault for replay. The daily dig
           stays free for everyone.
         </li>
-        <li>It&apos;s tied to your Digly account, not to a device. Log in anywhere to use it.</li>
+        <li>
+          <b>All sales are final. Digly Unlimited is not refundable</b>, including if you change your mind, stop playing, or don&apos;t use it. Before you
+          pay, you confirm that you understand this.
+        </li>
+        <li>
+          <b>It belongs to the account you buy it on.</b> It can&apos;t be moved, merged, shared or transferred to a different account, including a new
+          account you make later. Log in to that same account on any device to use it, and keep your username and password safe.
+        </li>
+        <li>Deleting your account removes Unlimited with it, and it won&apos;t be refunded or restored on another account.</li>
+        <li>
+          If a payment is reversed, charged back or disputed, Unlimited is removed from the account. If you were charged by mistake, for example twice,
+          email us and we&apos;ll fix it.
+        </li>
         <li>Payments are handled by Stripe. We never see or store your card details.</li>
-        <li>
-          <b>Refunds:</b> if you change your mind, email us within 14 days of buying and we&apos;ll refund you in full. A refunded or disputed payment
-          removes Unlimited from the account.
-        </li>
-        <li>
-          &quot;For good&quot; means for as long as Digly runs. If we ever shut Digly down within a year of your purchase, we&apos;ll refund it.
-        </li>
-        <li>Deleting your account removes Unlimited with it, and it can&apos;t be moved to another account.</li>
+        <li>Nothing here takes away any right to a refund that the law where you live gives you and that can&apos;t be waived.</li>
       </ul>
 
       <h2>Our content</h2>

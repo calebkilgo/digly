@@ -11,6 +11,12 @@ export const UNLIMITED = {
   label: "$5",
 };
 
+// The purchase terms a buyer agrees to before checkout. Bump the version when
+// the wording in /terms changes, so each purchase records what was agreed to.
+export const PURCHASE_TERMS_VERSION = "2026-11-17";
+export const NO_REFUND_LINE =
+  "All sales are final. Digly Unlimited is not refundable, and it stays with the account you buy it on. It can't be moved to a different account.";
+
 // Vault games 1..FREE_VAULT_GAMES are free; the rest need Digly Unlimited.
 export const FREE_VAULT_GAMES = 3;
 

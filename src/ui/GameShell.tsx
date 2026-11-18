@@ -1,5 +1,6 @@
 "use client";
 
+import { PURCHASE_TERMS_VERSION } from "@/game/rules/plans";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { DiglyScene } from "@/scene/DiglyScene";
 import { createService, type AnyService } from "@/game/service";
@@ -180,7 +181,7 @@ export function GameShell() {
       return;
     }
     track("checkout_started");
-    window.location.href = await service.checkout();
+    window.location.href = await service.checkout(PURCHASE_TERMS_VERSION);
   }, [service, username]);
 
   // back from Stripe: ?unlimited=success&session_id=... or ?unlimited=cancel

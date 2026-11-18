@@ -121,6 +121,8 @@ export class SupabaseStore implements Store {
           amount: p.amount,
           currency: p.currency,
           payment_intent: p.paymentIntent,
+          terms_version: p.termsVersion ?? null,
+          terms_accepted_at: p.termsAcceptedAt ? new Date(p.termsAcceptedAt).toISOString() : null,
           status: "paid",
           updated_at: new Date().toISOString(),
         },
