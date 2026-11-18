@@ -11,6 +11,8 @@ const s = new Proxy({} as Record<string, string>, { get: (_, k) => `adm-${String
 // seconds and right after any change.
 
 type Status = "new" | "planned" | "added" | "dismissed";
+type Tab = "overview" | "answers" | "ideas" | "team";
+
 interface Idea {
   id: number;
   text: string;
@@ -45,6 +47,12 @@ interface LiveStats {
   lastHour: number;
   buckets: number[];
 }
+interface Category {
+  slug: string;
+  title: string;
+  level: number;
+  vault: boolean;
+}
 interface AnswerRow {
   key: string;
   name: string;
@@ -61,16 +69,21 @@ interface AnswerList {
   count: number;
   answers: AnswerRow[];
 }
-const TIER_NAMES: Record<string, string> = { copper: "Bronze", gold: "Gold", diamond: "Diamond", ruby: "Ruby", platinum: "Platinum" };
-interface Category {
-  slug: string;
-  title: string;
-  level: number;
-  vault: boolean;
+interface Rejects {
+  plays: number;
+  answersInList: number;
+  rejects: { text: string; n: number }[];
 }
 
 const REFRESH_MS = 8000;
+const TABS: { id: Tab; label: string }[] = [
+  { id: "overview", label: "Overview" },
+  { id: "answers", label: "Answers" },
+  { id: "ideas", label: "Ideas" },
+  { id: "team", label: "Team" },
+];
 const STATUSES: Status[] = ["new", "planned", "added", "dismissed"];
+const TIER_NAMES: Record<string, string> = { copper: "Bronze", gold: "Gold", diamond: "Diamond", ruby: "Ruby", platinum: "Platinum" };
 const ACTIONS: Record<string, string> = {
   admin_added: "made an admin:",
   admin_removed: "removed admin from",
@@ -97,34 +110,53 @@ async function api<T>(path: string, body?: unknown): Promise<T> {
 }
 
 function ago(t: number) {
-  const s2 = Math.max(0, Math.round((Date.now() - t) / 1000));
-  if (s2 < 60) return `${s2}s ago`;
-  if (s2 < 3600) return `${Math.round(s2 / 60)}m ago`;
-  if (s2 < 86400) return `${Math.round(s2 / 3600)}h ago`;
+  const sec = Math.max(0, Math.round((Date.now() - t) / 1000));
+  if (sec < 60) return `${sec}s ago`;
+  if (sec < 3600) return `${Math.round(sec / 60)}m ago`;
+  if (sec < 86400) return `${Math.round(sec / 3600)}h ago`;
   return new Date(t).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
+const fmt = (v: number | undefined) => (v === undefined ? "—" : v.toLocaleString());
+
 export function AdminPanel({ me }: { me: string }) {
+  const [tab, setTab] = useState<Tab>("overview");
   const [overview, setOverview] = useState<Overview | null>(null);
+  const [live, setLive] = useState<LiveStats | null>(null);
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [log, setLog] = useState<LogEntry[]>([]);
   const [admins, setAdmins] = useState<{ id: string; username: string }[]>([]);
-  const [live, setLive] = useState<LiveStats | null>(null);
+  const [cats, setCats] = useState<Category[]>([]);
   const [synced, setSynced] = useState<number | null>(null);
   const [offline, setOffline] = useState(false);
   const [, tick] = useState(0);
 
+  // the tab lives in the address bar, so a refresh or a shared link opens the same page
+  useEffect(() => {
+    const read = () => {
+      const h = window.location.hash.slice(1) as Tab;
+      if (TABS.some((t) => t.id === h)) setTab(h);
+    };
+    read();
+    window.addEventListener("hashchange", read);
+    return () => window.removeEventListener("hashchange", read);
+  }, []);
+  const go = (t: Tab) => {
+    setTab(t);
+    history.replaceState(null, "", `#${t}`);
+  };
+
   const refresh = useCallback(async () => {
     try {
-      const [o, i, l, a, lv] = await Promise.all([
+      const [o, lv, i, l, a] = await Promise.all([
         api<Overview>("/api/admin/overview"),
+        api<LiveStats>("/api/admin/live"),
         api<{ suggestions: Idea[] }>("/api/admin/suggestions"),
         api<{ log: LogEntry[] }>("/api/admin/log"),
         api<{ admins: { id: string; username: string }[] }>("/api/admin/admins"),
-        api<LiveStats>("/api/admin/live"),
       ]);
-      setLive(lv);
       setOverview(o);
+      setLive(lv);
       setIdeas(i.suggestions);
       setLog(l.log);
       setAdmins(a.admins);
@@ -137,6 +169,7 @@ export function AdminPanel({ me }: { me: string }) {
 
   useEffect(() => {
     void refresh();
+    api<{ categories: Category[] }>("/api/admin/rejects").then((r) => setCats(r.categories), () => undefined);
     const id = setInterval(() => void refresh(), REFRESH_MS);
     const clock = setInterval(() => tick((n) => n + 1), 1000);
     return () => {
@@ -145,284 +178,167 @@ export function AdminPanel({ me }: { me: string }) {
     };
   }, [refresh]);
 
+  const newIdeas = ideas.filter((i) => i.status === "new").length;
+
   return (
     <div className={s.root}>
-      <div className={s.wrap}>
-        <header className={s.top}>
+      <header className={s.topbar}>
+        <div className={s.barIn}>
           <div className={s.brand}>
-            Digly <span>admin</span>
+            DIGLY<span>/ Admin</span>
           </div>
+          <nav className={s.nav}>
+            {TABS.map((t) => (
+              <button key={t.id} className={`${s.navItem} ${tab === t.id ? s.navOn : ""}`} onClick={() => go(t.id)}>
+                {t.label}
+                {t.id === "ideas" && newIdeas > 0 && <span className={s.count}>{newIdeas}</span>}
+              </button>
+            ))}
+          </nav>
           <div className={s.meta}>
-            <span>
+            <span className={s.status}>
               <span className={`${s.dot} ${offline ? s.dotOff : ""}`} />
-              {offline ? "Can't reach the server" : synced ? `Live · synced ${ago(synced)}` : "Loading…"}
+              {offline ? "Offline" : synced ? `Live · ${ago(synced)}` : "Connecting"}
             </span>
-            <span>Signed in as {me}</span>
-            <a className={s.link} href="/">
-              Back to the game
+            <span className={s.dim}>{me}</span>
+            <a className={s.exit} href="/">
+              Exit
             </a>
           </div>
-        </header>
+        </div>
+      </header>
 
-        <Live live={live} />
-        <Stats overview={overview} />
-
-        <div className={s.cols}>
-          <div>
-            <Ideas ideas={ideas} onChange={refresh} />
-            <Missing onAdd={refresh} />
-          </div>
-          <div>
+      <main className={s.wrap}>
+        {tab === "overview" && <OverviewTab overview={overview} live={live} log={log} onMore={() => go("team")} />}
+        {tab === "answers" && <AnswersTab cats={cats} synced={synced} onChange={refresh} />}
+        {tab === "ideas" && <Ideas ideas={ideas} onChange={refresh} />}
+        {tab === "team" && (
+          <div className={s.split}>
             <Admins me={me} admins={admins} onChange={refresh} />
             <Log log={log} />
           </div>
-        </div>
-
-        <Answers synced={synced} onChange={refresh} />
-      </div>
+        )}
+      </main>
     </div>
   );
 }
 
-// Who's playing right now: everyone with a level still on the clock, plus how
-// many started a level recently. Refreshes with the rest of the panel.
-function Live({ live }: { live: LiveStats | null }) {
+// ---- overview -------------------------------------------------------------
+
+function OverviewTab({ overview, live, log, onMore }: { overview: Overview | null; live: LiveStats | null; log: LogEntry[]; onMore: () => void }) {
+  const st = overview?.stats;
   const max = Math.max(1, ...(live?.buckets ?? [0]));
   return (
-    <section className={`${s.section} ${s.live}`}>
-      <div className={s.liveMain}>
-        <div className={s.label}>
-          <span className={`${s.dot} ${s.pulse}`} /> Digging right now
-        </div>
-        <div className={s.liveBig}>{live ? live.diggingNow.toLocaleString() : "—"}</div>
-        {live && (
-          <div className={s.small}>
-            {live.ranked} daily · {live.practice} practice · {live.vault} Vault
-            <br />
-            Level 1: {live.byLevel[0]} · Level 2: {live.byLevel[1]} · Level 3: {live.byLevel[2]}
+    <>
+      <section className={s.panel}>
+        <div className={s.liveGrid}>
+          <div>
+            <div className={s.label}>
+              <span className={`${s.dot} ${s.pulse}`} />
+              Digging now
+            </div>
+            <div className={s.hero}>{fmt(live?.diggingNow)}</div>
+            <div className={s.chips}>
+              <span>Daily {fmt(live?.ranked)}</span>
+              <span>Practice {fmt(live?.practice)}</span>
+              <span>Vault {fmt(live?.vault)}</span>
+            </div>
+            <div className={s.chips}>
+              <span>L1 {fmt(live?.byLevel[0])}</span>
+              <span>L2 {fmt(live?.byLevel[1])}</span>
+              <span>L3 {fmt(live?.byLevel[2])}</span>
+            </div>
           </div>
-        )}
-      </div>
-      <div className={s.liveSide}>
-        <div className={s.liveRow}>
+          <div>
+            <div className={s.cells}>
+              {(
+                [
+                  ["Last 5 min", live?.last5],
+                  ["Last 15 min", live?.last15],
+                  ["Last hour", live?.lastHour],
+                ] as const
+              ).map(([label, v]) => (
+                <div className={s.cell} key={label}>
+                  <div className={s.label}>{label}</div>
+                  <div className={s.num}>{fmt(v)}</div>
+                </div>
+              ))}
+            </div>
+            <div className={s.bars} aria-label="Players starting a level, every 5 minutes over the last hour">
+              {(live?.buckets ?? Array(12).fill(0)).map((n, i) => (
+                <div key={i} className={s.bar} title={`${n} player${n === 1 ? "" : "s"}, ${55 - i * 5}–${60 - i * 5} min ago`}>
+                  <div style={{ height: `${(n / max) * 100}%` }} />
+                </div>
+              ))}
+            </div>
+            <div className={s.axis}>
+              <span>−60 min</span>
+              <span>now</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className={`${s.panel} ${s.flush}`}>
+        <div className={s.strip}>
           {(
             [
-              ["Last 5 min", live?.last5],
-              ["Last 15 min", live?.last15],
-              ["Last hour", live?.lastHour],
+              ["Players", st?.players],
+              ["Accounts", st?.accounts],
+              ["Unlimited", st?.unlimited],
+              ["Dug today", st?.diggersToday],
+              ["Finished today", st?.finishedToday],
             ] as const
           ).map(([label, v]) => (
-            <div key={label}>
+            <div className={s.cell} key={label}>
               <div className={s.label}>{label}</div>
-              <div className={s.stat}>{v === undefined ? "—" : v.toLocaleString()}</div>
+              <div className={s.num}>{fmt(v)}</div>
             </div>
           ))}
         </div>
-        <div className={s.bars} aria-label="Players starting a level, every 5 minutes over the last hour">
-          {(live?.buckets ?? Array(12).fill(0)).map((n, i) => (
-            <div key={i} className={s.bar} title={`${n} player${n === 1 ? "" : "s"}, ${55 - i * 5}–${60 - i * 5} min ago`}>
-              <div style={{ height: `${(n / max) * 100}%` }} />
-            </div>
-          ))}
-        </div>
-        <div className={`${s.small} ${s.barAxis}`}>
-          <span>1 hour ago</span>
-          <span>now</span>
-        </div>
-      </div>
-    </section>
-  );
-}
+      </section>
 
-function Stats({ overview }: { overview: Overview | null }) {
-  const st = overview?.stats;
-  const cards: [string, number | string | undefined][] = [
-    ["Players", st?.players],
-    ["Accounts", st?.accounts],
-    ["Unlimited", st?.unlimited],
-    ["Dug today", st?.diggersToday],
-    ["Finished today", st?.finishedToday],
-  ];
-  return (
-    <>
-      <div className={s.grid}>
-        {cards.map(([label, v]) => (
-          <div className={s.card} key={label}>
-            <div className={s.label}>{label}</div>
-            <div className={s.stat}>{v === undefined ? "—" : v.toLocaleString()}</div>
+      <div className={s.split}>
+        <section className={s.panel}>
+          <div className={s.head}>
+            <h2>Today · Daily Dig {overview?.number ?? ""}</h2>
+            {overview && <span className={s.tag}>{overview.backend === "supabase" ? "Supabase" : "Memory store"}</span>}
           </div>
-        ))}
+          <ul className={s.rows}>
+            {(overview?.categories ?? []).map((c) => (
+              <li key={c.level} className={s.rowItem}>
+                <span className={s.dim}>Level {c.level}</span>
+                <span>{c.title}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+        <section className={s.panel}>
+          <div className={s.head}>
+            <h2>Recent activity</h2>
+            <button className={s.textBtn} onClick={onMore}>
+              View all
+            </button>
+          </div>
+          <LogRows log={log.slice(0, 6)} />
+        </section>
       </div>
-      {overview && (
-        <div className={s.section}>
-          <h2>
-            Today · Daily Dig {overview.number}
-            <span className={s.pill}>{overview.backend === "supabase" ? "Supabase" : "Memory store (not shared)"}</span>
-          </h2>
-          <div className={s.small}>{overview.categories.map((c) => `Level ${c.level}: ${c.title}`).join("   ·   ")}</div>
-        </div>
-      )}
     </>
   );
 }
 
-function Ideas({ ideas, onChange }: { ideas: Idea[]; onChange: () => Promise<void> }) {
-  const [filter, setFilter] = useState<Status | "all">("new");
-  const [err, setErr] = useState("");
-  const shown = filter === "all" ? ideas : ideas.filter((i) => i.status === filter);
-  const count = (st: Status) => ideas.filter((i) => i.status === st).length;
+// ---- answers: the list editor and what players typed that didn't count ----
 
-  const setStatus = async (id: number, status: Status) => {
-    setErr("");
-    try {
-      await api("/api/admin/suggestions", { id, status });
-      await onChange();
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Couldn't save that.");
-    }
-  };
-
-  return (
-    <section className={s.section}>
-      <h2>
-        Prompt ideas <span className={s.small}>{ideas.length} total</span>
-      </h2>
-      <div className={s.tabs}>
-        {[...STATUSES, "all" as const].map((st) => (
-          <button key={st} className={`${s.tab} ${filter === st ? s.tabOn : ""}`} onClick={() => setFilter(st)}>
-            {st[0].toUpperCase() + st.slice(1)}
-            {st !== "all" ? ` (${count(st)})` : ""}
-          </button>
-        ))}
-      </div>
-      {shown.length === 0 ? (
-        <div className={s.small}>Nothing here.</div>
-      ) : (
-        <ul className={s.list}>
-          {shown.map((i) => (
-            <li className={s.row} key={i.id}>
-              <div>
-                <div>{i.text}</div>
-                <div className={s.small}>
-                  sent {ago(i.createdAt)}
-                  {i.updatedBy ? ` · ${i.status} by ${i.updatedBy} ${i.updatedAt ? ago(i.updatedAt) : ""}` : ""}
-                </div>
-              </div>
-              <select className={s.select} value={i.status} onChange={(e) => void setStatus(i.id, e.target.value as Status)} aria-label={`Status for ${i.text}`}>
-                {STATUSES.map((st) => (
-                  <option key={st} value={st}>
-                    {st}
-                  </option>
-                ))}
-              </select>
-            </li>
-          ))}
-        </ul>
-      )}
-      {err && <div className={s.error}>{err}</div>}
-    </section>
-  );
-}
-
-// The most common things players typed that didn't count, per category.
-// Real answers that show up here belong in the answer lists.
-function Missing({ onAdd }: { onAdd: () => Promise<void> }) {
-  const [cats, setCats] = useState<Category[]>([]);
-  const [slug, setSlug] = useState("");
-  const [data, setData] = useState<{ plays: number; answersInList: number; rejects: { text: string; n: number }[] } | null>(null);
-  const [err, setErr] = useState("");
-
-  useEffect(() => {
-    api<{ categories: Category[] }>("/api/admin/rejects").then(
-      (r) => setCats(r.categories),
-      () => setErr("Couldn't load categories."),
-    );
-  }, []);
-
-  useEffect(() => {
-    if (!slug) return;
-    setData(null);
-    api<{ plays: number; answersInList: number; rejects: { text: string; n: number }[] }>(`/api/admin/rejects?slug=${encodeURIComponent(slug)}`).then(setData, () =>
-      setErr("Couldn't load that category."),
-    );
-  }, [slug]);
-
-  return (
-    <section className={s.section}>
-      <h2>Missing answers</h2>
-      <select className={s.select} value={slug} onChange={(e) => setSlug(e.target.value)} style={{ width: "100%" }}>
-        <option value="">Pick a category…</option>
-        {cats.map((c) => (
-          <option key={c.slug} value={c.slug}>
-            {c.vault ? "Vault · " : ""}L{c.level} · {c.title}
-          </option>
-        ))}
-      </select>
-      {data && (
-        <>
-          <div className={s.small} style={{ margin: "10px 0" }}>
-            {data.answersInList} answers in the list · {data.plays} ranked plays
-          </div>
-          {data.rejects.length === 0 ? (
-            <div className={s.small}>No rejected answers yet.</div>
-          ) : (
-            <table className={s.table}>
-              <tbody>
-                {data.rejects.slice(0, 60).map((r) => (
-                  <tr key={r.text}>
-                    <td>{r.text}</td>
-                    <td>
-                      {r.n}×{" "}
-                      <button
-                        className={`${s.btn} ${s.ghost}`}
-                        onClick={async () => {
-                          const name = prompt(`Add to ${cats.find((c) => c.slug === slug)?.title ?? slug} as:`, r.text);
-                          if (!name?.trim()) return;
-                          setErr("");
-                          try {
-                            await api("/api/admin/answers", { slug, action: "add", name: name.trim(), aliases: name.trim().toLowerCase() === r.text ? [] : [r.text], rating: 75 });
-                            setData({ ...data, answersInList: data.answersInList + 1, rejects: data.rejects.filter((x) => x.text !== r.text) });
-                            await onAdd();
-                          } catch (e) {
-                            setErr(e instanceof Error ? e.message : "Couldn't add that.");
-                          }
-                        }}
-                      >
-                        Add
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </>
-      )}
-      {err && <div className={s.error}>{err}</div>}
-    </section>
-  );
-}
-
-// Every category's answer list: search it, add answers, change or remove them.
-// Changes live in the database, so the game and the other admins pick them up
-// within about 30 seconds, no redeploy needed.
-function Answers({ synced, onChange }: { synced: number | null; onChange: () => Promise<void> }) {
-  const [cats, setCats] = useState<Category[]>([]);
+function AnswersTab({ cats, synced, onChange }: { cats: Category[]; synced: number | null; onChange: () => Promise<void> }) {
   const [slug, setSlug] = useState("");
   const [list, setList] = useState<AnswerList | null>(null);
+  const [rej, setRej] = useState<Rejects | null>(null);
   const [q, setQ] = useState("");
   const [show, setShow] = useState<"all" | "edited" | "removed">("all");
   const [form, setForm] = useState({ name: "", aliases: "", rating: "75" });
   const [editing, setEditing] = useState<string | null>(null);
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
-
-  useEffect(() => {
-    api<{ categories: Category[] }>("/api/admin/rejects").then(
-      (r) => setCats(r.categories),
-      () => setErr("Couldn't load categories."),
-    );
-  }, []);
 
   const load = useCallback(async (which: string) => {
     if (!which) return;
@@ -436,9 +352,13 @@ function Answers({ synced, onChange }: { synced: number | null; onChange: () => 
 
   useEffect(() => {
     setList(null);
+    setRej(null);
     setEditing(null);
+    setErr("");
     setForm({ name: "", aliases: "", rating: "75" });
+    if (!slug) return;
     void load(slug);
+    api<Rejects>(`/api/admin/rejects?slug=${encodeURIComponent(slug)}`).then(setRej, () => undefined);
   }, [slug, load]);
 
   // follow the panel's refresh so changes from other admins show up
@@ -462,180 +382,320 @@ function Answers({ synced, onChange }: { synced: number | null; onChange: () => 
     }
   };
 
+  const reset = () => {
+    setEditing(null);
+    setForm({ name: "", aliases: "", rating: "75" });
+  };
+
   const save = async () => {
     const name = form.name.trim();
     if (!name) return;
-    const aliases = form.aliases.split(",").map((a) => a.trim()).filter(Boolean);
-    const ok = await send({ action: "add", name, aliases, rating: Number(form.rating), ...(editing ? { replaces: editing } : {}) });
-    if (ok) {
-      setForm({ name: "", aliases: "", rating: "75" });
-      setEditing(null);
+    const aliases = form.aliases
+      .split(",")
+      .map((a) => a.trim())
+      .filter(Boolean);
+    if (await send({ action: "add", name, aliases, rating: Number(form.rating), ...(editing ? { replaces: editing } : {}) })) reset();
+  };
+
+  const addReject = async (text: string) => {
+    if (await send({ action: "add", name: text.replace(/\b\w/g, (c) => c.toUpperCase()), aliases: [], rating: 75 })) {
+      setRej((r) => (r ? { ...r, rejects: r.rejects.filter((x) => x.text !== text) } : r));
     }
   };
 
+  const all = list?.answers ?? [];
   const needle = q.trim().toLowerCase();
-  const rows = (list?.answers ?? []).filter((a) => {
+  const rows = all.filter((a) => {
     if (show === "edited" && (a.status === "list" || a.status === "removed")) return false;
     if (show === "removed" && a.status !== "removed") return false;
     if (!needle) return true;
     return a.name.toLowerCase().includes(needle) || a.aliases.some((x) => x.includes(needle));
   });
-  const edited = (list?.answers ?? []).filter((a) => a.status === "added" || a.status === "changed").length;
-  const removed = (list?.answers ?? []).filter((a) => a.status === "removed").length;
-  const exact = needle && list?.answers.some((a) => a.status !== "removed" && (a.name.toLowerCase() === needle || a.aliases.includes(needle)));
+  const edited = all.filter((a) => a.status === "added" || a.status === "changed").length;
+  const removed = all.filter((a) => a.status === "removed").length;
+  const exact = needle && all.some((a) => a.status !== "removed" && (a.name.toLowerCase() === needle || a.aliases.includes(needle)));
 
   return (
-    <section className={s.section}>
-      <h2>
-        Answer lists
-        {list && (
-          <span className={s.small}>
-            {list.count} answers · {edited} added or changed · {removed} removed
-          </span>
-        )}
-      </h2>
-      <select className={s.select} value={slug} onChange={(e) => setSlug(e.target.value)} style={{ width: "100%" }}>
-        <option value="">Pick a category…</option>
-        {cats.map((c) => (
-          <option key={c.slug} value={c.slug}>
-            {c.vault ? "Vault · " : ""}L{c.level} · {c.title}
-          </option>
-        ))}
-      </select>
-
-      {slug && !list && !err && <div className={s.small} style={{ marginTop: 10 }}>Loading…</div>}
-
-      {list && (
-        <>
-          <form
-            className={s.form}
-            onSubmit={(e) => {
-              e.preventDefault();
-              void save();
-            }}
-          >
-            <input className={s.input} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Answer, e.g. White Oak" aria-label="Answer" />
-            <input
-              className={s.input}
-              value={form.aliases}
-              onChange={(e) => setForm({ ...form, aliases: e.target.value })}
-              placeholder="Other spellings, comma separated"
-              aria-label="Other spellings"
-            />
-            <input
-              className={s.input}
-              style={{ flex: "0 0 64px" }}
-              type="number"
-              min={1}
-              max={100}
-              value={form.rating}
-              onChange={(e) => setForm({ ...form, rating: e.target.value })}
-              title="Rarity: 1 is the most common, 100 the rarest"
-              aria-label="Rarity 1 to 100"
-            />
-            <button className={s.btn} disabled={busy || !form.name.trim()}>
-              {editing ? "Save" : "Add"}
-            </button>
-            {editing && (
-              <button
-                type="button"
-                className={`${s.btn} ${s.ghost}`}
-                onClick={() => {
-                  setEditing(null);
-                  setForm({ name: "", aliases: "", rating: "75" });
-                }}
-              >
-                Cancel
-              </button>
-            )}
-          </form>
-          <div className={s.small} style={{ marginBottom: 10 }}>
-            Rarity is 1 for answers almost everyone gives up to 100 for ones almost nobody does. Live play adjusts it over time.
+    <>
+      <section className={s.panel}>
+        <div className={s.pickRow}>
+          <div className={s.field}>
+            <label className={s.label} htmlFor="adm-cat">
+              Category
+            </label>
+            <select id="adm-cat" className={s.input} value={slug} onChange={(e) => setSlug(e.target.value)}>
+              <option value="">Choose a category</option>
+              <optgroup label="Daily">
+                {cats
+                  .filter((c) => !c.vault)
+                  .map((c) => (
+                    <option key={c.slug} value={c.slug}>
+                      L{c.level} · {c.title}
+                    </option>
+                  ))}
+              </optgroup>
+              <optgroup label="Vault">
+                {cats
+                  .filter((c) => c.vault)
+                  .map((c) => (
+                    <option key={c.slug} value={c.slug}>
+                      L{c.level} · {c.title}
+                    </option>
+                  ))}
+              </optgroup>
+            </select>
           </div>
-
-          <div className={s.form}>
-            <input className={s.input} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search answers and spellings" aria-label="Search answers" />
-          </div>
-          <div className={s.tabs}>
-            {(["all", "edited", "removed"] as const).map((t) => (
-              <button key={t} className={`${s.tab} ${show === t ? s.tabOn : ""}`} onClick={() => setShow(t)}>
-                {t === "all" ? "All" : t === "edited" ? `Added or changed (${edited})` : `Removed (${removed})`}
-              </button>
-            ))}
-          </div>
-          {needle && !exact && (
-            <div className={s.small} style={{ marginBottom: 8 }}>
-              &ldquo;{q.trim()}&rdquo; doesn&apos;t count yet.{" "}
-              <button className={`${s.btn} ${s.ghost}`} onClick={() => setForm({ name: q.trim(), aliases: "", rating: "75" })}>
-                Fill it in above
-              </button>
+          {list && (
+            <div className={s.cells}>
+              <div className={s.cell}>
+                <div className={s.label}>Answers</div>
+                <div className={s.num}>{list.count}</div>
+              </div>
+              <div className={s.cell}>
+                <div className={s.label}>Edited</div>
+                <div className={s.num}>{edited}</div>
+              </div>
+              <div className={s.cell}>
+                <div className={s.label}>Removed</div>
+                <div className={s.num}>{removed}</div>
+              </div>
+              <div className={s.cell}>
+                <div className={s.label}>Ranked plays</div>
+                <div className={s.num}>{rej ? rej.plays : "—"}</div>
+              </div>
             </div>
           )}
+        </div>
+      </section>
 
-          {rows.length === 0 ? (
-            <div className={s.small}>No matches.</div>
-          ) : (
-            <table className={`${s.table} ${s.answers}`}>
-              <tbody>
-                {rows.slice(0, 400).map((a) => (
-                  <tr key={`${a.status}-${a.key}`} className={a.status === "removed" ? s.gone : ""}>
-                    <td>
-                      {a.name}
-                      {a.status !== "list" && <span className={s.pill}>{a.status}{a.by ? ` by ${a.by}` : ""}</span>}
-                      {a.aliases.length > 0 && <div className={s.small}>{a.aliases.join(", ")}</div>}
-                    </td>
-                    <td className={s.num}>{a.rating}</td>
-                    <td className={s.num}>{a.status === "removed" ? "" : TIER_NAMES[a.tier] ?? a.tier}</td>
-                    <td>
-                      {a.status === "removed" ? (
-                        <button className={`${s.btn} ${s.ghost}`} disabled={busy} onClick={() => void send({ action: "undo", key: a.key, name: a.name })}>
-                          Put back
-                        </button>
-                      ) : (
-                        <>
-                          <button
-                            className={`${s.btn} ${s.ghost}`}
-                            disabled={busy}
-                            onClick={() => {
-                              setEditing(a.key);
-                              setForm({ name: a.name, aliases: a.aliases.join(", "), rating: String(a.rating) });
-                            }}
-                          >
-                            Edit
-                          </button>{" "}
-                          {a.status !== "list" && (
-                            <>
-                              <button className={`${s.btn} ${s.ghost}`} disabled={busy} title="Go back to how the code has it" onClick={() => void send({ action: "undo", key: a.key, name: a.name })}>
-                                Undo
-                              </button>{" "}
-                            </>
-                          )}
-                          {a.status !== "added" && (
+      {!slug && <div className={s.empty}>Choose a category to see its answers.</div>}
+      {slug && !list && !err && <div className={s.empty}>Loading…</div>}
+      {err && <div className={s.error}>{err}</div>}
+
+      {list && (
+        <div className={s.answersGrid}>
+          <section className={s.panel}>
+            <form
+              className={s.addForm}
+              onSubmit={(e) => {
+                e.preventDefault();
+                void save();
+              }}
+            >
+              <div className={s.label}>{editing ? "Edit answer" : "Add answer"}</div>
+              <div className={s.formRow}>
+                <input className={s.input} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Name, e.g. White Oak" aria-label="Answer" />
+                <input
+                  className={s.input}
+                  value={form.aliases}
+                  onChange={(e) => setForm({ ...form, aliases: e.target.value })}
+                  placeholder="Other spellings, comma separated"
+                  aria-label="Other spellings"
+                />
+                <input
+                  className={`${s.input} ${s.rarity}`}
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={form.rating}
+                  onChange={(e) => setForm({ ...form, rating: e.target.value })}
+                  title="Rarity: 1 is the most common, 100 the rarest"
+                  aria-label="Rarity 1 to 100"
+                />
+                <button className={`${s.btn} ${s.primary}`} disabled={busy || !form.name.trim()}>
+                  {editing ? "Save" : "Add"}
+                </button>
+                {editing && (
+                  <button type="button" className={s.btn} onClick={reset}>
+                    Cancel
+                  </button>
+                )}
+              </div>
+              <div className={s.hint}>Rarity runs from 1 (almost everyone says it) to 100 (almost nobody does). Live play adjusts it over time.</div>
+            </form>
+
+            <div className={s.toolbar}>
+              <input className={`${s.input} ${s.search}`} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search answers and spellings" aria-label="Search answers" />
+              <div className={s.seg}>
+                {(["all", "edited", "removed"] as const).map((t) => (
+                  <button key={t} className={show === t ? s.segOn : ""} onClick={() => setShow(t)}>
+                    {t === "all" ? "All" : t === "edited" ? `Edited ${edited}` : `Removed ${removed}`}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {needle && !exact && (
+              <div className={s.notice}>
+                <span>&ldquo;{q.trim()}&rdquo; doesn&apos;t count yet.</span>
+                <button className={s.textBtn} onClick={() => setForm({ name: q.trim(), aliases: "", rating: "75" })}>
+                  Add it
+                </button>
+              </div>
+            )}
+
+            {rows.length === 0 ? (
+              <div className={s.empty}>No matches.</div>
+            ) : (
+              <table className={s.table}>
+                <thead>
+                  <tr>
+                    <th>Answer</th>
+                    <th className={s.r}>Rarity</th>
+                    <th>Tier</th>
+                    <th />
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.slice(0, 400).map((a) => (
+                    <tr key={`${a.status}-${a.key}`} className={a.status === "removed" ? s.gone : ""}>
+                      <td>
+                        <span className={s.name}>{a.name}</span>
+                        {a.status !== "list" && (
+                          <span className={`${s.tag} ${s[`tag_${a.status}`]}`}>
+                            {a.status}
+                            {a.by ? ` · ${a.by}` : ""}
+                          </span>
+                        )}
+                        {a.aliases.length > 0 && <div className={s.dim}>{a.aliases.join(", ")}</div>}
+                      </td>
+                      <td className={s.r}>{a.rating}</td>
+                      <td className={s.dim}>{a.status === "removed" ? "" : TIER_NAMES[a.tier] ?? a.tier}</td>
+                      <td className={s.actions}>
+                        {a.status === "removed" ? (
+                          <button className={s.textBtn} disabled={busy} onClick={() => void send({ action: "undo", key: a.key, name: a.name })}>
+                            Restore
+                          </button>
+                        ) : (
+                          <>
                             <button
-                              className={`${s.btn} ${s.ghost}`}
+                              className={s.textBtn}
                               disabled={busy}
                               onClick={() => {
-                                if (confirm(`Remove "${a.name}" from ${list.title}? It stops counting for everyone.`)) void send({ action: "remove", name: a.name });
+                                setEditing(a.key);
+                                setForm({ name: a.name, aliases: a.aliases.join(", "), rating: String(a.rating) });
+                                window.scrollTo({ top: 0, behavior: "smooth" });
                               }}
                             >
-                              Remove
+                              Edit
                             </button>
-                          )}
-                        </>
-                      )}
-                    </td>
-                  </tr>
+                            {a.status !== "list" && (
+                              <button className={s.textBtn} disabled={busy} title="Go back to how the code has it" onClick={() => void send({ action: "undo", key: a.key, name: a.name })}>
+                                Undo
+                              </button>
+                            )}
+                            {a.status !== "added" && (
+                              <button
+                                className={`${s.textBtn} ${s.danger}`}
+                                disabled={busy}
+                                onClick={() => {
+                                  if (confirm(`Remove "${a.name}" from ${list.title}? It stops counting for everyone.`)) void send({ action: "remove", name: a.name });
+                                }}
+                              >
+                                Remove
+                              </button>
+                            )}
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+            {rows.length > 400 && <div className={s.hint}>Showing 400 of {rows.length}. Search to narrow it down.</div>}
+          </section>
+
+          <section className={s.panel}>
+            <div className={s.head}>
+              <h2>Missing answers</h2>
+            </div>
+            <div className={s.hint}>What players typed in this category that didn&apos;t count, most common first.</div>
+            {!rej ? (
+              <div className={s.empty}>Loading…</div>
+            ) : rej.rejects.length === 0 ? (
+              <div className={s.empty}>Nothing yet.</div>
+            ) : (
+              <ul className={s.rows}>
+                {rej.rejects.slice(0, 80).map((r) => (
+                  <li key={r.text} className={s.rowItem}>
+                    <span>
+                      {r.text} <span className={s.dim}>×{r.n}</span>
+                    </span>
+                    <button className={s.textBtn} disabled={busy} onClick={() => void addReject(r.text)}>
+                      Add
+                    </button>
+                  </li>
                 ))}
-              </tbody>
-            </table>
-          )}
-          {rows.length > 400 && <div className={s.small}>Showing 400 of {rows.length}. Search to narrow it down.</div>}
-        </>
+              </ul>
+            )}
+          </section>
+        </div>
+      )}
+    </>
+  );
+}
+
+// ---- prompt ideas ----------------------------------------------------------
+
+function Ideas({ ideas, onChange }: { ideas: Idea[]; onChange: () => Promise<void> }) {
+  const [filter, setFilter] = useState<Status | "all">("new");
+  const [err, setErr] = useState("");
+  const shown = filter === "all" ? ideas : ideas.filter((i) => i.status === filter);
+  const count = (st: Status) => ideas.filter((i) => i.status === st).length;
+
+  const setStatus = async (id: number, status: Status) => {
+    setErr("");
+    try {
+      await api("/api/admin/suggestions", { id, status });
+      await onChange();
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Couldn't save that.");
+    }
+  };
+
+  return (
+    <section className={s.panel}>
+      <div className={s.head}>
+        <h2>Prompt ideas</h2>
+        <div className={s.seg}>
+          {[...STATUSES, "all" as const].map((st) => (
+            <button key={st} className={filter === st ? s.segOn : ""} onClick={() => setFilter(st)}>
+              {st[0].toUpperCase() + st.slice(1)} {st !== "all" ? count(st) : ideas.length}
+            </button>
+          ))}
+        </div>
+      </div>
+      {shown.length === 0 ? (
+        <div className={s.empty}>Nothing here.</div>
+      ) : (
+        <ul className={s.rows}>
+          {shown.map((i) => (
+            <li className={s.rowItem} key={i.id}>
+              <div>
+                <div className={s.name}>{i.text}</div>
+                <div className={s.dim}>
+                  Sent {ago(i.createdAt)}
+                  {i.updatedBy ? ` · ${i.status} by ${i.updatedBy}${i.updatedAt ? ` ${ago(i.updatedAt)}` : ""}` : ""}
+                </div>
+              </div>
+              <div className={s.seg}>
+                {STATUSES.map((st) => (
+                  <button key={st} className={i.status === st ? s.segOn : ""} onClick={() => i.status !== st && void setStatus(i.id, st)}>
+                    {st[0].toUpperCase() + st.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </li>
+          ))}
+        </ul>
       )}
       {err && <div className={s.error}>{err}</div>}
     </section>
   );
 }
+
+// ---- team ------------------------------------------------------------------
 
 function Admins({ me, admins, onChange }: { me: string; admins: { id: string; username: string }[]; onChange: () => Promise<void> }) {
   const [name, setName] = useState("");
@@ -658,33 +718,39 @@ function Admins({ me, admins, onChange }: { me: string; admins: { id: string; us
   };
 
   return (
-    <section className={s.section}>
-      <h2>Admins</h2>
-      <ul className={s.list}>
-        {admins.map((a) => (
-          <li className={s.row} key={a.id}>
-            <span>
-              {a.username}
-              {a.username.toLowerCase() === me.toLowerCase() ? <span className={s.small}> (you)</span> : null}
-            </span>
-            {a.username.toLowerCase() !== me.toLowerCase() && (
-              <button className={`${s.btn} ${s.ghost}`} disabled={busy} onClick={() => void set(a.username, false)}>
-                Remove
-              </button>
-            )}
-          </li>
-        ))}
+    <section className={s.panel}>
+      <div className={s.head}>
+        <h2>Admins</h2>
+        <span className={s.dim}>{admins.length}</span>
+      </div>
+      <ul className={s.rows}>
+        {admins.map((a) => {
+          const self = a.username.toLowerCase() === me.toLowerCase();
+          return (
+            <li className={s.rowItem} key={a.id}>
+              <span>
+                {a.username}
+                {self && <span className={s.dim}> · you</span>}
+              </span>
+              {!self && (
+                <button className={`${s.textBtn} ${s.danger}`} disabled={busy} onClick={() => void set(a.username, false)}>
+                  Remove
+                </button>
+              )}
+            </li>
+          );
+        })}
       </ul>
       <form
-        className={s.form}
+        className={s.formRow}
         onSubmit={(e) => {
           e.preventDefault();
           if (name.trim()) void set(name.trim(), true);
         }}
       >
-        <input className={s.input} value={name} onChange={(e) => setName(e.target.value)} placeholder="Username to make an admin" />
-        <button className={s.btn} disabled={busy || !name.trim()}>
-          Add
+        <input className={s.input} value={name} onChange={(e) => setName(e.target.value)} placeholder="Username" aria-label="Username to make an admin" />
+        <button className={`${s.btn} ${s.primary}`} disabled={busy || !name.trim()}>
+          Make admin
         </button>
       </form>
       {err && <div className={s.error}>{err}</div>}
@@ -692,24 +758,29 @@ function Admins({ me, admins, onChange }: { me: string; admins: { id: string; us
   );
 }
 
+function LogRows({ log }: { log: LogEntry[] }) {
+  if (log.length === 0) return <div className={s.empty}>No admin changes yet.</div>;
+  return (
+    <ul className={s.rows}>
+      {log.map((e, i) => (
+        <li className={s.rowItem} key={`${e.at}-${i}`}>
+          <div>
+            <span className={s.name}>{e.actor}</span> <span className={s.dim}>{ACTIONS[e.action] ?? e.action}</span> {e.detail}
+          </div>
+          <span className={s.time}>{ago(e.at)}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function Log({ log }: { log: LogEntry[] }) {
   return (
-    <section className={s.section}>
-      <h2>Activity</h2>
-      {log.length === 0 ? (
-        <div className={s.small}>No admin changes yet.</div>
-      ) : (
-        <ul className={s.list}>
-          {log.map((e, i) => (
-            <li className={s.row} key={`${e.at}-${i}`}>
-              <div>
-                <b>{e.actor}</b> {ACTIONS[e.action] ?? e.action} {e.detail}
-              </div>
-              <span className={s.small}>{ago(e.at)}</span>
-            </li>
-          ))}
-        </ul>
-      )}
+    <section className={s.panel}>
+      <div className={s.head}>
+        <h2>Activity</h2>
+      </div>
+      <LogRows log={log} />
     </section>
   );
 }

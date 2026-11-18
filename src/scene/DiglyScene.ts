@@ -6,7 +6,7 @@ import { Miner } from "./Miner";
 import { SPR_H } from "./minerSprites";
 import { Particles } from "./Particles";
 import { Reveal, type RevealCallbacks, type RevealSlot } from "./Reveal";
-import { World } from "./World";
+import { FEET_UP, World } from "./World";
 import { CAVE, GEM, PX, setPX } from "./palette";
 import { approach, clamp } from "./rng";
 
@@ -414,7 +414,7 @@ export class DiglyScene {
       my = p.y;
       this.camTarget = my - floorY;
       anchorY = top + h * 0.55;
-      if (this.depth > 2 * k) this.world.extendPath(mx, my - 40 * k);
+      this.world.extendPath(mx, my - FEET_UP * k);
     } else if (this.mode === "reveal") {
       anchorY = top + h * 0.4;
       mx = this.W / 2;
@@ -463,6 +463,10 @@ export class DiglyScene {
     if (this.mode === "reveal") {
       m.x = approach(m.x, mx, 5, dt);
       m.y = approach(m.y, my, 5, dt);
+    } else if (this.mode === "play" && Math.abs(m.x - mx) > 6 * PX) {
+      // walks in from the ledge to the far timber as the round starts
+      m.x = approach(m.x, mx, 6, dt);
+      m.y = my;
     } else {
       m.position.set(mx, my);
     }

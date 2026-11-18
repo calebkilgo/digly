@@ -9,6 +9,8 @@ import { clamp, hash, mulberry32 } from "./rng";
 const BAND_TOP0 = -900;
 const TILE = 512;
 const TUNNEL_W = 128;
+// the tunnel path runs this far (times k) above the miner's boots
+export const FEET_UP = 40;
 
 interface Band {
   i: number;
@@ -174,7 +176,8 @@ export class World {
     const k = this.k;
     const stepLen = 5 * k;
     if (!this.dig.length) {
-      this.dig = [{ x: this.homeX, y: this.floorY, s: 0 }];
+      // he starts at the far timber inside the mine and digs on from there
+      this.dig = [{ x: this.mineEnd - 3 * PX, y: this.floorY, s: 0 }];
       this.digState = { a: 0.12, dir: 1 };
       this.digRnd = mulberry32(hash(this.seed, this.digSeed, 17));
     }
@@ -392,20 +395,22 @@ export class World {
     // the opening, drawn over the sky so the face can't notch it
     // rock over the entrance, so the face comes down to the timber instead of showing sky
     const capTop = fy - eh - 4 * u;
-    // a ramp from just over the cap up to where the mountain's own face takes over
-    const hx0 = ex - 4 * u;
+    // a ramp from the cap up to where the mountain's own face takes over. It stays
+    // above the cap and inside the front post, so no rock overlaps the timber.
+    const hx0 = ex + 4 * u;
     let hx1 = hx0;
     while (hx1 < ex + ew + 20 * u && ground(hx1) > capTop - 4 * u) hx1 += step;
     const y0h = capTop - 4 * u;
     const y1h = ground(hx1);
     const headTop = (x: number) => snap(y0h + ((x - hx0) / Math.max(step, hx1 - hx0)) * (y1h - y0h));
     for (let x = hx0; x < hx1; x += step) {
-      const gy = ground(x);
-      const top = Math.min(headTop(x), gy);
-      g.rect(x, top, step, gy - top).fill(rock);
+      const bottom = Math.min(ground(x), capTop - u);
+      const top = Math.min(headTop(x), bottom);
+      if (bottom <= top) continue;
+      g.rect(x, top, step, bottom - top).fill(rock);
       g.rect(x, top - u, step, u).fill(INK);
     }
-    g.rect(ex - 5 * u, headTop(ex - 4 * u) - u, u, fy - headTop(ex - 4 * u) + u).fill(INK);
+    g.rect(hx0 - u, y0h - u, u, capTop - y0h).fill(INK);
     g.rect(ex, fy - eh, ew, eh).fill(0x1a1226);
     g.rect(ex, fy - eh, ew, 3 * u).fill(0x120c1c);
     for (let i = 0; i < 9; i++) {
@@ -787,10 +792,12 @@ export class World {
     // while it runs level, the tunnel's floor sits on the ledge line instead of
     // its middle, then it eases down into the descent
     const end = this.mineEnd - 4 * PX;
+    // path points sit FEET_UP above his boots; lift them so the floor is just under the boots
     const half = (TUNNEL_W * k) / 2;
+    const lift = Math.max(0, half - FEET_UP * k - 3 * PX);
     const pts = this.path
-      .filter((p) => p.x >= end || p.y > this.floorY + 4 * PX)
-      .map((p) => ({ x: p.x, y: p.y - half * clamp(1 - (p.y - this.floorY) / (half * 2), 0, 1) }));
+      .filter((p) => p.x >= end || p.y + FEET_UP * k > this.floorY + 4 * PX)
+      .map((p) => ({ x: p.x, y: p.y - lift * clamp(1 - (p.y + FEET_UP * k - this.floorY) / (half * 2), 0, 1) }));
     if (pts.length > 1) {
       for (const [gr, wdt, col] of [
         [t, TUNNEL_W * k + 18, CAVE.rim],
