@@ -30,14 +30,11 @@ function textureFrom(rows: string[], swap?: Record<string, number>): Texture {
   return t;
 }
 
-const TAU = Math.PI * 2;
-// Angles of the arm piece around his hip. 0 is the rest pose from the art: the
-// pick head on the ground in front of him. Positive turns clockwise, so one
-// swing is a full turn: down behind him, up over his head, then hard into the
-// ground in front.
+// Angles of the arm piece around his hip. 0 is the rest pose from the art:
+// pickaxe held upright, head on top. Positive turns clockwise (forward).
 const REST = 0;
-const OVERHEAD = 4.15; // pick straight above his hip (valid answers skip ahead to here)
-const SWING_SHARE = 0.82; // part of each swing spent turning; the rest it sits planted
+const WINDUP = -0.9; // head back over his shoulder
+const STRIKE = 2.2; // head down in the ground in front of him
 
 // Digly the miner. Units inside are sprite pixels; the scene scales the root
 // so one sprite pixel is one screen "art pixel". Origin is between his boots.
@@ -56,6 +53,7 @@ export class Miner {
 
   private t = 0;
   private swingT = 0;
+  private swingLen = 0.32; // seconds for the current swing; re-rolled each time
   private angle = REST;
   private angleVel = 0;
   private hop = 0;
@@ -152,37 +150,44 @@ export class Miner {
     const rm = this.reducedMotion;
     const digging = this.state === "drill" || this.state === "rev";
 
-    // ---- the swing: one full turn around the hip per strike ------------------
+    // ---- the swing: wind back, chop down hard, lift, repeat -------------------
+    // Each swing gets its own speed so the rhythm doesn't feel mechanical.
     if (digging) {
-      const period = this.urgent ? 0.42 : 0.6;
-      const before = this.swingT;
-      this.swingT += dt / period;
       if (this.forceStrike) {
-        // skip ahead to the pick coming over his head
-        const into = this.swingT % 1;
-        const overhead = Math.sqrt(OVERHEAD / TAU) * SWING_SHARE;
-        if (into < overhead) this.swingT = Math.floor(this.swingT) + overhead;
+        // a valid answer: go straight into the downswing
+        if (this.swingT < 0.45) this.swingT = 0.45;
         this.forceStrike = false;
       }
-      const p = this.swingT % 1;
-      // slow lift behind him, speeding up into the ground in front
-      this.angle = p < SWING_SHARE ? TAU * Math.pow(p / SWING_SHARE, 2.2) : TAU;
-      if (Math.floor(before + (1 - SWING_SHARE)) !== Math.floor(this.swingT + (1 - SWING_SHARE))) {
-        // crossed the end of the turn: the pick hits the ground
-        this.arm.rotation = 0;
+      const before = this.swingT;
+      this.swingT += dt / this.swingLen;
+      const p = Math.min(this.swingT, 1);
+      if (p < 0.45) {
+        const k = p / 0.45;
+        this.angle = REST + (WINDUP - REST) * (1 - (1 - k) * (1 - k));
+      } else if (p < 0.6) {
+        const k = (p - 0.45) / 0.15;
+        this.angle = WINDUP + (STRIKE - WINDUP) * k * k;
+      } else {
+        // planted, then eased back up toward the windup
+        const k = (p - 0.6) / 0.4;
+        this.angle = STRIKE + (REST - STRIKE) * k * k;
+      }
+      if (before < 0.6 && this.swingT >= 0.6) {
+        this.arm.rotation = STRIKE;
         const tip = this.armPoint(ARM_TIP.x, ARM_TIP.y);
         this.squash = rm ? 0 : 0.08 * this.power;
         this.onStrike?.(tip.x, tip.y, this.power);
         this.power = 1;
       }
+      if (this.swingT >= 1) {
+        this.swingT = 0;
+        const base = this.urgent ? 0.2 : 0.26;
+        this.swingLen = base + Math.random() * 0.18;
+      }
       this.angleVel = 0;
     } else {
-      // celebrating, idle or watching: the pick rests on the ground
+      // celebrating, idle or watching: he holds the pick upright
       const target = REST;
-      // come back to rest the short way round
-      this.angle = ((this.angle % TAU) + TAU) % TAU;
-      if (this.angle - target > Math.PI) this.angle -= TAU;
-      if (target - this.angle > Math.PI) this.angle += TAU;
       this.angleVel += (-(this.angle - target) * 120 - this.angleVel * 14) * dt;
       this.angle += this.angleVel * dt;
     }

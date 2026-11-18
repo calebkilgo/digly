@@ -83,27 +83,27 @@ export const FRAMES = {
 export type FrameName = keyof typeof FRAMES;
 
 // One arm and the pickaxe, as a single piece that swings around his front
-// hip. The arm runs straight out from his side to the hand on the handle.
+// hip. He holds it upright: head on top, hand on the handle below it.
 export const ARM = [
-  ".....hh.....",
+  "....mmmm....",
+  "..mmWGGWmm..",
+  ".mWW.gg.WWm.",
+  "mW...gg...Wm",
+  "W....Gg....W",
   ".....Hq.....",
-  ".....SS.....",
-  "OOOOOSS.....",
+  ".....Hq.....",
+  ".....Hq.....",
   "oooooHq.....",
+  "OOOOOSS.....",
+  ".....SS.....",
   ".....Hq.....",
-  ".....Hq.....",
-  ".....Hq.....",
-  "....WWWW....",
-  "..WWmGGmWW..",
-  ".Wmm.gg.mmm.",
-  "Wm...gg...mm",
-  "m....Gg....m",
+  ".....hh.....",
 ];
 // where ARM's top-left corner sits on the body, in body pixels
-export const ARM_AT = { x: 6.5, y: 12 }; // puts the pivot on his front side at the waist, body pixel (7, 15.5)
+export const ARM_AT = { x: 6.5, y: 6 }; // puts the pivot on his front side at the waist, body pixel (7, 15.5)
 // the pivot (his front hip) and the pick's striking point, in ARM pixels
-export const ARM_PIVOT = { x: 0.5, y: 3.5 };
-export const ARM_TIP = { x: 6, y: 12.5 };
+export const ARM_PIVOT = { x: 0.5, y: 9.5 };
+export const ARM_TIP = { x: 6, y: 0.5 };
 
 // ---- the old front-facing pickaxe, still used by the logo in the UI --------
 

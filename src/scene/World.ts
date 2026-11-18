@@ -51,7 +51,8 @@ export class World {
   readonly back = new Container(); // parallax 0.5
   readonly near = new Container(); // parallax 1.35
   readonly lantern = new Graphics();
-  readonly sky = new Graphics(); // world space, drawn over the strata above the surface
+  readonly sky = new Graphics(); // world space: everything above the ground line, drawn over the tunnel
+  readonly rock = new Graphics(); // world space: the mountain, drawn under the tunnel
   readonly ruler = new Container(); // world space: depth ticks and level lines
   private rulerTiles = new Map<number, Container>();
 
@@ -90,7 +91,8 @@ export class World {
     this.backTiles.clear();
     this.nearTiles.clear();
     this.rulerTiles.clear();
-    // keep the path's horizontal shape proportional to the new width
+    // the dig path depends on width; rebuild it from the same seed
+    this.dig = [];
     this.redrawTunnel();
     this.redrawSky();
   }
@@ -142,102 +144,164 @@ export class World {
     return flat ? h : Math.max(0, h + Math.sin(x * 0.029) * 5 * k + Math.sin(x * 0.0093 + 2) * 12 * k);
   }
 
-  // Where Digly is after digging `dist` world pixels. He starts on the ledge
-  // and cuts straight into the mountain, then zig-zags down in long, shallow
-  // runs: across, turn, back across, a little deeper each time. Nothing is
-  // dug until the round starts; the tunnel follows him.
-  digPoint(dist: number, runWidth: number): { x: number; y: number } {
-    const along = Math.max(0, dist) * 0.94; // horizontal share of each step
-    const down = Math.max(0, dist) * 0.34; // vertical share (about 20 degrees)
-    // triangle wave between homeX and homeX + runWidth, heading right first
-    const u = along / runWidth;
-    const tri = u % 2 < 1 ? u % 2 : 2 - (u % 2);
-    return { x: this.homeX + tri * runWidth, y: this.floorY + down };
+  // Where Digly is after digging `dist` world pixels. He starts on the ledge,
+  // cuts into the mountain, then wanders down through the earth: mostly
+  // sideways, sometimes steeper, turning at random and at the edges. The path
+  // is generated a step at a time from a seed, so it's the same every frame
+  // and different every dig. Nothing is dug until the round starts.
+  private digSeed = 1;
+  private dig: { x: number; y: number; s: number }[] = [];
+  private digState = { a: 0.12, dir: 1 };
+  private digRnd: () => number = Math.random;
+
+  newDig(seed: number) {
+    this.digSeed = seed;
+    this.dig = [];
   }
 
-  // Night sky, distant hills, grass and the mountain, seen when the home
-  // screen zooms out. Three screens wide so it still fills the view zoomed out.
+  digPoint(dist: number): { x: number; y: number } {
+    const k = this.k;
+    const stepLen = 5 * k;
+    if (!this.dig.length) {
+      this.dig = [{ x: this.homeX, y: this.floorY, s: 0 }];
+      this.digState = { a: 0.12, dir: 1 };
+      this.digRnd = mulberry32(hash(this.seed, this.digSeed, 17));
+    }
+    const r = this.digRnd;
+    const m = this.mountain;
+    const want = Math.max(0, dist);
+    while (this.dig[this.dig.length - 1].s < want) {
+      const p = this.dig[this.dig.length - 1];
+      const st = this.digState;
+      st.a += (r() - 0.5) * 0.4;
+      if (r() < 0.04) st.a = 0.05 + r() * 0.75; // a sudden steeper or flatter run
+      if (r() < 0.02) st.dir = -st.dir; // turn around for no reason
+      st.a = clamp(st.a, 0.04, 0.85);
+      const deep = p.y > this.surfaceY + 90 * k;
+      const left = deep ? this.homeX - Math.min(this.width * 0.4, 380 * k) : m.mouth + 50 * k;
+      const right = this.homeX + Math.min(this.width * 0.45, 460 * k);
+      if (p.s < 110 * k) {
+        // first stretch: straight into the mountain
+        st.dir = 1;
+        st.a = Math.min(st.a, 0.22);
+      }
+      if (p.x >= right) st.dir = -1;
+      if (p.x <= left) st.dir = 1;
+      this.dig.push({ x: p.x + st.dir * Math.cos(st.a) * stepLen, y: p.y + Math.sin(st.a) * stepLen, s: p.s + stepLen });
+    }
+    // interpolate between the two steps around `want`
+    let lo = 0;
+    let hi = this.dig.length - 1;
+    while (hi - lo > 1) {
+      const mid = (lo + hi) >> 1;
+      if (this.dig[mid].s <= want) lo = mid;
+      else hi = mid;
+    }
+    const a = this.dig[lo];
+    const b = this.dig[hi];
+    const t = b.s > a.s ? (want - a.s) / (b.s - a.s) : 0;
+    return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
+  }
+
+  // Two layers. `rock` is the mountain itself, drawn under the tunnel so
+  // digging cuts into it. `sky` is everything above the ground line (sky,
+  // stars, moon, hills, grass, trees) and is drawn over the tunnel, so a
+  // tunnel can never bite into the sky. Three screens wide for the zoom-out.
   private redrawSky() {
     const g = this.sky.clear();
+    const rk = this.rock.clear();
     const u = PX;
     const w = this.width;
+    const k = this.k;
     const x0 = -w;
     const x1 = 2 * w;
     const sy = this.surfaceY;
     const top = sy - 4000;
-    const snap = (v: number) => Math.round(v / u) * u;
-    // stepped bands, lighter toward the horizon
-    const bands = [0x10162b, 0x151c38, 0x1b2347, 0x232b56, 0x2c3466];
-    const bh = 30 * u;
-    g.rect(x0, top, x1 - x0, sy - top).fill(bands[0]);
-    bands.forEach((c, i) => g.rect(x0, sy - (bands.length - i) * bh, x1 - x0, bh).fill(c));
-    // stars
-    const r = mulberry32(hash(this.seed, 5));
-    for (let i = 0; i < 180; i++) {
-      const x = snap(x0 + r() * (x1 - x0));
-      const y = snap(sy - 40 * u - r() * 1100);
-      const s = r() < 0.15 ? 2 : 1;
-      g.rect(x, y, s * u, s * u).fill({ color: 0xf6ebd9, alpha: 0.35 + r() * 0.55 });
-    }
-    // moon
-    const mx = snap(this.homeX - 170 * this.k);
-    const my = snap(sy - 330 * this.k);
-    const moon = ["..MMM..", ".MMMMm.", "MMMMMmm", "MMMMMmm", "MMMMMmm", ".MMMmm.", "..mmm.."];
-    moon.forEach((row, j) =>
-      [...row].forEach((ch, i) => {
-        if (ch !== ".") g.rect(mx + i * 2 * u, my + j * 2 * u, 2 * u, 2 * u).fill(ch === "M" ? 0xfff4d0 : 0xd8cfa8);
-      }),
-    );
-    // distant hills, flat dark silhouettes
     const step = 2 * u;
-    for (let x = snap(x0); x < x1; x += step) {
-      const h = 50 * this.k + Math.sin(x * 0.006) * 30 * this.k + Math.sin(x * 0.017 + 1) * 14 * this.k;
-      g.rect(x, snap(sy - h), step, snap(h)).fill(0x1d2140);
-    }
-    // grass on the surface
-    g.rect(x0, sy - 4 * u, x1 - x0, 4 * u).fill(0x4e9a3a);
-    g.rect(x0, sy - u, x1 - x0, u).fill(0x3a7a2c);
-    for (let x = Math.floor(x0 / step) * step; x < x1; x += step) {
-      const h = [0, 1, 1, 2][Math.floor(r() * 4)];
-      if (h) g.rect(x, sy - (4 + h) * u, u, h * u).fill(0x5fb247);
-    }
+    const snap = (v: number) => Math.round(v / u) * u;
     const m = this.mountain;
-    const k = this.k;
-    // the mountain, stepped in pixel columns: lit face, rock layers, snow up high
+    const ground = (x: number) => sy - snap(this.mountainAt(x + step / 2)); // y of the ground line at a column
+    const groundAt = (x: number) => ground(Math.floor(x / step) * step);
+    const r = mulberry32(hash(this.seed, 5));
+
+    // ---- the mountain (under the tunnel) ----
     const rock = 0x76688a;
     const rockLo = 0x5f5276;
     const seam = 0x463a5a;
     const snow = 0xf6ebd9;
     const snowLine = 820 * k;
-    for (let x = snap(m.foot); x < m.right; x += step) {
+    const col = (v: number) => Math.floor(v / step) * step; // same column grid for rock and sky
+    for (let x = col(m.foot); x < m.right; x += step) {
       const hRaw = this.mountainAt(x + step / 2);
       const h = snap(hRaw);
       if (h <= 0) continue;
       const yTop = sy - h;
-      g.rect(x, yTop - u, step, h + u).fill(INK);
-      g.rect(x, yTop, step, h).fill(x < m.mouth + 400 * k ? rock : rockLo);
+      rk.rect(x, yTop, step, h).fill(x < m.mouth + 400 * k ? rock : rockLo);
       for (let b = 1; b * 34 * k < h; b++) {
         const yb = snap(sy - b * 34 * k - Math.sin(x * 0.004 + b) * 10 * k);
-        if (yb > yTop + 2 * u) g.rect(x, yb, step, u).fill(seam);
+        if (yb > yTop + 2 * u) rk.rect(x, yb, step, u).fill(seam);
       }
       const capH = hRaw - snowLine + Math.sin(x * 0.07) * 14 * k + Math.sin(x * 0.023) * 10 * k;
-      if (capH > 0) g.rect(x, yTop, step, snap(Math.min(capH, h))).fill(snow);
+      if (capH > 0) rk.rect(x, yTop, step, snap(Math.min(capH, h))).fill(snow);
     }
-    // the ledge: a packed-dirt top where he stands
-    g.rect(snap(m.ledgeL), sy - this.ledgeH, snap(m.mouth - m.ledgeL), 2 * u).fill(0x8a6a4a);
-    // boulders on the slopes
+    rk.rect(snap(m.ledgeL), sy - this.ledgeH, snap(m.mouth - m.ledgeL), 2 * u).fill(0x8a6a4a);
     for (let i = 0; i < 50; i++) {
       const x = snap(m.foot + r() * (m.right - m.foot));
-      if (x > m.ledgeL - 20 * k && x < m.mouth + 300 * k) continue; // keep the ledge and shaft clear
+      if (x > m.ledgeL - 20 * k && x < m.mouth + 300 * k) continue;
       const h = this.mountainAt(x);
       if (h < 24 * k || h > snowLine) continue;
       const y = snap(sy - r() * (h - 16 * k));
       const bw = snap((3 + r() * 4) * u);
-      g.rect(x - u, y - u, bw + 2 * u, bw * 0.6 + 2 * u).fill(INK);
-      g.rect(x, y, bw, snap(bw * 0.6)).fill(0x8a7c9c);
-      g.rect(x, y, bw, u).fill(0xa093b0);
+      rk.rect(x - u, y - u, bw + 2 * u, bw * 0.6 + 2 * u).fill(INK);
+      rk.rect(x, y, bw, snap(bw * 0.6)).fill(0x8a7c9c);
+      rk.rect(x, y, bw, u).fill(0xa093b0);
     }
-    // pine trees on the ground and the lower slope
+
+    // ---- the sky, column by column down to the ground line (over the tunnel) ----
+    const bands = [0x10162b, 0x151c38, 0x1b2347, 0x232b56, 0x2c3466];
+    const bh = 30 * u;
+    for (let x = col(x0); x < x1; x += step) {
+      const gy = ground(x);
+      let y = top;
+      const cut = (y2: number, c: number) => {
+        const b = Math.min(y2, gy);
+        if (b > y) g.rect(x, y, step, b - y).fill(c);
+        y = Math.max(y, y2);
+      };
+      cut(sy - bands.length * bh, bands[0]);
+      bands.forEach((c, i) => cut(sy - (bands.length - i - 1) * bh, c));
+      // distant hills behind everything
+      const hh = 50 * k + Math.sin(x * 0.006) * 30 * k + Math.sin(x * 0.017 + 1) * 14 * k;
+      const hTop = snap(sy - hh);
+      if (hTop < gy) g.rect(x, hTop, step, gy - hTop).fill(0x1d2140);
+      // ink edge along the mountain, grass on open ground
+      if (gy < sy - 2 * u) g.rect(x, gy - u, step, u).fill(INK);
+      else {
+        g.rect(x, sy - 4 * u, step, 4 * u).fill(0x4e9a3a);
+        g.rect(x, sy - u, step, u).fill(0x3a7a2c);
+        const tuft = [0, 1, 1, 2][Math.floor(r() * 4)];
+        if (tuft) g.rect(x, sy - (4 + tuft) * u, u, tuft * u).fill(0x5fb247);
+      }
+    }
+    // stars and moon, only where there's sky
+    for (let i = 0; i < 180; i++) {
+      const x = snap(x0 + r() * (x1 - x0));
+      const y = snap(sy - 40 * u - r() * 1100);
+      if (y >= groundAt(x) - 2 * u) continue;
+      const s2 = r() < 0.15 ? 2 : 1;
+      g.rect(x, y, s2 * u, s2 * u).fill({ color: 0xf6ebd9, alpha: 0.35 + r() * 0.55 });
+    }
+    const mx = snap(this.homeX - 170 * k);
+    const my = snap(sy - 330 * k);
+    const moon = ["..MMM..", ".MMMMm.", "MMMMMmm", "MMMMMmm", "MMMMMmm", ".MMMmm.", "..mmm.."];
+    moon.forEach((row, j) =>
+      [...row].forEach((ch, i) => {
+        const px = mx + i * 2 * u;
+        const py = my + j * 2 * u;
+        if (ch !== "." && py < groundAt(px)) g.rect(px, py, 2 * u, 2 * u).fill(ch === "M" ? 0xfff4d0 : 0xd8cfa8);
+      }),
+    );
+    // pine trees on the ground and lower slope
     const pine = (x: number, base: number, size: number) => {
       const s2 = Math.max(3, Math.round(size));
       for (let row = 0; row < s2 * 2; row++) {
@@ -251,7 +315,7 @@ export class World {
       if (x > m.ledgeL - 40 * k && x < m.right) continue;
       pine(x, sy - this.mountainAt(x) + 2 * u, 3 + r() * 3);
     }
-    // a mine cart parked on the ground at the foot of the slope
+    // a mine cart on the ground at the foot of the slope
     const cx = snap(m.foot - 60 * k);
     const cw = 22 * u;
     const ch = 10 * u;
@@ -269,6 +333,7 @@ export class World {
   resetPath() {
     this.path = [];
     this.discovery = undefined;
+    this.newDig(Math.floor(Math.random() * 1e9));
     this.redrawTunnel();
   }
 

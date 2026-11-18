@@ -105,9 +105,9 @@ export class DiglyScene {
     this.particles = new Particles(this.app.renderer);
     this.miner.onStrike = (x, y, power) => this.strike(x, y, power);
 
-    this.worldC.addChild(this.world.strata, this.world.sky, this.world.tunnel);
+    this.worldC.addChild(this.world.strata, this.world.rock, this.world.tunnel);
     this.root.addChild(this.worldC, this.world.back, this.dark);
-    this.worldC2.addChild(this.world.tunnelMask, this.world.ruler, this.world.lantern, this.miner.root, this.particles.layer);
+    this.worldC2.addChild(this.world.sky, this.world.tunnelMask, this.world.ruler, this.world.lantern, this.miner.root, this.particles.layer);
     this.root.addChild(this.worldC2, this.vignette, this.reveal.root);
     this.app.stage.addChild(this.root);
 
@@ -284,7 +284,7 @@ export class DiglyScene {
 
   valid() {
     this.miner.surge();
-    this.depthTarget += 56 * this.k;
+    this.depthTarget += 110 * this.k;
     const p = this.minerPoint(0, -SPR_H - 4);
     this.particles.emit({ kind: "spark", x: p.x, y: p.y, count: 5, color: 0xffe14a, speed: [60, 140], angle: [-Math.PI, 0], gravity: 160, life: [0.35, 0.6], size: [0.8, 1.2], endScale: 0.4, spread: 6 });
     this.shake(1.5);
@@ -382,7 +382,7 @@ export class DiglyScene {
     const n = Math.round(4 * power);
     this.particles.emit({ kind: "chunk", x: p.x, y: p.y, count: n, color: pal.base, speed: [80, 200 * power], angle: [-Math.PI + 0.3, -0.3], gravity: 700, life: [0.3, 0.55], size: [0.7, 1.1], spread: 4 });
     this.particles.emit({ kind: "dust", x: p.x, y: p.y, count: Math.ceil(n / 2), color: pal.fleck, speed: [20, 70], angle: [-Math.PI, 0], gravity: 100, life: [0.3, 0.5], size: [1, 1.5], spread: 6 });
-    if (this.drilling) this.depthTarget += 3 * this.k;
+    if (this.drilling) this.depthTarget += 7 * this.k;
     if (power > 1) this.shake(1.2);
     this.onStrike?.(power);
   }
@@ -405,11 +405,11 @@ export class DiglyScene {
       // zoomed out, he sits lower so more sky shows above the surface
       anchorY = top + h * (this.mode === "home" ? 0.55 + (1 - this.zoom) * 0.25 : 0.48);
     } else if (this.mode === "play") {
-      const creep = (this.drilling ? (this.urgent ? 14 : 6) : 0) * k;
+      const creep = (this.drilling ? (this.urgent ? 34 : 18) : 0) * k;
       this.depthTarget += creep * dt;
       this.depth = approach(this.depth, this.depthTarget, 7, dt);
-      // into the mountain, then shallow zig-zags down through the earth
-      const p = this.world.digPoint(this.depth, Math.min(this.W * 0.42, 420 * k));
+      // into the mountain, then wandering down through the earth
+      const p = this.world.digPoint(this.depth);
       mx = p.x;
       my = p.y;
       this.camTarget = my - floorY;
