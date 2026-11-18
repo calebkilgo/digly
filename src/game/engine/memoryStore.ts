@@ -1,5 +1,5 @@
 import type { AttemptMode } from "../service/types";
-import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store, type Suggestion } from "./store";
+import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store, type Suggestion, type SuggestionStatus, type AdminStats, type AdminLogEntry } from "./store";
 
 export interface MemoryData {
   players: Record<string, { name: string; username?: string; passwordHash?: string; email?: string | null; isAdmin?: boolean; unlimited?: boolean }>;
@@ -10,6 +10,7 @@ export interface MemoryData {
   answers: Record<string, string[]>;
   rejects: Record<string, string[]>;
   suggestions?: Suggestion[];
+  adminLog?: AdminLogEntry[];
 }
 
 const empty = (): MemoryData => ({ players: {}, attempts: {}, answers: {}, rejects: {} });
@@ -20,7 +21,11 @@ const empty = (): MemoryData => ({ players: {}, attempts: {}, answers: {}, rejec
 export class MemoryStore implements Store {
   protected data: MemoryData;
 
-  constructor(data?: MemoryData) {
+  // devAdmins: usernames that become admins when they sign up (local dev only)
+  constructor(
+    data?: MemoryData,
+    private devAdmins: string[] = [],
+  ) {
     this.data = data ?? empty();
   }
 
@@ -44,6 +49,7 @@ export class MemoryStore implements Store {
     const p = (this.data.players[id] ??= { name: "" });
     if (p.username) throw new StoreConflict();
     Object.assign(p, { username: a.username, passwordHash: a.passwordHash, email: a.email });
+    if (this.devAdmins.includes(lower)) p.isAdmin = true;
     this.changed();
   }
 
@@ -222,12 +228,56 @@ export class MemoryStore implements Store {
   }
 
   async addSuggestion(s: Suggestion) {
-    (this.data.suggestions ??= []).push(s);
+    const list = (this.data.suggestions ??= []);
+    list.push({ ...s, id: list.length + 1, status: "new" });
     this.changed();
   }
 
   async listSuggestions(limit: number) {
     return [...(this.data.suggestions ?? [])].reverse().slice(0, limit);
+  }
+
+  async setSuggestionStatus(id: number, status: SuggestionStatus, by: string, at: number) {
+    const s = this.data.suggestions?.find((x) => x.id === id);
+    if (!s) return false;
+    Object.assign(s, { status, updatedBy: by, updatedAt: at });
+    this.changed();
+    return true;
+  }
+
+  async adminStats(day: number): Promise<AdminStats> {
+    const ps = Object.values(this.data.players);
+    const ranked = Object.values(this.data.attempts).filter((a) => a.day === day && a.mode === "ranked");
+    return {
+      players: ps.length,
+      accounts: ps.filter((p) => p.username).length,
+      unlimited: ps.filter((p) => p.unlimited).length,
+      diggersToday: ranked.filter((a) => a.level === 1).length,
+      finishedToday: ranked.filter((a) => a.level === 3 && a.finishedAt !== null).length,
+    };
+  }
+
+  async listAdmins() {
+    return Object.entries(this.data.players)
+      .filter(([, p]) => p.isAdmin && p.username)
+      .map(([id, p]) => ({ id, username: p.username! }));
+  }
+
+  async setAdminByUsername(username: string, admin: boolean) {
+    const hit = Object.entries(this.data.players).find(([, p]) => p.username?.toLowerCase() === username.toLowerCase());
+    if (!hit) return null;
+    hit[1].isAdmin = admin;
+    this.changed();
+    return hit[0];
+  }
+
+  async addAdminLog(e: AdminLogEntry) {
+    (this.data.adminLog ??= []).push(e);
+    this.changed();
+  }
+
+  async listAdminLog(limit: number) {
+    return [...(this.data.adminLog ?? [])].reverse().slice(0, limit);
   }
 
   async topRejects(slug: string, limit: number) {

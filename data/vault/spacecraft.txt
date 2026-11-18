@@ -4,20 +4,20 @@
 # domain: science
 # noun: missions
 # rule: Named spacecraft, rockets, space stations and space programs.
-# rule: Telescopes in space count. Fictional ships don't.
-Apollo 11 | apollo
-Apollo 13
+# rule: Numbered missions like Voyager 2 count on their own. Fictional ships don't.
+Apollo | apollo program, project apollo
 Space Shuttle | shuttle
+International Space Station | iss, space station
+Hubble | hubble space telescope
+Voyager | voyager program
+Apollo 11
+Apollo 13
 Challenger
 Columbia
 Discovery
 Endeavour | endeavor
 Atlantis
-International Space Station | iss, space station
-Hubble | hubble space telescope
-Voyager 1 | voyager
-Voyager 2
-Sputnik | sputnik 1
+Sputnik | sputnik program
 Mir
 Skylab
 Gemini | project gemini
@@ -26,7 +26,8 @@ Saturn V | saturn 5
 Falcon 9
 Falcon Heavy
 Starship
-Dragon | crew dragon, spacex dragon
+Dragon | spacex dragon
+Crew Dragon
 James Webb | james webb space telescope, jwst, webb
 Curiosity
 Perseverance
@@ -35,33 +36,25 @@ Spirit
 Sojourner
 Ingenuity
 Pathfinder | mars pathfinder
-Viking 1 | viking
-Viking 2
-Pioneer 10 | pioneer
-Pioneer 11
+Viking | viking program
+Pioneer | pioneer program
 New Horizons
 Cassini | cassini huygens
+Huygens
 Juno
 Galileo
 Rosetta
 Philae
-Artemis | artemis 1, artemis i
+Artemis | artemis program
 Orion
-Vostok 1 | vostok
+Vostok | vostok program
 Soyuz
 Salyut
 Tiangong
 Shenzhou
 Chang'e | change
-Luna 2 | luna
+Luna | luna program
 Lunokhod
-Apollo 8
-Apollo 1
-Apollo 12
-Apollo 17
-Gemini 4
-Friendship 7
-Freedom 7
 Kepler | kepler space telescope
 Spitzer
 Chandra
@@ -70,8 +63,7 @@ Parker Solar Probe | parker
 Dawn
 Messenger
 Magellan
-Mariner 4 | mariner
-Mariner 10
+Mariner | mariner program
 Venera
 Vega
 Giotto
@@ -81,12 +73,11 @@ Deep Impact
 Stardust
 Genesis
 Hayabusa
-Hayabusa2
 OSIRIS-REx | osiris rex
 Lucy
 Psyche
 DART
-Mars Odyssey
+Mars Odyssey | 2001 mars odyssey
 Mars Express
 Mars Reconnaissance Orbiter | mro
 MAVEN
@@ -97,7 +88,7 @@ Lunar Reconnaissance Orbiter | lro
 LCROSS
 Chandrayaan
 Mangalyaan | mars orbiter mission
-Tianwen-1 | tianwen
+Tianwen | tianwen 1
 Zhurong
 Yutu
 Hope | emirates mars mission
@@ -113,7 +104,7 @@ Clementine
 Lunar Prospector
 Surveyor
 Ranger
-Explorer 1
+Explorer | explorer program
 Vanguard
 Starlink
 Space Launch System | sls
@@ -137,10 +128,168 @@ SpaceShipOne
 SpaceShipTwo
 X-15
 Kosmos
-Luna 9
-Luna 3
 Zond
-Apollo-Soyuz | apollo soyuz
-Sputnik 2 | laika
-Mercury-Redstone | redstone
+Apollo-Soyuz | apollo soyuz test project
+Spacelab
+Redstone | mercury redstone
+Voskhod
+Friendship 7
+Freedom 7
+Liberty Bell 7
+Aurora 7
+Sigma 7
+Faith 7
+Vanguard 1
+Telstar 1 | telstar
+Landsat
+Dragonfly
+Odysseus | im 1
+Peregrine
+Beresheet
+SLIM
+Vikram
+Pragyan
+Akatsuki
+IKAROS
+Mars Polar Lander
+Mars Climate Orbiter
+Deep Space 1
+Nozomi
+Phobos-Grunt | phobos grunt
+Fobos
+Vega 1
+Vega 2
+LADEE
+GRAIL
+WMAP
+COBE
+Fermi
+Swift
+Nustar
+Apollo 1
+Apollo 4
+Apollo 5
+Apollo 6
+Apollo 7
+Apollo 8
+Apollo 9
+Apollo 10
+Apollo 12
+Apollo 14
+Apollo 15
+Apollo 16
+Apollo 17
+Voyager 1
+Voyager 2
+Gemini 3
+Gemini 4
+Gemini 5
+Gemini 6
+Gemini 7
 Gemini 8
+Gemini 9
+Gemini 10
+Gemini 11
+Gemini 12
+Pioneer 1
+Pioneer 3
+Pioneer 4
+Pioneer 5
+Pioneer 6
+Pioneer 7
+Pioneer 8
+Pioneer 9
+Pioneer 10
+Pioneer 11
+Pioneer Venus
+Viking 1
+Viking 2
+Mariner 2
+Mariner 4
+Mariner 5
+Mariner 6
+Mariner 7
+Mariner 9
+Mariner 10
+Luna 1
+Luna 2
+Luna 3
+Luna 9
+Luna 10
+Luna 16
+Luna 17
+Luna 24
+Luna 25
+Venera 4
+Venera 7
+Venera 9
+Venera 13
+Venera 14
+Sputnik 1
+Sputnik 2
+Sputnik 3
+Vostok 1
+Vostok 2
+Vostok 3
+Vostok 4
+Vostok 5
+Vostok 6
+Voskhod 1
+Voskhod 2
+Soyuz 1
+Soyuz 11
+Soyuz 19
+Salyut 1
+Salyut 2
+Salyut 3
+Salyut 4
+Salyut 5
+Salyut 6
+Salyut 7
+Skylab 2
+Skylab 3
+Skylab 4
+Shenzhou 5
+Shenzhou 6
+Shenzhou 7
+Shenzhou 9
+Shenzhou 13
+Shenzhou 16
+Chang'e 1
+Chang'e 2
+Chang'e 3
+Chang'e 4
+Chang'e 5
+Chang'e 6
+Artemis I | artemis 1
+Artemis II | artemis 2
+Artemis III | artemis 3
+Explorer 1
+Explorer 3
+Explorer 6
+Ranger 7
+Ranger 8
+Ranger 9
+Surveyor 1
+Surveyor 3
+Surveyor 5
+Surveyor 6
+Surveyor 7
+Lunar Orbiter 1
+Lunar Orbiter 5
+Hayabusa2 | hayabusa 2
+Chandrayaan-1 | chandrayaan 1
+Chandrayaan-2 | chandrayaan 2
+Chandrayaan-3 | chandrayaan 3
+Tiangong-1 | tiangong 1
+Tiangong-2 | tiangong 2
+Mars 2
+Mars 3
+Kosmos 954
+STS-1 | sts 1
+STS-107 | sts 107
+STS-51-L | sts 51 l
+Expedition 1
+Crew-1 | crew 1
+Inspiration4
+Polaris Dawn

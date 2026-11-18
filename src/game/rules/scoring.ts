@@ -1,6 +1,6 @@
 // All scoring numbers live in SCORING. Tune them there, nowhere else.
 //
-// Every level: 60 seconds, name as many valid answers as you can, your best 3
+// Every level: 45 seconds, name as many valid answers as you can, your best 3
 // count. Each answer has a tier (from how niche it is within that prompt).
 // Level score = points of your best 3 answers x level multiplier. Answers are
 // the only thing that scores; nothing takes points away.
@@ -8,9 +8,9 @@
 export type TierKey = "copper" | "gold" | "diamond" | "ruby" | "platinum";
 
 export const SCORING = {
-  seconds: 60,
+  seconds: 45,
   best: 3,
-  points: { copper: 20, gold: 50, diamond: 150, ruby: 350, platinum: 1000 } as Record<TierKey, number>,
+  points: { copper: 50, gold: 150, diamond: 300, ruby: 500, platinum: 750 } as Record<TierKey, number>,
   multipliers: { 1: 1, 2: 1.25, 3: 1.5 } as Record<1 | 2 | 3, number>,
   // tier cutoffs on the z-score of an answer's difficulty within its prompt
   tierZ: { gold: -1.0, diamond: 0.3, ruby: 1.8 }, // ~16% copper, 46% gold, 35% diamond, 3.6% ruby

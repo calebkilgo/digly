@@ -89,13 +89,42 @@ export interface Store {
   // prompt ideas from players (guests too)
   addSuggestion(s: Suggestion): Promise<void>;
   listSuggestions(limit: number): Promise<Suggestion[]>;
+  // admin panel
+  setSuggestionStatus(id: number, status: SuggestionStatus, by: string, at: number): Promise<boolean>;
+  adminStats(day: number): Promise<AdminStats>;
+  listAdmins(): Promise<{ id: string; username: string }[]>;
+  // returns the player's id, or null if there's no account with that name
+  setAdminByUsername(username: string, admin: boolean): Promise<string | null>;
+  addAdminLog(e: AdminLogEntry): Promise<void>;
+  listAdminLog(limit: number): Promise<AdminLogEntry[]>;
+}
+
+export type SuggestionStatus = "new" | "planned" | "added" | "dismissed";
+
+export interface AdminStats {
+  players: number; // everyone who has ever loaded the game
+  accounts: number;
+  unlimited: number;
+  diggersToday: number; // started today's ranked dig
+  finishedToday: number; // finished all three levels today
+}
+
+export interface AdminLogEntry {
+  actor: string;
+  action: string;
+  detail: string;
+  at: number;
 }
 
 export interface Suggestion {
+  id?: number;
   playerId: string | null;
   text: string;
   day: number;
   createdAt: number;
+  status?: SuggestionStatus;
+  updatedBy?: string | null;
+  updatedAt?: number | null;
 }
 
 export class StoreConflict extends Error {}

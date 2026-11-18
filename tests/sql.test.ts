@@ -144,3 +144,20 @@ describe("migration 0006", () => {
     expect(rows.rows).toEqual([{ player_id: null }, { player_id: null }]);
   });
 });
+
+describe("migration 0007", () => {
+  it("adds idea statuses and an admin log", async () => {
+    const db = new PGlite();
+    await db.exec(SQL);
+    await db.exec(readFileSync(new URL("../supabase/migrations/0006_prompt_suggestions.sql", import.meta.url), "utf8"));
+    const SQL7 = readFileSync(new URL("../supabase/migrations/0007_admin_panel.sql", import.meta.url), "utf8");
+    await db.exec(SQL7);
+    await db.exec(SQL7);
+    await db.query("insert into prompt_suggestions (text, day) values ('Kinds of cheese', 31)");
+    expect((await db.query<{ status: string }>("select status from prompt_suggestions")).rows[0].status).toBe("new");
+    await db.query("update prompt_suggestions set status = 'planned', updated_by = 'caleb', updated_at = now()");
+    await expect(db.query("update prompt_suggestions set status = 'nope'")).rejects.toBeTruthy();
+    await db.query("insert into admin_log (actor, action, detail) values ('caleb', 'idea_planned', 'Kinds of cheese')");
+    expect(Number((await db.query<{ n: number }>("select count(*) as n from admin_log")).rows[0].n)).toBe(1);
+  });
+});

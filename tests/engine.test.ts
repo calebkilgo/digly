@@ -41,9 +41,9 @@ describe("dig slots", () => {
   it("never carry a category", () => {
     const d = digSlots(DAY);
     expect(d.levels.map((l) => [l.level, l.multiplier, l.scored, l.seconds])).toEqual([
-      [1, SCORING.multipliers[1], 3, 60],
-      [2, SCORING.multipliers[2], 3, 60],
-      [3, SCORING.multipliers[3], 3, 60],
+      [1, SCORING.multipliers[1], 3, 45],
+      [2, SCORING.multipliers[2], 3, 45],
+      [3, SCORING.multipliers[3], 3, 45],
     ]);
     expect(JSON.stringify(d)).not.toMatch(/title|prompt|slug/);
   });
@@ -59,7 +59,7 @@ describe("ranked attempts", () => {
     expect(JSON.stringify(s)).not.toMatch(/prompt/);
     const st = await eng.start("p", DAY, 1, "ranked");
     expect(st.challenge.prompt.length).toBeGreaterThan(3);
-    expect(st.expiresAt - st.startedAt).toBe(60_000);
+    expect(st.expiresAt - st.startedAt).toBe(45_000);
     const slug = seedFor(DAY, 1).slug;
     const first = SEEDS.find((x) => x.slug === slug)!.answers.trim().split("\n")[0].split(/[|=]/)[0].trim();
     const r = await eng.submit("p", st.attemptId, first);
@@ -98,7 +98,7 @@ describe("ranked attempts", () => {
 
   it("close themselves once the clock runs out", async () => {
     const st = await eng.start("p", DAY, 1, "ranked");
-    clock += 60_000 + SERVER_GRACE_MS - 1;
+    clock += 45_000 + SERVER_GRACE_MS - 1;
     expect((await eng.submit("p", st.attemptId, "zzzz")).status).toBe("rejected");
     clock += 2;
     expect((await eng.submit("p", st.attemptId, "pug")).status).toBe("expired");
@@ -358,6 +358,21 @@ describe("Vault games", () => {
     expect(by["Virginia Pine"]).toBeGreaterThan(by["Pine"]);
   });
 
+  it("counts numbered missions, empires as lost countries, and luxury cars", async () => {
+    const play = async (game: number, level: 1 | 2 | 3, words: string[]) => {
+      const st = await eng.start("p", DAY, level, "practice", { vault: game, unlimited: true });
+      for (const w of words) expect((await eng.submit("p", st.attemptId, w)).status, w).toBe("accepted");
+      return Object.fromEntries((await eng.finish("p", st.attemptId)).accepted.map((a) => [a.name, a.rarity]));
+    };
+    const space = await play(5, 3, ["voyager", "voyager 2", "apollo", "apollo 17"]);
+    expect(space["Voyager 2"]).toBeGreaterThan(space["Voyager"]);
+    expect(space["Apollo 17"]).toBeGreaterThan(space["Apollo"]);
+    await play(8, 3, ["ottoman empire", "persia", "soviet union"]);
+    await play(8, 2, ["ferrari", "ray ban", "rolex"]);
+    const fish = await play(2, 2, ["trout", "rainbow trout", "largemouth bass"]);
+    expect(fish["Rainbow Trout"]).toBeGreaterThan(fish["Trout"]);
+  });
+
   it("needs Unlimited past the free games, and refuses bad requests", async () => {
     expect(await code(eng.start("p", DAY, 1, "practice", { vault: 4 }))).toBe("locked");
     expect(await code(eng.start("p", DAY, 1, "practice", { vault: 4, unlimited: true }))).toBe("ok");
@@ -379,6 +394,26 @@ describe("all answers", () => {
     expect(all.filter((a) => a.found)).toHaveLength(1);
     expect(all[0].tier).toBe("platinum");
     expect(await code(eng.allAnswers("someone-else", st.attemptId))).toBe("forbidden");
+  });
+});
+
+describe("admin panel in the store", () => {
+  it("shares idea statuses, admin changes and the activity log", async () => {
+    await eng.suggest("g1", "Board games from the 80s");
+    const [idea] = await store.listSuggestions(10);
+    expect(idea.status).toBe("new");
+    expect(await store.setSuggestionStatus(idea.id!, "planned", "caleb", 5)).toBe(true);
+    expect((await store.listSuggestions(10))[0]).toMatchObject({ status: "planned", updatedBy: "caleb" });
+    expect(await store.setSuggestionStatus(999, "added", "caleb", 6)).toBe(false);
+    await store.ensurePlayer("p2");
+    await store.claimAccount("p2", { username: "Helper", passwordHash: "x", email: null });
+    expect(await store.setAdminByUsername("helper", true)).toBe("p2");
+    expect((await store.listAdmins()).map((a) => a.username)).toEqual(["Helper"]);
+    expect(await store.setAdminByUsername("nobody", true)).toBeNull();
+    await store.addAdminLog({ actor: "caleb", action: "admin_added", detail: "Helper", at: 7 });
+    expect((await store.listAdminLog(5))[0]).toMatchObject({ actor: "caleb", detail: "Helper" });
+    const st = await store.adminStats(DAY);
+    expect(st.accounts).toBe(1);
   });
 });
 

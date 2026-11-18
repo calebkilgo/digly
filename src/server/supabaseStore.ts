@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store, type Suggestion } from "@/game/engine/store";
+import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store, type Suggestion, type SuggestionStatus, type AdminStats, type AdminLogEntry } from "@/game/engine/store";
 import type { AttemptMode, LevelNo } from "@/game/service/types";
 
 interface DbAttempt {
@@ -202,12 +202,78 @@ export class SupabaseStore implements Store {
   }
 
   async listSuggestions(limit: number) {
-    const data = check(await this.db.from("prompt_suggestions").select("player_id, text, day, created_at").order("created_at", { ascending: false }).limit(limit));
-    return (data as { player_id: string | null; text: string; day: number; created_at: string }[]).map((r) => ({
+    const data = check(
+      await this.db
+        .from("prompt_suggestions")
+        .select("id, player_id, text, day, created_at, status, updated_by, updated_at")
+        .order("created_at", { ascending: false })
+        .limit(limit),
+    );
+    type Row = { id: number; player_id: string | null; text: string; day: number; created_at: string; status: SuggestionStatus; updated_by: string | null; updated_at: string | null };
+    return (data as Row[]).map((r) => ({
+      id: Number(r.id),
       playerId: r.player_id,
       text: r.text,
       day: r.day,
       createdAt: Date.parse(r.created_at),
+      status: r.status,
+      updatedBy: r.updated_by,
+      updatedAt: r.updated_at ? Date.parse(r.updated_at) : null,
+    }));
+  }
+
+  async setSuggestionStatus(id: number, status: SuggestionStatus, by: string, at: number) {
+    const data = check(
+      await this.db
+        .from("prompt_suggestions")
+        .update({ status, updated_by: by, updated_at: new Date(at).toISOString() })
+        .eq("id", id)
+        .select("id"),
+    );
+    return (data as unknown[]).length > 0;
+  }
+
+  async adminStats(day: number): Promise<AdminStats> {
+    const count = async (q: PromiseLike<{ count: number | null; error: { message: string } | null }>) => {
+      const r = await q;
+      if (r.error) throw new Error(`supabase: ${r.error.message}`);
+      return r.count ?? 0;
+    };
+    const head = { count: "exact" as const, head: true };
+    const [players, accounts, unlimited, diggersToday, finishedToday] = await Promise.all([
+      count(this.db.from("players").select("id", head)),
+      count(this.db.from("players").select("id", head).not("username", "is", null)),
+      count(this.db.from("players").select("id", head).eq("unlimited", true)),
+      count(this.db.from("attempts").select("id", head).eq("day", day).eq("mode", "ranked").eq("level", 1)),
+      count(this.db.from("attempts").select("id", head).eq("day", day).eq("mode", "ranked").eq("level", 3).not("finished_at", "is", null)),
+    ]);
+    return { players, accounts, unlimited, diggersToday, finishedToday };
+  }
+
+  async listAdmins() {
+    const data = check(await this.db.from("players").select("id, username").eq("is_admin", true).not("username", "is", null).order("username"));
+    return (data as { id: string; username: string }[]).map((r) => ({ id: r.id, username: r.username }));
+  }
+
+  async setAdminByUsername(username: string, admin: boolean) {
+    const pattern = username.replace(/[\\%_]/g, "\\$&");
+    const hit = check(await this.db.from("players").select("id").ilike("username", pattern).limit(1).maybeSingle());
+    if (!hit) return null;
+    check(await this.db.from("players").update({ is_admin: admin }).eq("id", hit.id));
+    return hit.id as string;
+  }
+
+  async addAdminLog(e: AdminLogEntry) {
+    check(await this.db.from("admin_log").insert({ actor: e.actor, action: e.action, detail: e.detail, created_at: new Date(e.at).toISOString() }));
+  }
+
+  async listAdminLog(limit: number) {
+    const data = check(await this.db.from("admin_log").select("actor, action, detail, created_at").order("created_at", { ascending: false }).limit(limit));
+    return (data as { actor: string; action: string; detail: string; created_at: string }[]).map((r) => ({
+      actor: r.actor,
+      action: r.action,
+      detail: r.detail,
+      at: Date.parse(r.created_at),
     }));
   }
 

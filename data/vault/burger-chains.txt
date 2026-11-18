@@ -33,7 +33,6 @@ Fatburger
 BurgerFi | burger fi
 Wayback Burgers
 Burgerville
-Back Yard Burgers
 Good Times
 Farmer Boys
 Mooyah
@@ -53,7 +52,6 @@ MOS Burger | mos
 Freshness Burger
 Harvey's | harveys
 Big Boy | bobs big boy, frischs big boy
-Kewpee
 Hamburger Hamlet
 Red Rooster
 Grill'd | grilld
@@ -71,3 +69,15 @@ Teddy's Bigger Burgers | teddys
 Burger Lounge
 Dick's Drive-In | dicks drive in
 Gott's Roadside | gotts
+Nation's Giant Hamburgers | nations
+Hamburger Mary's
+Beefsteak Charlie's
+Max Hamburgare | max burgers
+Burger Fuel | burgerfuel
+Jack's | jacks family restaurants
+Zippy's
+Swensons | swensons drive in
+Crown Burgers
+Apple Pan
+Burger Baron
+Beefy's

@@ -2,6 +2,7 @@ import { timingSafeEqual } from "node:crypto";
 import { getEngine, handle, requireAdmin } from "@/server/game";
 import { GameError } from "@/game/service/types";
 import { SEEDS } from "@/game/data/seeds";
+import { VAULT_CHALLENGES } from "@/game/data/vault";
 
 // GET /api/admin/rejects?slug=dog-breeds  (logged in as an admin, or &key=DIGLY_ADMIN_KEY)
 // The most common inputs that didn't match, plus how many have played the
@@ -16,8 +17,9 @@ export async function GET(req: Request) {
     if (!okKey) await requireAdmin();
     const { engine } = getEngine();
     const slug = url.searchParams.get("slug");
-    if (!slug) return { slugs: SEEDS.map((s) => s.slug) };
-    if (!SEEDS.some((s) => s.slug === slug)) throw new GameError("not_found", "Unknown category");
+    const all = [...SEEDS, ...VAULT_CHALLENGES];
+    if (!slug) return { categories: all.map((s) => ({ slug: s.slug, title: s.title, level: s.level, vault: !SEEDS.includes(s) })) };
+    if (!all.some((s) => s.slug === slug)) throw new GameError("not_found", "Unknown category");
     const stats = await engine.storeRef().answerStats(slug, engine.today() + 1);
     return { slug, plays: stats.plays, answersInList: engine.answerCount(slug), rejects: await engine.topRejects(slug, 200) };
   });

@@ -165,8 +165,11 @@ export function SettingsScreen(props: {
         <div>
           <div className="t">Admin tools</div>
           <div className="d" style={{ color: "#cdb68b" }}>
-            Only you see this. Resets remove your own runs and keep you logged in.
+            Only admins see this. Resets remove your own runs and keep you logged in.
           </div>
+          <a className="btn btn-sm btn-y" href="/admin" style={{ marginTop: 8, display: "inline-block", textDecoration: "none" }}>
+            Open the admin panel
+          </a>
         </div>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           <button

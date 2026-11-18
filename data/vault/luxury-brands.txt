@@ -2,8 +2,7 @@
 # level: 2
 # domain: everyday objects
 # noun: brands
-# rule: High-end fashion, jewelry, watch, leather or beauty houses.
-# rule: Luxury car brands don't count.
+# rule: High-end brands of anything: fashion, cars, watches, jewelry, eyewear, bags, beauty, yachts, drinks.
 Gucci
 Louis Vuitton | lv, vuitton
 Chanel
@@ -139,3 +138,156 @@ Baccarat
 Lalique
 Christofle
 Fornasetti
+Ferrari
+Lamborghini
+Rolls-Royce | rolls royce
+Bentley
+Porsche
+Aston Martin
+Maserati
+Bugatti
+McLaren
+Mercedes-Benz | mercedes, mercedes benz
+BMW
+Audi
+Lexus
+Cadillac
+Lincoln
+Maybach | mercedes maybach
+Pagani
+Koenigsegg
+Rimac
+Lotus
+Alfa Romeo
+Jaguar
+Land Rover | range rover
+Infiniti
+Acura
+Lucid
+Polestar
+Spyker
+Ray-Ban | ray ban
+Oakley
+Persol
+Oliver Peoples
+Maui Jim
+Gentle Monster
+Moscot
+Lindberg
+Silhouette
+Garrett Leight
+Bose
+Bang & Olufsen | bang and olufsen, b and o
+Bowers & Wilkins | bowers and wilkins
+Devialet
+Vertu
+Leica
+Hasselblad
+Dyson
+Smeg
+Sub-Zero | sub zero
+Miele
+Gaggenau
+Sunseeker
+Riva
+Feadship
+Azimut
+Ferretti
+Benetti
+Lurssen
+Gulfstream
+Dassault Falcon
+Pilatus
+Dom Perignon | dom
+Krug
+Moet & Chandon | moet, moet and chandon
+Veuve Clicquot | veuve
+Cristal | louis roederer
+Ace of Spades | armand de brignac
+Bollinger
+Taittinger
+Perrier-Jouet | perrier jouet
+Ruinart
+Salon
+Macallan | the macallan
+Glenfiddich
+Johnnie Walker Blue | johnnie walker blue label
+Hennessy
+Remy Martin
+Louis XIII
+Courvoisier
+Pappy Van Winkle | pappy
+Grey Goose
+Belvedere
+Clase Azul
+Patron
+Don Julio
+Petrus
+Chateau Margaux
+Chateau Lafite | lafite rothschild
+Chateau Latour
+Opus One
+Screaming Eagle
+Domaine de la Romanee-Conti | drc
+Penfolds Grange
+Sassicaia
+Pierre Marcolini
+Fortnum & Mason | fortnum and mason
+Harrods
+Bergdorf Goodman
+Neiman Marcus
+Saks Fifth Avenue | saks
+Selfridges
+Galeries Lafayette
+Barneys
+Net-a-Porter | net a porter
+Farfetch
+Four Seasons
+Ritz-Carlton | ritz carlton, ritz
+Mandarin Oriental
+Aman
+Peninsula
+St. Regis | st regis
+Waldorf Astoria
+Rosewood
+Belmond
+Raffles
+Burj Al Arab
+Cire Trudon
+Tom Dixon
+Poltrona Frau
+Roche Bobois
+B&B Italia | b and b italia
+Minotti
+Vitra
+Herman Miller
+Knoll
+Christian Liaigre
+Canada Goose
+Mackage
+Golden Goose
+Common Projects
+Amiri
+Fear of God
+Palm Angels
+Dsquared2
+Philipp Plein
+Charvet
+Turnbull & Asser | turnbull and asser
+Hackett
+Ralph Lauren Purple Label | purple label
+Clive Christian
+Amouage
+Roja Parfums | roja
+Xerjoff
+Parfums de Marly
+Le Labo
+Kilian
+S.T. Dupont | st dupont, dupont
+Davidoff
+Cohiba
+Dunhill
+Bucherer
+Steinway & Sons | steinway
+Fazioli
+Bosendorfer

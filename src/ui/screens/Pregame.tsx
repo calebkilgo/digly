@@ -60,7 +60,7 @@ export function PregameScreen(props: { scene: DiglyScene | null; run: Run; onBac
         <ul className="rules">
           <li>
             <span className="pip px">?</span>
-            <span>Each category stays secret until its 60-second clock starts.</span>
+            <span>Each category stays secret until its 45-second clock starts.</span>
           </li>
           <li>
             <span className="pip px">!</span>

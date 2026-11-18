@@ -3,7 +3,7 @@
 # domain: history
 # noun: countries
 # rule: Nations that broke up, merged or were absorbed.
-# rule: Empires and countries that only changed their name don't count.
+# rule: Empires, kingdoms and old names of countries all count.
 Soviet Union | ussr, union of soviet socialist republics, cccp
 Yugoslavia
 Czechoslovakia
@@ -124,3 +124,125 @@ Nabataea | nabataean kingdom
 Palmyra | palmyrene empire
 Volga Bulgaria
 Tiwanaku
+Ottoman Empire | ottoman turkey, ottomans
+Roman Empire | rome, ancient rome
+Western Roman Empire
+Byzantine Empire | eastern roman empire, byzantium
+Holy Roman Empire
+Austria-Hungary | austro hungarian empire, austria hungary
+Austrian Empire
+Russian Empire | imperial russia, tsarist russia
+German Empire | second reich, kaiserreich
+Nazi Germany | third reich
+Empire of Japan | imperial japan
+Mughal Empire
+Aztec Empire | aztecs
+Inca Empire | incas
+Mali Empire
+Songhai Empire
+Ghana Empire
+Ashanti Empire
+Zulu Kingdom
+Khmer Empire
+Mongol Empire
+Golden Horde
+Persian Empire | achaemenid empire
+Sasanian Empire | sassanid empire
+Parthian Empire | parthia
+Carthage
+Babylon | babylonia
+Assyria
+Akkadian Empire | akkad
+Hittite Empire | hittites
+Macedonia | kingdom of macedon, macedon
+Seleucid Empire
+Ptolemaic Egypt | ptolemaic kingdom
+Kingdom of Aksum | aksum, axum
+Timurid Empire
+Safavid Empire
+Qing Dynasty | qing china
+Ming Dynasty
+Korean Empire
+Empire of Brazil
+First Mexican Empire
+Second Mexican Empire
+French Second Empire
+First French Empire | napoleonic empire
+Kingdom of France
+Spanish Empire
+Portuguese Empire
+British Empire
+British Raj | british india
+Dutch Republic | united provinces
+Kingdom of Westphalia
+Duchy of Warsaw
+Congress Poland
+Republic of Ragusa | ragusa
+Kingdom of Portugal and the Algarves
+Union of Kalmar | kalmar union
+Denmark-Norway
+Sweden-Norway | union of sweden and norway
+Kingdom of Serbs, Croats and Slovenes
+Persia
+Burma
+Ceylon
+Siam
+Zaire
+Upper Volta
+Kampuchea | democratic kampuchea
+Khmer Republic
+Abyssinia
+Formosa
+Bechuanaland
+Basutoland
+Nyasaland
+Northern Rhodesia
+Gold Coast
+Dutch Guiana
+British Honduras
+Ubangi-Shari
+French Sudan
+Spanish Sahara
+Trucial States
+Aden
+Bengal Presidency
+East Pakistan
+Hejaz | kingdom of hejaz
+Nejd
+Mesopotamia
+Transjordan
+Mandatory Palestine
+Kingdom of Iraq
+North Yemen | yemen arab republic
+South Yemen | peoples democratic republic of yemen
+Federation of Arab Republics
+Mali Federation
+Senegambia
+Federation of the West Indies | west indies federation
+Federation of Malaya
+Straits Settlements
+Tibet
+Manchuria
+Mengjiang
+Wa State
+Kingdom of Sarawak | sarawak
+North Borneo
+Republic of Hatay | hatay
+South Kasai
+Kingdom of Egypt
+Kingdom of Libya
+Kingdom of Afghanistan
+Kingdom of Laos
+Kingdom of Sikkim
+Kingdom of Tahiti | tahiti
+Kingdom of Fiji
+Kingdom of Madagascar | merina kingdom
+Kingdom of Benin
+Republic of Natalia
+Griqualand
+Stellaland
+Goshen
+Bophuthatswana
+Transkei
+Ciskei
+Venda

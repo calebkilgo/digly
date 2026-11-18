@@ -5,30 +5,30 @@
 # rule: Fish that live in lakes and rivers, including pet fish.
 # rule: Fish that swim between rivers and the sea, like salmon, count.
 # strip: fish
-Trout | rainbow trout, brown trout
-Bass | largemouth bass, smallmouth bass, black bass
-Catfish | channel catfish
+Trout
+Bass
+Catfish
 Salmon
-Carp | common carp
+Carp
 Goldfish
-Pike | northern pike
-Perch | yellow perch
+Pike
+Perch
 Walleye
 Bluegill
 Crappie
 Tilapia
 Piranha
 Koi
-Sunfish | pumpkinseed
+Sunfish
 Guppy
 Betta | siamese fighting fish
 Minnow
 Sturgeon
 Eel
 Muskellunge | muskie, musky
-Gar | longnose gar, alligator gar
+Gar
 Angelfish
-Tetra | neon tetra
+Tetra
 Bream
 Brook Trout | speckled trout
 Lake Trout
@@ -48,8 +48,8 @@ Discus
 Cichlid
 Gourami
 Pleco | plecostomus
-Loach | clown loach
-Barb | tiger barb
+Loach
+Barb
 Rasbora
 Killifish
 Corydoras | cory catfish
@@ -65,8 +65,8 @@ Striped Bass | striper
 Chub
 Dace
 Shiner
-Sucker | white sucker
-Buffalo Fish | bigmouth buffalo
+Sucker
+Buffalo Fish
 Burbot
 Zander
 Tench
@@ -127,3 +127,156 @@ Crucian Carp
 Black Ghost Knifefish | knifefish
 Elephantnose Fish
 Endler's Livebearer | endler
+Rainbow Trout
+Brown Trout
+Bull Trout
+Apache Trout
+Gila Trout
+Tiger Trout
+Splake
+Largemouth Bass
+Smallmouth Bass
+Spotted Bass
+Guadalupe Bass
+Shoal Bass
+Black Bass
+Yellow Bass
+Hybrid Striped Bass | wiper
+Channel Catfish
+Common Carp
+Mirror Carp
+Leather Carp
+Northern Pike
+Yellow Perch
+European Perch | redfin perch
+White Perch
+Pumpkinseed
+Redear Sunfish | shellcracker
+Green Sunfish
+Longear Sunfish
+Redbreast Sunfish
+Orangespotted Sunfish
+Longnose Gar
+Alligator Gar
+Spotted Gar
+Shortnose Gar
+Florida Gar
+Neon Tetra
+Cardinal Tetra
+Black Skirt Tetra
+Glowlight Tetra
+Rummy-nose Tetra | rummy nose tetra
+Congo Tetra
+Bloodfin Tetra
+Tiger Barb
+Cherry Barb
+Rosy Barb
+Clown Loach
+Kuhli Loach
+Dojo Loach | weather loach
+White Sucker
+Longnose Sucker
+Northern Hog Sucker
+Bigmouth Buffalo
+Smallmouth Buffalo
+Black Crappie
+White Crappie
+Lake Sturgeon
+White Sturgeon
+Shovelnose Sturgeon
+Pallid Sturgeon
+Beluga Sturgeon | beluga
+Sterlet
+Atlantic Sturgeon
+Green Sturgeon
+American Eel
+European Eel
+Smallmouth Redhorse | redhorse
+Creek Chub
+Bluntnose Minnow
+Red Shiner
+Emerald Shiner
+Spottail Shiner
+Common Shiner
+Blacknose Dace
+Longnose Dace
+Mottled Sculpin
+Johnny Darter
+Rainbow Darter
+Snail Darter
+Fountain Darter
+Threespine Stickleback | three spined stickleback
+Ninespine Stickleback
+Sea Lamprey
+Brook Lamprey
+Lake Whitefish
+Mountain Whitefish
+Arctic Grayling
+Chain Pickerel
+Redfin Pickerel
+Grass Pickerel
+Tiger Muskie | tiger muskellunge
+American Shad
+Gizzard Shad
+Threadfin Shad
+Alewife
+Rainbow Smelt | smelt
+Desert Pupfish | pupfish
+Bonytail Chub
+Humpback Chub
+Colorado Pikeminnow | pikeminnow
+Razorback Sucker
+Redeye Bass
+Shadow Bass
+Flier
+Banded Killifish
+Mummichog
+Asian Arowana | dragon fish
+Silver Arowana
+Red-bellied Piranha | red bellied piranha
+Black Piranha
+Tambaqui
+Peacock Cichlid
+Convict Cichlid
+Jack Dempsey
+Firemouth Cichlid
+Severum
+Ram Cichlid | german blue ram
+Kribensis
+Frontosa
+Electric Blue Cichlid
+Flowerhorn
+Pearl Gourami
+Dwarf Gourami
+Kissing Gourami
+Paradise Fish
+Bristlenose Pleco
+Otocinclus
+Glass Catfish
+Upside-down Catfish
+Pictus Catfish
+Redtail Catfish
+Bala Shark
+Red-tailed Black Shark | red tail shark
+Rainbow Shark
+Siamese Algae Eater
+Harlequin Rasbora
+Celestial Pearl Danio | galaxy rasbora
+White Cloud Mountain Minnow | white cloud
+Black Molly
+Sailfin Molly
+Leopard Bushfish
+Ropefish | reedfish
+Freshwater Stingray
+Polka Dot Stingray
+Giant Gourami
+Goliath Tigerfish | tigerfish
+Sunapee Trout
+Golden Mahseer
+Murray Cod
+Australian Bass
+Golden Perch | yellowbelly
+Silver Perch
+Barramundi
+Pangasius | basa, swai, iridescent shark
+Climbing Perch

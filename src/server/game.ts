@@ -10,11 +10,15 @@ import { newToken, tokenHash } from "./auth";
 
 export type Backend = "supabase" | "memory";
 
-let engine: DigEngine | null = null;
-let backend: Backend = "memory";
+// Kept on globalThis: Next can load this module more than once in one server
+// (pages and API routes are bundled separately), and with the memory store
+// they must share one copy.
+const g = globalThis as unknown as { __digly?: { engine: DigEngine; backend: Backend } };
 
 export function getEngine() {
-  if (!engine) {
+  if (!g.__digly) {
+    let engine: DigEngine;
+    let backend: Backend;
     const url = process.env.SUPABASE_URL;
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (url && key) {
@@ -24,11 +28,15 @@ export function getEngine() {
       // Fine for local dev. On Vercel each instance would keep its own copy,
       // so set the Supabase env vars before real players arrive.
       if (process.env.NODE_ENV === "production") console.warn("digly: SUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY not set, using memory store");
-      engine = new DigEngine(new MemoryStore());
+      // DIGLY_DEV_ADMINS=name1,name2 makes those sign-ups admins, for testing
+      // the admin panel locally. It does nothing once Supabase is set up.
+      const devAdmins = (process.env.DIGLY_DEV_ADMINS ?? "").split(",").map((x) => x.trim().toLowerCase()).filter(Boolean);
+      engine = new DigEngine(new MemoryStore(undefined, devAdmins));
       backend = "memory";
     }
+    g.__digly = { engine, backend };
   }
-  return { engine, backend };
+  return g.__digly;
 }
 
 const PID = "digly_pid";
@@ -69,14 +77,28 @@ export async function playerId(create = true): Promise<string | null> {
 
 // Admins are accounts with players.is_admin = true, set by hand in Supabase.
 // Needs a real login session: a guest cookie alone never counts.
-export async function requireAdmin() {
+// Admin access needs a real logged-in session (a guest cookie never counts)
+// and the is_admin flag on that account, checked on every request.
+export async function requireAdminPlayer() {
   const jar = await cookies();
   const sid = jar.get(SID)?.value;
   const store = getEngine().engine.storeRef();
   const pid = sid ? await store.sessionPlayer(tokenHash(sid), Date.now()) : null;
   const p = pid ? await store.getPlayer(pid) : null;
-  if (!p?.isAdmin) throw new GameError("forbidden", "Admins only");
-  return p.id;
+  if (!p?.isAdmin || !p.username) throw new GameError("forbidden", "Admins only");
+  return { id: p.id, username: p.username };
+}
+
+export async function requireAdmin() {
+  return (await requireAdminPlayer()).id;
+}
+
+// Changes must come from our own pages: a form on another site can't use an
+// admin's cookie to make them. Browsers always send Origin on POST.
+export async function requireSameOrigin(req: Request) {
+  const origin = req.headers.get("origin");
+  const host = (await headers()).get("host");
+  if (!origin || !host || new URL(origin).host !== host) throw new GameError("forbidden", "Bad origin");
 }
 
 export async function startSession(pid: string) {

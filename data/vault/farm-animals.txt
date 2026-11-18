@@ -131,3 +131,80 @@ Deer | red deer, farmed deer
 Elk
 Snail
 Cricket
+Dexter Cattle | dexter
+Belted Galloway | galloway
+Red Poll
+Devon Cattle
+Murray Grey
+Watusi | ankole watusi
+Scottish Blackface
+Rambouillet
+Lincoln Sheep
+Leicester Longwool
+Katahdin
+Dorper
+Icelandic Sheep
+Babydoll Southdown
+Valais Blacknose
+Navajo-Churro | navajo churro
+Hereford Pig
+Large Black Pig
+Red Wattle
+Ossabaw Island Hog
+Iberian Pig
+Mulefoot
+Spotted Pig
+Chester White
+Poland China
+Ameraucana
+Araucana
+Barred Plymouth Rock
+Cochin
+Polish Chicken
+Marans
+Welsummer
+Easter Egger
+Ayam Cemani
+Brahma
+Faverolles
+Dominique
+Jersey Giant
+Buff Orpington
+Bourbon Red Turkey
+Broad Breasted White
+Narragansett Turkey
+Heritage Turkey
+Cayuga Duck
+Rouen Duck
+Call Duck
+Buff Duck
+Sebastopol Goose
+African Goose
+Chinese Goose
+Pilgrim Goose
+Kiko Goat
+Oberhasli
+Toggenburg
+Pygora
+Cashmere Goat
+Spanish Goat
+Haflinger
+Suffolk Punch
+American Cream Draft
+Shetland Pony
+Welsh Pony
+Fjord Horse | norwegian fjord
+Mammoth Jackstock | mammoth donkey
+Poitou Donkey
+Huacaya Alpaca | huacaya
+Suri Alpaca | suri
+New Zealand Rabbit
+Flemish Giant
+Rex Rabbit
+Angora Rabbit
+Californian Rabbit
+Holland Lop
+Lionhead Rabbit
+Coturnix Quail
+Bobwhite Quail
+Ringneck Pheasant
