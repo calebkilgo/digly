@@ -17,6 +17,7 @@ import {
   type LevelNo,
   type PublicChallenge,
   type SubmitResult,
+  type FullAnswer,
   type BoardRow,
 } from "../service/types";
 import { digSlots } from "../service/slots";
@@ -361,6 +362,26 @@ export class DigEngine {
       rarest: all.slice(0, 20).map((a) => ({ ...reveal(a), found: got.has(a.id) })),
       finishedAt: row.finishedAt ?? Math.min(this.now(), row.expiresAt),
     };
+  }
+
+  // Every answer in a finished level's list, rarest first, marking the ones
+  // this attempt found. Only after the level ends, so it can't be used to cheat.
+  async allAnswers(playerId: string, attemptId: string): Promise<FullAnswer[]> {
+    let row = await this.own(playerId, attemptId);
+    if (row.finishedAt === null) {
+      if (!this.expired(row)) throw new GameError("locked", "Finish the level first");
+      await this.close(row);
+      row = (await this.store.getAttempt(attemptId))!;
+    }
+    const { index } = this.indexed(row.slug);
+    const live = await this.rarity(row.slug, row.day);
+    const got = new Set(await this.store.listAnswers(row.id));
+    return [...index.answers]
+      .sort((a, b) => live.get(b.id)!.rating - live.get(a.id)!.rating)
+      .map((a) => {
+        const l = live.get(a.id)!;
+        return { ...this.scored(a, live), pct: l.pct, ...(l.estimated ? { est: true } : {}), found: got.has(a.id) };
+      });
   }
 
   // A prompt idea from a player. Kept short and plain; links aren't allowed.

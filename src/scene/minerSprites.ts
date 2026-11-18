@@ -93,11 +93,11 @@ export const ARM = [
   ".....Hq.....",
   ".....Hq.....",
   ".....Hq.....",
-  "W....Gg....W",
-  "mW...gg...Wm",
-  ".mWW.gg.WWm.",
-  "..mmWGGWmm..",
-  "....mmmm....",
+  "....WWWW....",
+  "..WWmGGmWW..",
+  ".Wmm.gg.mmm.",
+  "Wm...gg...mm",
+  "m....Gg....m",
 ];
 // where ARM's top-left corner sits on the body, in body pixels
 export const ARM_AT = { x: 6.5, y: 12 }; // puts the pivot on his front side at the waist, body pixel (7, 15.5)

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { AttemptResult, DigResult, PublicChallenge, RevealedAnswer } from "@/game/service/types";
+import type { AttemptResult, DigResult, FullAnswer, PublicChallenge, RevealedAnswer } from "@/game/service/types";
 import { foundLabel, pointsOf, tierOf } from "@/game/rules/scoring";
 import { sfx } from "@/audio/sfx";
 import { GemIcon } from "./art";
@@ -82,11 +82,60 @@ function LevelAnswers({ result }: { result: AttemptResult }) {
   );
 }
 
-// The rarest answers, one tab per level.
-export function AnswersSheet({ levels, results, start = 0, onClose }: { levels: PublicChallenge[]; results: AttemptResult[]; start?: number; onClose: () => void }) {
-  const [tab, setTab] = useState(Math.min(start, results.length - 1));
+// Every answer in a level's list, rarest first, loaded when asked for.
+function AllAnswers({ attemptId, load }: { attemptId: string; load: (id: string) => Promise<FullAnswer[]> }) {
+  const [list, setList] = useState<FullAnswer[] | null>(null);
+  const [err, setErr] = useState("");
+  const [q, setQ] = useState("");
+  useEffect(() => {
+    let live = true;
+    setList(null);
+    load(attemptId).then(
+      (a) => live && setList(a),
+      () => live && setErr("Couldn't load the answers."),
+    );
+    return () => {
+      live = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [attemptId]);
+  if (err) return <p className="rejected">{err}</p>;
+  if (!list) return <p className="fine">Loading every answer…</p>;
+  const needle = q.trim().toLowerCase();
+  const shown = needle ? list.filter((a) => a.name.toLowerCase().includes(needle)) : list;
   return (
-    <Sheet title="Rarest answers" onClose={onClose}>
+    <div>
+      <h3>
+        All {list.length} answers · you found {list.filter((a) => a.found).length}
+      </h3>
+      <input className="all-search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search the list" aria-label="Search the answers" />
+      <ul className="finds">
+        {shown.map((a) => (
+          <Row key={a.name} a={a} cls={a.found ? "yours" : "locked"} />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+// The rarest answers, one tab per level, plus the full list when a loader is given.
+export function AnswersSheet({
+  levels,
+  results,
+  start = 0,
+  onClose,
+  loadAll,
+}: {
+  levels: PublicChallenge[];
+  results: AttemptResult[];
+  start?: number;
+  onClose: () => void;
+  loadAll?: (attemptId: string) => Promise<FullAnswer[]>;
+}) {
+  const [tab, setTab] = useState(Math.min(start, results.length - 1));
+  const [view, setView] = useState<"rarest" | "all">("rarest");
+  return (
+    <Sheet title="Answers" onClose={onClose}>
       <GemLadder />
       {results.length > 1 && (
         <div className="tabs" role="tablist">
@@ -100,7 +149,17 @@ export function AnswersSheet({ levels, results, start = 0, onClose }: { levels: 
       <p className="fine" style={{ margin: 0 }}>
         {levels[tab].prompt}
       </p>
-      <LevelAnswers result={results[tab]} />
+      {loadAll && (
+        <div className="tabs" role="tablist" aria-label="Which answers">
+          <button role="tab" aria-selected={view === "rarest"} className={`tab ${view === "rarest" ? "on" : ""}`} onClick={() => setView("rarest")}>
+            Rarest 20
+          </button>
+          <button role="tab" aria-selected={view === "all"} className={`tab ${view === "all" ? "on" : ""}`} onClick={() => setView("all")}>
+            All answers
+          </button>
+        </div>
+      )}
+      {view === "all" && loadAll ? <AllAnswers attemptId={results[tab].attemptId} load={loadAll} /> : <LevelAnswers result={results[tab]} />}
       <p className="fine">Rarity scores are fixed for the day, so every digger is scored the same way.</p>
     </Sheet>
   );

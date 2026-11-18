@@ -64,7 +64,6 @@ export class World {
   homeX = 400;
   k = 1; // world scale, follows Digly's size on screen
   private discovery?: { x: number; y: number; rx: number; ry: number };
-  private lanternT = 0;
 
   constructor(seed: number) {
     this.seed = seed;
@@ -143,43 +142,17 @@ export class World {
     return flat ? h : Math.max(0, h + Math.sin(x * 0.029) * 5 * k + Math.sin(x * 0.0093 + 2) * 12 * k);
   }
 
-  // The mine shaft: in at the ledge, straight back into the rock, then
-  // curving down until it's below the open ground. Digly walks this path
-  // first when a dig starts; after it he digs freely.
-  get shaft(): { x: number; y: number }[] {
-    const k = this.k;
-    const m = this.mountain;
-    const f = this.floorY;
-    const pts = [{ x: this.homeX, y: f }, { x: m.mouth + 70 * k, y: f }];
-    // a quarter-ellipse bend down to just under the ground
-    const cx = m.mouth + 70 * k;
-    const rx = 220 * k;
-    const ry = this.surfaceY + 60 * k - f;
-    for (let a = 1; a <= 10; a++) {
-      const t = (a / 10) * (Math.PI / 2);
-      pts.push({ x: cx + Math.sin(t) * rx, y: f + (1 - Math.cos(t)) * ry });
-    }
-    return pts;
-  }
-
-  // Where Digly is after digging `dist` world pixels: along the shaft first,
-  // then straight down in a zig-zag. `free` is false while still in the shaft.
-  shaftPoint(dist: number, zigWidth: number): { x: number; y: number; free: boolean } {
-    const pts = this.shaft;
-    let left = Math.max(0, dist);
-    for (let i = 1; i < pts.length; i++) {
-      const a = pts[i - 1];
-      const b = pts[i];
-      const len = Math.hypot(b.x - a.x, b.y - a.y);
-      if (left <= len) {
-        const t = len ? left / len : 0;
-        return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t, free: false };
-      }
-      left -= len;
-    }
-    const end = pts[pts.length - 1];
-    const zig = (2 / Math.PI) * Math.asin(Math.sin(left / (190 * this.k)));
-    return { x: end.x + zig * zigWidth, y: end.y + left, free: true };
+  // Where Digly is after digging `dist` world pixels. He starts on the ledge
+  // and cuts straight into the mountain, then zig-zags down in long, shallow
+  // runs: across, turn, back across, a little deeper each time. Nothing is
+  // dug until the round starts; the tunnel follows him.
+  digPoint(dist: number, runWidth: number): { x: number; y: number } {
+    const along = Math.max(0, dist) * 0.94; // horizontal share of each step
+    const down = Math.max(0, dist) * 0.34; // vertical share (about 20 degrees)
+    // triangle wave between homeX and homeX + runWidth, heading right first
+    const u = along / runWidth;
+    const tri = u % 2 < 1 ? u % 2 : 2 - (u % 2);
+    return { x: this.homeX + tri * runWidth, y: this.floorY + down };
   }
 
   // Night sky, distant hills, grass and the mountain, seen when the home
@@ -314,7 +287,7 @@ export class World {
   // happens when Digly has moved a few pixels. His body hides the gap.
   extendPath(x: number, y: number) {
     const last = this.path[this.path.length - 1];
-    if (last && y - last.y < 9 * this.k) return;
+    if (last && Math.hypot(x - last.x, y - last.y) < 9 * this.k) return;
     this.path.push({ x, y });
     // keep the polyline short: points far above the camera never show again
     if (this.path.length > 160) this.path.splice(1, this.path.length - 160);
@@ -605,24 +578,16 @@ export class World {
     const hx = this.homeX;
     const k = this.k;
     const d = this.discovery;
-    // the mine shaft: from the ledge into the mountain and down
-    const mt = this.mountain;
-    const sh = this.shaft;
-    const tw = mt.tunnelH;
+    // nothing is dug at home: only the path Digly has cut, and the cavern
+    // he reveals gems in
     const chamber = (gr: Graphics, grow: number, color: number) => {
-      // the opening is square at the top of the horizontal run
-      gr.rect(mt.mouth - grow, this.floorY - tw - grow, sh[1].x - mt.mouth + grow * 2, tw + 6 * k + grow * 2).fill(color);
-      gr.moveTo(sh[1].x, this.floorY - tw / 2);
-      for (const p of sh.slice(2)) gr.lineTo(p.x, p.y - tw / 2);
-      gr.stroke({ width: tw + grow * 2, color, cap: "round", join: "round" });
       if (d) gr.ellipse(d.x, d.y, d.rx + grow, d.ry + grow).fill(color);
     };
     chamber(t, 9, CAVE.rim);
     chamber(t, 0, CAVE.back);
     chamber(m, 0, 0xffffff);
     if (this.path.length) {
-      const end = this.shaft[this.shaft.length - 1];
-      const pts = [{ x: end.x, y: end.y - TUNNEL_W * k * 0.4 }, ...this.path];
+      const pts = this.path;
       for (const [gr, wdt, col] of [
         [t, TUNNEL_W * k + 18, CAVE.rim],
         [t, TUNNEL_W * k, CAVE.back],
@@ -633,50 +598,13 @@ export class World {
         gr.stroke({ width: wdt, color: col, cap: "round", join: "round" });
       }
     }
-    // timber: a plank ceiling along the level run, one set of posts, and a
-    // heavy portal frame at the mouth
-    const u = PX;
-    const wood = 0x8a5a2b;
-    const woodLo = 0x5e3a18;
-    const snapU = (v: number) => Math.round(v / u) * u;
-    const fy = this.floorY;
-    const ceil = snapU(fy - tw);
-    t.rect(mt.mouth, ceil, sh[1].x - mt.mouth, 3 * u).fill(woodLo);
-    for (let x = snapU(mt.mouth + 8 * k); x < sh[1].x; x += 12 * u) t.rect(x, ceil, u, 3 * u).fill(INK);
-    const setX = snapU(mt.mouth + 52 * k);
-    t.rect(setX - u, ceil + 3 * u, 5 * u, fy - ceil - 3 * u).fill(INK);
-    t.rect(setX, ceil + 3 * u, 3 * u, fy - ceil - 3 * u).fill(woodLo);
-    const px0 = snapU(mt.mouth - 2 * u);
-    t.rect(px0 - u, ceil - 6 * u, 7 * u, fy - ceil + 6 * u).fill(INK);
-    t.rect(px0, ceil - 5 * u, 5 * u, fy - ceil + 5 * u).fill(wood);
-    t.rect(px0 + 4 * u, ceil - 5 * u, u, fy - ceil + 5 * u).fill(woodLo);
-    t.rect(px0 - 6 * u, ceil - 9 * u, snapU(40 * k) + 12 * u, 5 * u).fill(INK);
-    t.rect(px0 - 5 * u, ceil - 8 * u, snapU(40 * k) + 10 * u, 3 * u).fill(wood);
-    // rails on the ledge running into the shaft
-    for (let x = snapU(mt.ledgeL + 6 * k); x < sh[1].x - 4 * u; x += 5 * u) t.rect(x, fy - u, 3 * u, 2 * u).fill(woodLo);
-    t.rect(snapU(mt.ledgeL + 6 * k), fy - 2 * u, sh[1].x - mt.ledgeL - 6 * k - 4 * u, u).fill(0xb8c4d3);
     if (d) t.ellipse(d.x, d.y + d.ry * 0.82, d.rx * 0.9, d.ry * 0.14).fill({ color: CAVE.rim, alpha: 0.6 });
   }
 
-  // Lantern hanging in the home chamber. Swings a little.
-  updateLantern(dt: number, visible: boolean) {
-    // drawn at fixed pixel size; the chamber scales around it
-    this.lanternT += dt;
-    const g = this.lantern.clear();
-    if (!visible) return;
-    const k = this.k;
-    // hangs just inside the shaft mouth
-    const x = this.mountain.mouth + 26 * k;
-    const top = this.floorY - 112 * k;
-    const sw = Math.sin(this.lanternT * 1.3) * 0.08;
-    const len = 46 * k;
-    const lx = x + Math.sin(sw) * len;
-    const ly = top + Math.cos(sw) * len;
-    g.moveTo(x, top - 30).lineTo(lx, ly).stroke({ width: lw(), color: INK });
-    g.ellipse(lx, ly + 70, 60, 10).fill({ color: CAVE.lantern, alpha: 0.07 });
-    g.roundRect(lx - 9, ly, 18, 24, 4).fill(CAVE.lantern).stroke({ width: lw(), color: INK });
-    g.rect(lx - 10, ly - 3, 20, 5).fill(0x3b3236).stroke({ width: lw(), color: INK });
-    g.rect(lx - 10, ly + 22, 20, 5).fill(0x3b3236).stroke({ width: lw(), color: INK });
-    g.moveTo(lx - 3, ly + 6).lineTo(lx - 3, ly + 18).stroke({ width: lw(), color: 0xfff1c4 });
+  // The old home chamber had a hanging lantern. The ledge doesn't, so this
+  // just keeps the layer empty.
+  updateLantern(_dt: number, _visible: boolean) {
+    this.lantern.clear();
   }
+
 }

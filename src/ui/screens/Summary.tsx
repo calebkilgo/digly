@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { DiglyScene } from "@/scene/DiglyScene";
-import type { DigResult } from "@/game/service/types";
+import type { DigResult, FullAnswer } from "@/game/service/types";
 import { SCORING, percentile, tierOf } from "@/game/rules/scoring";
 import type { ChallengeService } from "@/game/service/types";
 import { sfx } from "@/audio/sfx";
@@ -21,6 +21,7 @@ export interface Rewards {
 // The payoff for the whole dig: total, comparison, level-by-level breakdown.
 export function SummaryScreen(props: {
   scene: DiglyScene | null;
+  loadAll?: (attemptId: string) => Promise<FullAnswer[]>;
   run: Run;
   result: DigResult;
   rewards: Rewards | null;
@@ -165,7 +166,7 @@ export function SummaryScreen(props: {
 
       <div className="results-dock px dark">
         <button className="btn btn-y wide" onClick={() => (sfx.button(), track("answers_viewed"), setSheet("answers"))}>
-          See the rarest answers
+          See all the answers
         </button>
         <button className="btn btn-go" onClick={() => (sfx.button(), track("share_clicked"), setSheet("share"))}>
           Share
@@ -179,7 +180,7 @@ export function SummaryScreen(props: {
       </div>
       </div>
 
-      {sheet === "answers" && <AnswersSheet levels={result.levels.map((l) => l.challenge)} results={result.levels} onClose={() => setSheet("none")} />}
+      {sheet === "answers" && <AnswersSheet loadAll={props.loadAll} levels={result.levels.map((l) => l.challenge)} results={result.levels} onClose={() => setSheet("none")} />}
       {sheet === "share" && <ShareSheet number={run.dig.number} result={result} beat={beat} onClose={() => setSheet("none")} />}
     </div>
   );

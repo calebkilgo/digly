@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { DiglyScene, RockAnchor } from "@/scene/DiglyScene";
-import type { AttemptResult, RevealedAnswer } from "@/game/service/types";
+import type { AttemptResult, FullAnswer, RevealedAnswer } from "@/game/service/types";
 import { SCORING, foundLabel, pointsOf, tierOf } from "@/game/rules/scoring";
 import { LEVELS } from "@/game/rules/levels";
 import { hash } from "@/scene/rng";
@@ -24,6 +24,7 @@ function revealOrder(top: RevealedAnswer[], n: number): (RevealedAnswer | null)[
 // its multiplier, then the player digs deeper or goes to the results.
 export function RevealScreen(props: {
   scene: DiglyScene | null;
+  loadAll?: (attemptId: string) => Promise<FullAnswer[]>;
   run: Run;
   result: AttemptResult;
   reduced: boolean;
@@ -213,11 +214,11 @@ export function RevealScreen(props: {
           </button>
         )}
         <button className="btn wide" onClick={() => (sfx.button(), setSheet(true))} disabled={!done}>
-          Rarest answers for this level
+          Answers for this level
         </button>
       </div>
 
-      {sheet && <AnswersSheet levels={[ch]} results={[result]} onClose={() => setSheet(false)} />}
+      {sheet && <AnswersSheet loadAll={props.loadAll} levels={[ch]} results={[result]} onClose={() => setSheet(false)} />}
     </div>
   );
 }

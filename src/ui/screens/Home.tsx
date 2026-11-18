@@ -110,7 +110,7 @@ export function HomeScreen(props: {
           ))}
         </ol>
         <ul className="facts">
-          <li>40 seconds a level. Name as many as you can. Your best 3 count.</li>
+          <li>60 seconds a level. Name as many as you can. Your best 3 count.</li>
           <li>
             <b>Rare answers score big.</b> Each level is harder and worth more.
           </li>

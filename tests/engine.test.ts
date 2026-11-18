@@ -41,9 +41,9 @@ describe("dig slots", () => {
   it("never carry a category", () => {
     const d = digSlots(DAY);
     expect(d.levels.map((l) => [l.level, l.multiplier, l.scored, l.seconds])).toEqual([
-      [1, SCORING.multipliers[1], 3, 40],
-      [2, SCORING.multipliers[2], 3, 40],
-      [3, SCORING.multipliers[3], 3, 40],
+      [1, SCORING.multipliers[1], 3, 60],
+      [2, SCORING.multipliers[2], 3, 60],
+      [3, SCORING.multipliers[3], 3, 60],
     ]);
     expect(JSON.stringify(d)).not.toMatch(/title|prompt|slug/);
   });
@@ -59,7 +59,7 @@ describe("ranked attempts", () => {
     expect(JSON.stringify(s)).not.toMatch(/prompt/);
     const st = await eng.start("p", DAY, 1, "ranked");
     expect(st.challenge.prompt.length).toBeGreaterThan(3);
-    expect(st.expiresAt - st.startedAt).toBe(40_000);
+    expect(st.expiresAt - st.startedAt).toBe(60_000);
     const slug = seedFor(DAY, 1).slug;
     const first = SEEDS.find((x) => x.slug === slug)!.answers.trim().split("\n")[0].split(/[|=]/)[0].trim();
     const r = await eng.submit("p", st.attemptId, first);
@@ -98,7 +98,7 @@ describe("ranked attempts", () => {
 
   it("close themselves once the clock runs out", async () => {
     const st = await eng.start("p", DAY, 1, "ranked");
-    clock += 40_000 + SERVER_GRACE_MS - 1;
+    clock += 60_000 + SERVER_GRACE_MS - 1;
     expect((await eng.submit("p", st.attemptId, "zzzz")).status).toBe("rejected");
     clock += 2;
     expect((await eng.submit("p", st.attemptId, "pug")).status).toBe("expired");
@@ -349,12 +349,36 @@ describe("Vault games", () => {
     expect((await eng.status("p", DAY)).next).toBe(1); // ranked dig untouched
   });
 
+  it("rewards specific species: White Oak and Virginia Pine are their own, rarer answers", async () => {
+    const st = await eng.start("p", DAY, 1, "practice", { vault: 1 });
+    for (const t of ["oak", "white oak", "virginia pine", "pine"]) expect((await eng.submit("p", st.attemptId, t)).status, t).toBe("accepted");
+    const r = await eng.finish("p", st.attemptId);
+    const by = Object.fromEntries(r.accepted.map((a) => [a.name, a.rarity]));
+    expect(by["White Oak"]).toBeGreaterThan(by["Oak"]);
+    expect(by["Virginia Pine"]).toBeGreaterThan(by["Pine"]);
+  });
+
   it("needs Unlimited past the free games, and refuses bad requests", async () => {
     expect(await code(eng.start("p", DAY, 1, "practice", { vault: 4 }))).toBe("locked");
     expect(await code(eng.start("p", DAY, 1, "practice", { vault: 4, unlimited: true }))).toBe("ok");
     expect(await code(eng.start("p", DAY, 1, "ranked", { vault: 1 }))).toBe("bad_request");
     expect(await code(eng.start("p", DAY, 1, "practice", { vault: 999 }))).toBe("bad_request");
     expect(await code(eng.start("p", DAY - 1, 1, "practice", { vault: 1 }))).toBe("bad_request");
+  });
+});
+
+describe("all answers", () => {
+  it("lists every answer after the level, found ones marked, and stays locked during it", async () => {
+    const st = await eng.start("p", DAY, 1, "practice", { vault: 1 });
+    await eng.submit("p", st.attemptId, "oak");
+    expect(await code(eng.allAnswers("p", st.attemptId))).toBe("locked");
+    await eng.finish("p", st.attemptId);
+    const all = await eng.allAnswers("p", st.attemptId);
+    expect(all.length).toBeGreaterThan(100);
+    expect(all.find((a) => a.name === "Oak")?.found).toBe(true);
+    expect(all.filter((a) => a.found)).toHaveLength(1);
+    expect(all[0].tier).toBe("platinum");
+    expect(await code(eng.allAnswers("someone-else", st.attemptId))).toBe("forbidden");
   });
 });
 

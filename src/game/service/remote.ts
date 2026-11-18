@@ -1,4 +1,4 @@
-import { GameError, type Account, type CategoryInfo, type AttemptMode, type AttemptResult, type AttemptStart, type Board, type ChallengeService, type DayStatus, type LevelNo, type SubmitResult } from "./types";
+import { GameError, type Account, type CategoryInfo, type AttemptMode, type AttemptResult, type AttemptStart, type Board, type ChallengeService, type DayStatus, type LevelNo, type SubmitResult, type FullAnswer } from "./types";
 
 async function call<T>(path: string, init?: { method?: string; body?: unknown }): Promise<T> {
   let res: Response;
@@ -58,6 +58,10 @@ export class RemoteService implements ChallengeService {
 
   submit(attemptId: string, text: string) {
     return call<SubmitResult>(`/api/attempts/${encodeURIComponent(attemptId)}/submit`, { method: "POST", body: { text } });
+  }
+
+  async allAnswers(attemptId: string) {
+    return (await call<{ answers: FullAnswer[] }>(`/api/attempts/${encodeURIComponent(attemptId)}/answers`)).answers;
   }
 
   finish(attemptId: string) {

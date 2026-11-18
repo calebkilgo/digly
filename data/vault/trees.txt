@@ -124,3 +124,139 @@ Jarrah
 Cassia
 Frangipani | plumeria
 Flame Tree | royal poinciana
+White Oak
+Red Oak | northern red oak
+Bur Oak | burr oak
+Pin Oak
+Scarlet Oak
+Black Oak
+Post Oak
+Water Oak
+Willow Oak
+Chestnut Oak
+Swamp White Oak
+English Oak | pedunculate oak
+Holm Oak
+Valley Oak
+Coast Live Oak
+Shumard Oak
+Cherrybark Oak
+Blackjack Oak
+Virginia Pine | scrub pine
+Loblolly Pine
+Longleaf Pine
+Shortleaf Pine
+Slash Pine
+Pitch Pine
+Red Pine | norway pine
+Jack Pine
+Scots Pine | scotch pine
+Austrian Pine | black pine
+Stone Pine | umbrella pine
+Pinyon Pine | pinon pine, pinyon
+Sugar Pine
+Limber Pine
+Whitebark Pine
+Monterey Pine
+Western White Pine
+Table Mountain Pine
+Silver Maple
+Norway Maple
+Box Elder | boxelder
+Bigleaf Maple
+Striped Maple
+Field Maple
+Sycamore Maple
+Paperbark Maple
+River Birch
+Yellow Birch
+Black Birch | sweet birch
+Gray Birch
+Norway Spruce
+White Spruce
+Black Spruce
+Red Spruce
+Sitka Spruce
+Engelmann Spruce
+Balsam Fir
+Fraser Fir
+Noble Fir
+Grand Fir
+White Fir | concolor fir
+Subalpine Fir
+Nordmann Fir
+Eastern Hemlock
+Western Hemlock
+Eastern Red Cedar | red cedar
+Western Red Cedar
+Atlas Cedar
+Deodar Cedar | deodar
+Cedar of Lebanon
+Incense Cedar
+Northern White Cedar | arborvitae
+Bald Cypress
+Leyland Cypress
+Monterey Cypress
+Italian Cypress
+American Elm
+Slippery Elm
+Chinese Elm
+White Ash
+Green Ash
+Black Ash
+Shagbark Hickory
+Pignut Hickory
+Bitternut Hickory
+Mockernut Hickory
+Black Walnut
+English Walnut
+Butternut
+American Chestnut
+American Beech
+European Beech | copper beech
+Black Willow
+Pussy Willow
+White Willow
+Lombardy Poplar
+Balsam Poplar
+White Poplar
+Quaking Aspen | trembling aspen
+Eastern Cottonwood
+Southern Magnolia
+Saucer Magnolia
+Star Magnolia
+Black Cherry
+Japanese Cherry | sakura
+Chokecherry
+Crabapple | crab apple
+Flowering Dogwood
+Pacific Dogwood
+Dawn Redwood
+Rainbow Eucalyptus
+Blue Gum
+Royal Palm
+Fan Palm
+Cabbage Palm | sabal palm, palmetto
+Sweetbay Magnolia | sweetbay
+Black Tupelo | black gum
+Sourwood
+Yellowwood
+Hackberry
+Kentucky Coffeetree
+Ohio Buckeye
+American Hornbeam | musclewood
+Hophornbeam
+Serviceberry | juneberry, shadbush
+Sweet Chestnut
+Red Alder
+Bradford Pear | callery pear
+Crape Myrtle | crepe myrtle
+Empress Tree | paulownia
+Tree of Heaven | ailanthus
+Russian Olive
+Red Mulberry
+White Mulberry
+Bigtooth Aspen
+Sugarberry
+Western Larch | tamarack
+Eastern Larch

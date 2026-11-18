@@ -1,7 +1,7 @@
 import { SCORING } from "./scoring";
 
 // Every daily dig is three levels, each deeper than the last. They all play the
-// same way (40 seconds, best 3 count); deeper levels have harder prompts and
+// same way (60 seconds, best 3 count); deeper levels have harder prompts and
 // a bigger multiplier. The numbers come from SCORING.
 
 export interface LevelInfo {

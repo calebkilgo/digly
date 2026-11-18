@@ -85,6 +85,8 @@ export interface AttemptResult {
   finishedAt: number;
 }
 
+export type FullAnswer = RevealedAnswer & { found: boolean };
+
 export interface DigResult {
   day: number;
   mode: AttemptMode;
@@ -123,6 +125,7 @@ export interface ChallengeService {
   start(day: number, level: LevelNo, mode: AttemptMode, opts?: { slug?: string; vault?: number }): Promise<AttemptStart>;
   submit(attemptId: string, text: string): Promise<SubmitResult>;
   finish(attemptId: string): Promise<AttemptResult>;
+  allAnswers(attemptId: string): Promise<FullAnswer[]>; // every answer for a finished level, rarest first
   board(day: number): Promise<Board>;
   account(): Promise<Account>;
   signUp(username: string, password: string, email?: string): Promise<Account>;

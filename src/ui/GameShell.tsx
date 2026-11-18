@@ -369,7 +369,8 @@ export function GameShell() {
     return () => window.removeEventListener("keydown", f);
   }, [screen, go]);
 
-  const common = { scene, reduced, say };
+  const loadAll = service ? (id: string) => service.allAnswers(id) : undefined;
+  const common = { scene, reduced, say, loadAll };
 
   // everything below depends on the clock and this device's storage
   if (!mounted) return <div className="app" />;

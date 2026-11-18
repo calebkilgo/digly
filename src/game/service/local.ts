@@ -39,6 +39,9 @@ export class LocalService implements ChallengeService {
   submit(attemptId: string, text: string) {
     return this.engine.submit(ME, attemptId, text);
   }
+  allAnswers(attemptId: string) {
+    return this.engine.allAnswers(ME, attemptId);
+  }
   finish(attemptId: string) {
     return this.engine.finish(ME, attemptId);
   }

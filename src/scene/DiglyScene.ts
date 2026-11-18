@@ -408,13 +408,13 @@ export class DiglyScene {
       const creep = (this.drilling ? (this.urgent ? 14 : 6) : 0) * k;
       this.depthTarget += creep * dt;
       this.depth = approach(this.depth, this.depthTarget, 7, dt);
-      // along the mine shaft first, then zig-zagging straight down
-      const p = this.world.shaftPoint(this.depth, Math.min(this.W * 0.18, 150 * k));
+      // into the mountain, then shallow zig-zags down through the earth
+      const p = this.world.digPoint(this.depth, Math.min(this.W * 0.42, 420 * k));
       mx = p.x;
       my = p.y;
       this.camTarget = my - floorY;
       anchorY = top + h * 0.55;
-      if (p.free) this.world.extendPath(mx, my - 40 * k);
+      if (this.depth > 2 * k) this.world.extendPath(mx, my - 40 * k);
     } else if (this.mode === "reveal") {
       anchorY = top + h * 0.4;
       mx = this.W / 2;
