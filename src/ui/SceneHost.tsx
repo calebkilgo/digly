@@ -52,6 +52,10 @@ export function useSceneInsets(
       const top = t && appH ? t.bottom - appH.top : 0;
       const bottom = b && appH ? appH.bottom - b.top : 0;
       scene.setInsets(Math.max(0, top), Math.max(0, bottom));
+      // the same band for the page, so overlays (gauge, banners) can sit inside it on phones
+      const app = (topRef.current ?? bottomRef.current)?.closest(".app") as HTMLElement | null;
+      app?.style.setProperty("--free-top", `${Math.max(0, top)}px`);
+      app?.style.setProperty("--free-bottom", `${Math.max(0, bottom)}px`);
     };
     measure();
     const ro = new ResizeObserver(measure);

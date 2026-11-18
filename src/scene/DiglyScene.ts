@@ -47,6 +47,8 @@ export class DiglyScene {
   private k = 1;
   private camY = 0;
   private camTarget = 0;
+  private camX = 0; // sideways camera, phones only: keeps him on screen as he digs
+
   private shakeAmp = 0;
   private reduced = false;
   private focusX = 0.5;
@@ -107,7 +109,7 @@ export class DiglyScene {
 
     this.worldC.addChild(this.world.strata, this.world.rock, this.world.tunnel);
     this.root.addChild(this.worldC, this.world.back, this.dark);
-    this.worldC2.addChild(this.world.sky, this.world.tunnelMask, this.world.ruler, this.world.lantern, this.miner.root, this.particles.layer);
+    this.worldC2.addChild(this.world.sky, this.world.moon, this.world.tunnelMask, this.world.ruler, this.world.lantern, this.miner.root, this.particles.layer);
     this.root.addChild(this.worldC2, this.vignette, this.reveal.root);
     this.app.stage.addChild(this.root);
 
@@ -175,6 +177,11 @@ export class DiglyScene {
     this.world.resize(this.W, this.focusX);
     this.world.setScale(this.k);
     this.layoutReveal();
+  }
+
+  // phone-sized screens get a few layout tweaks; desktop never does
+  private narrow() {
+    return this.W < 600;
   }
 
   private freeBand() {
@@ -399,6 +406,7 @@ export class DiglyScene {
     let mx = this.world.homeX;
     let my = floorY;
     let anchorY = top + h * 0.55;
+    let camXTarget = 0;
 
     if (this.mode === "home" || this.mode === "pregame") {
       this.camTarget = 0;
@@ -414,6 +422,13 @@ export class DiglyScene {
       my = p.y;
       this.camTarget = my - floorY;
       anchorY = top + h * 0.55;
+      if (this.narrow()) {
+        // a phone is too narrow to show the whole dig: follow him sideways, keeping
+        // him a little left of center (the depth gauge sits on the right), and give
+        // him more headroom since the band between the HUD and keyboard is short
+        camXTarget = mx - this.W * 0.44;
+        anchorY = top + h * 0.7;
+      }
       this.world.extendPath(mx, my - FEET_UP * k);
     } else if (this.mode === "reveal") {
       anchorY = top + h * 0.4;
@@ -423,6 +438,9 @@ export class DiglyScene {
     }
 
     if (this.mode !== "reveal") this.camY = approach(this.camY, this.camTarget, this.mode === "play" ? 5 : 3, dt);
+    this.camX = this.reduced ? camXTarget : approach(this.camX, camXTarget, 4, dt);
+    if (Math.abs(this.camX - camXTarget) < 0.5) this.camX = camXTarget;
+    const cx = Math.round(this.camX);
     const worldY = Math.round(anchorY - this.camY);
     let sx = 0;
     let sy = 0;
@@ -440,14 +458,20 @@ export class DiglyScene {
       this.res = wantRes;
       this.app.renderer.resize(this.W, this.H, wantRes);
     }
-    const fx = this.world.homeX + sx;
-    const fy = worldY + sy + floorY - SPR_H * PX * 0.5;
+    // zoom around the miner. On desktop that's always his home spot; on phones he
+    // may already be walking into the mine while the zoom runs
+    const fx = this.narrow() ? sx - cx + mx : this.world.homeX + sx;
+    const fy = worldY + sy + (this.narrow() ? my : floorY) - SPR_H * PX * 0.5;
     const place = (c: Container, x: number, y: number) => {
       c.scale.set(z);
       c.position.set(fx + (x - fx) * z, fy + (y - fy) * z);
     };
-    place(this.worldC, sx, worldY + sy);
-    place(this.worldC2, sx, worldY + sy);
+    place(this.worldC, sx - cx, worldY + sy);
+    place(this.worldC2, sx - cx, worldY + sy);
+    // the depth ruler stays on the left edge of the screen however far the camera pans
+    this.world.ruler.x = cx;
+    // phones: the sky is a thin strip during a dig, so the moon would fill it
+    this.world.moon.visible = !(this.narrow() && this.mode !== "home");
     place(this.world.back, sx, Math.round(anchorY - this.camY * 0.5) + sy);
     // the depth ruler only makes sense zoomed in
     this.world.ruler.visible = z > 0.97;

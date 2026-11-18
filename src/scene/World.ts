@@ -54,6 +54,7 @@ export class World {
   readonly near = new Container(); // parallax 1.35
   readonly lantern = new Graphics();
   readonly sky = new Graphics(); // world space: everything above the ground line, drawn over the tunnel
+  readonly moon = new Graphics(); // on its own so phones can hide it during a dig
   readonly rock = new Graphics(); // world space: the mountain, drawn under the tunnel
   readonly ruler = new Container(); // world space: depth ticks and level lines
   private rulerTiles = new Map<number, Container>();
@@ -306,6 +307,7 @@ export class World {
       g.rect(x, y, s2 * u, s2 * u).fill({ color: 0xf6ebd9, alpha: 0.35 + r() * 0.55 });
     }
     // the moon, in tonight's real phase (lit on the right while waxing, as seen from North America)
+    const mg = this.moon.clear();
     const N = 13;
     const R = N / 2;
     const mu = 2 * u;
@@ -326,8 +328,8 @@ export class World {
         const px = mx + i * mu;
         const py = my + j * mu;
         if (py >= groundAt(px)) continue;
-        if (lit) g.rect(px, py, mu, mu).fill(craters.has(`${i},${j}`) ? 0xe2d7ad : 0xfff4d0);
-        else g.rect(px, py, mu, mu).fill({ color: 0x3a4166, alpha: 0.85 });
+        if (lit) mg.rect(px, py, mu, mu).fill(craters.has(`${i},${j}`) ? 0xe2d7ad : 0xfff4d0);
+        else mg.rect(px, py, mu, mu).fill({ color: 0x3a4166, alpha: 0.85 });
       }
     }
     // pines on the open ground: different heights, shapes and greens, with needle texture.

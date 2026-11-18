@@ -2245,3 +2245,118 @@ input {
 .unlock-card .agree a {
   color: #ffc928;
 }
+
+/* ---- phones: the dig screen ------------------------------------------------
+   Desktop is untouched. On a phone the three HUD cards become one slim row,
+   and the depth gauge and the banners sit inside the band between the HUD and
+   the answer box (which shrinks a lot when the keyboard is up). --free-top and
+   --free-bottom are measured by the scene host. */
+@media (max-width: 599px) {
+  .hud-top {
+    gap: 6px;
+    padding: 6px 8px 0;
+  }
+  .counter {
+    width: auto;
+    min-width: 54px;
+    flex-direction: row;
+    gap: 5px;
+    padding: 4px 8px;
+  }
+  .counter svg {
+    width: 24px;
+    height: auto;
+  }
+  .counter .n {
+    font-size: 26px;
+  }
+  .combo {
+    left: 2px;
+    bottom: -26px;
+    font-size: 15px;
+  }
+  .hud-prompt {
+    padding: 4px 8px 5px;
+    gap: 1px;
+  }
+  .hud-prompt .row .lv-label {
+    font-size: 12px;
+  }
+  .hud-prompt p {
+    font-size: 15px;
+    line-height: 1.05;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .stop {
+    min-height: 20px;
+    padding: 1px 6px;
+    font-size: 11px;
+  }
+  .clock {
+    width: 58px;
+    gap: 3px;
+    padding: 4px 4px 5px;
+  }
+  .clock .digits {
+    font-size: 30px;
+  }
+  .segs {
+    gap: 1px;
+  }
+  .segs i {
+    width: 3px;
+    height: 5px;
+  }
+
+  .depth-gauge {
+    right: 6px;
+    width: 10px;
+    top: calc(var(--free-top, 26%) + 26px);
+    bottom: calc(var(--free-bottom, 34%) + 14px);
+  }
+  .seg-lv span {
+    left: -16px;
+    font-size: 13px;
+  }
+  .depth-gauge .marker {
+    right: 16px;
+  }
+  .depth-gauge .marker span {
+    font-size: 13px;
+    padding: 0 3px;
+  }
+  .depth-gauge .marker::after {
+    right: -11px;
+    border-width: 5px;
+    border-left-width: 6px;
+  }
+
+  .countdown {
+    top: var(--free-top, 0);
+    bottom: var(--free-bottom, 0);
+    inset-inline: 0;
+    gap: 2px;
+    align-content: center;
+  }
+  .lv-title {
+    font-size: min(6vw, 30px);
+    white-space: nowrap;
+  }
+  .lv-mult {
+    font-size: min(4.2vw, 22px);
+    white-space: nowrap;
+  }
+  .countdown .big-num {
+    font-size: clamp(54px, 16vw, 110px);
+    line-height: 1;
+  }
+  .banner {
+    top: calc(var(--free-top, 0px) + (100% - var(--free-top, 0px) - var(--free-bottom, 0px)) * 0.42);
+  }
+  .banner .big-num {
+    font-size: clamp(34px, 10vw, 60px);
+  }
+}
