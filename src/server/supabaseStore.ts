@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store, type Suggestion, type SuggestionStatus, type AdminStats, type AdminLogEntry, type AnswerEdit } from "@/game/engine/store";
+import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store, type Suggestion, type SuggestionStatus, type AdminStats, type AdminLogEntry, type AnswerEdit, type LiveAttempt } from "@/game/engine/store";
 import type { AttemptMode, LevelNo } from "@/game/service/types";
 
 interface DbAttempt {
@@ -274,6 +274,27 @@ export class SupabaseStore implements Store {
       action: r.action,
       detail: r.detail,
       at: Date.parse(r.created_at),
+    }));
+  }
+
+  async recentAttempts(since: number, limit: number): Promise<LiveAttempt[]> {
+    const data = check(
+      await this.db
+        .from("attempts")
+        .select("player_id, level, mode, slug, started_at, expires_at, finished_at")
+        .gte("started_at", since)
+        .order("started_at", { ascending: false })
+        .limit(limit),
+    );
+    type Row = { player_id: string; level: number; mode: AttemptMode; slug: string; started_at: number | string; expires_at: number | string; finished_at: number | string | null };
+    return (data as Row[]).map((r) => ({
+      playerId: r.player_id,
+      level: r.level as LevelNo,
+      mode: r.mode,
+      slug: r.slug,
+      startedAt: Number(r.started_at),
+      expiresAt: Number(r.expires_at),
+      finishedAt: r.finished_at === null ? null : Number(r.finished_at),
     }));
   }
 

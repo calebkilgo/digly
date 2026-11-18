@@ -33,6 +33,18 @@ interface Overview {
   stats: { players: number; accounts: number; unlimited: number; diggersToday: number; finishedToday: number };
   categories: { level: number; slug: string; title: string }[];
 }
+interface LiveStats {
+  at: number;
+  diggingNow: number;
+  ranked: number;
+  practice: number;
+  vault: number;
+  byLevel: number[];
+  last5: number;
+  last15: number;
+  lastHour: number;
+  buckets: number[];
+}
 interface AnswerRow {
   key: string;
   name: string;
@@ -97,18 +109,21 @@ export function AdminPanel({ me }: { me: string }) {
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [log, setLog] = useState<LogEntry[]>([]);
   const [admins, setAdmins] = useState<{ id: string; username: string }[]>([]);
+  const [live, setLive] = useState<LiveStats | null>(null);
   const [synced, setSynced] = useState<number | null>(null);
   const [offline, setOffline] = useState(false);
   const [, tick] = useState(0);
 
   const refresh = useCallback(async () => {
     try {
-      const [o, i, l, a] = await Promise.all([
+      const [o, i, l, a, lv] = await Promise.all([
         api<Overview>("/api/admin/overview"),
         api<{ suggestions: Idea[] }>("/api/admin/suggestions"),
         api<{ log: LogEntry[] }>("/api/admin/log"),
         api<{ admins: { id: string; username: string }[] }>("/api/admin/admins"),
+        api<LiveStats>("/api/admin/live"),
       ]);
+      setLive(lv);
       setOverview(o);
       setIdeas(i.suggestions);
       setLog(l.log);
@@ -149,6 +164,7 @@ export function AdminPanel({ me }: { me: string }) {
           </div>
         </header>
 
+        <Live live={live} />
         <Stats overview={overview} />
 
         <div className={s.cols}>
@@ -165,6 +181,56 @@ export function AdminPanel({ me }: { me: string }) {
         <Answers synced={synced} onChange={refresh} />
       </div>
     </div>
+  );
+}
+
+// Who's playing right now: everyone with a level still on the clock, plus how
+// many started a level recently. Refreshes with the rest of the panel.
+function Live({ live }: { live: LiveStats | null }) {
+  const max = Math.max(1, ...(live?.buckets ?? [0]));
+  return (
+    <section className={`${s.section} ${s.live}`}>
+      <div className={s.liveMain}>
+        <div className={s.label}>
+          <span className={`${s.dot} ${s.pulse}`} /> Digging right now
+        </div>
+        <div className={s.liveBig}>{live ? live.diggingNow.toLocaleString() : "—"}</div>
+        {live && (
+          <div className={s.small}>
+            {live.ranked} daily · {live.practice} practice · {live.vault} Vault
+            <br />
+            Level 1: {live.byLevel[0]} · Level 2: {live.byLevel[1]} · Level 3: {live.byLevel[2]}
+          </div>
+        )}
+      </div>
+      <div className={s.liveSide}>
+        <div className={s.liveRow}>
+          {(
+            [
+              ["Last 5 min", live?.last5],
+              ["Last 15 min", live?.last15],
+              ["Last hour", live?.lastHour],
+            ] as const
+          ).map(([label, v]) => (
+            <div key={label}>
+              <div className={s.label}>{label}</div>
+              <div className={s.stat}>{v === undefined ? "—" : v.toLocaleString()}</div>
+            </div>
+          ))}
+        </div>
+        <div className={s.bars} aria-label="Players starting a level, every 5 minutes over the last hour">
+          {(live?.buckets ?? Array(12).fill(0)).map((n, i) => (
+            <div key={i} className={s.bar} title={`${n} player${n === 1 ? "" : "s"}, ${55 - i * 5}–${60 - i * 5} min ago`}>
+              <div style={{ height: `${(n / max) * 100}%` }} />
+            </div>
+          ))}
+        </div>
+        <div className={`${s.small} ${s.barAxis}`}>
+          <span>1 hour ago</span>
+          <span>now</span>
+        </div>
+      </div>
+    </section>
   );
 }
 

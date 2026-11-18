@@ -97,6 +97,8 @@ export interface Store {
   setAdminByUsername(username: string, admin: boolean): Promise<string | null>;
   addAdminLog(e: AdminLogEntry): Promise<void>;
   listAdminLog(limit: number): Promise<AdminLogEntry[]>;
+  // attempts started since a time, for the admin panel's live view
+  recentAttempts(since: number, limit: number): Promise<LiveAttempt[]>;
   // admin changes to a category's answer list, laid over the list in the code
   listAnswerEdits(slug: string): Promise<AnswerEdit[]>;
   putAnswerEdit(e: AnswerEdit): Promise<void>;
@@ -124,6 +126,16 @@ export interface AdminStats {
   unlimited: number;
   diggersToday: number; // started today's ranked dig
   finishedToday: number; // finished all three levels today
+}
+
+export interface LiveAttempt {
+  playerId: string;
+  level: LevelNo;
+  mode: AttemptMode;
+  slug: string;
+  startedAt: number;
+  expiresAt: number;
+  finishedAt: number | null;
 }
 
 export interface AdminLogEntry {

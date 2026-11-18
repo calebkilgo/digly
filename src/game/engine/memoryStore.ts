@@ -1,5 +1,5 @@
 import type { AttemptMode } from "../service/types";
-import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store, type Suggestion, type SuggestionStatus, type AdminStats, type AdminLogEntry, type AnswerEdit } from "./store";
+import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store, type Suggestion, type SuggestionStatus, type AdminStats, type AdminLogEntry, type AnswerEdit, type LiveAttempt } from "./store";
 
 export interface MemoryData {
   players: Record<string, { name: string; username?: string; passwordHash?: string; email?: string | null; isAdmin?: boolean; unlimited?: boolean }>;
@@ -279,6 +279,14 @@ export class MemoryStore implements Store {
 
   async listAdminLog(limit: number) {
     return [...(this.data.adminLog ?? [])].reverse().slice(0, limit);
+  }
+
+  async recentAttempts(since: number, limit: number): Promise<LiveAttempt[]> {
+    return Object.values(this.data.attempts)
+      .filter((a) => a.startedAt >= since)
+      .sort((a, b) => b.startedAt - a.startedAt)
+      .slice(0, limit)
+      .map((a) => ({ playerId: a.playerId, level: a.level, mode: a.mode, slug: a.slug, startedAt: a.startedAt, expiresAt: a.expiresAt, finishedAt: a.finishedAt }));
   }
 
   async listAnswerEdits(slug: string) {
