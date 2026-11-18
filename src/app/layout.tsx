@@ -4,7 +4,7 @@ import "./globals.css";
 export const SITE = process.env.SITE_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "https://digly.io");
 export const DESCRIPTION = "A daily knowledge dig in three levels. Name as many as you can; the rarer the answer, the more it's worth.";
 
-export const OG_IMAGE = { url: "/og.png", width: 1200, height: 630, alt: "Digly: a pixel miner digging through layers of rock for gems" };
+export const OG_IMAGE = { url: "/og.png", width: 1200, height: 630, alt: "Digly: a pixel miner with a pickaxe on a mountain ledge at night" };
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
@@ -34,7 +34,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#1f171b",
+  themeColor: "#10162b",
   interactiveWidget: "resizes-content",
 };
 
