@@ -41,6 +41,12 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        {/* the pixel fonts are on the first screen; fetch them with the HTML instead of after the CSS */}
+        <link rel="preload" href="/fonts/silkscreen-400.woff2" as="font" type="font/woff2" crossOrigin="" />
+        <link rel="preload" href="/fonts/silkscreen-700.woff2" as="font" type="font/woff2" crossOrigin="" />
+        <link rel="preload" href="/fonts/vt323.woff2" as="font" type="font/woff2" crossOrigin="" />
+      </head>
       <body>{children}</body>
     </html>
   );

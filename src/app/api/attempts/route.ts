@@ -19,11 +19,20 @@ export async function POST(req: Request) {
     }
     const vault = body.vault === undefined ? undefined : intParam(body.vault);
     // most Vault games need Digly Unlimited (admins always have it)
-    let unlimited = false;
-    if (mode === "practice") {
-      const p = await engine.storeRef().getPlayer(pid);
-      unlimited = !!p?.unlimited || !!p?.isAdmin;
+    const store = engine.storeRef();
+    const owns = async (fresh: boolean) => {
+      const p = await store.getPlayer(pid, { fresh });
+      return !!p?.unlimited || !!p?.isAdmin;
+    };
+    const unlimited = mode === "practice" && (await owns(false));
+    const day = intParam(body.day);
+    const level = intParam(body.level) as LevelNo;
+    try {
+      return await engine.start(pid, day, level, mode as AttemptMode, { slug, vault, unlimited });
+    } catch (e) {
+      // the cached copy can be a few seconds behind a purchase made on another server
+      if (!(e instanceof GameError && e.code === "locked" && mode === "practice" && !unlimited && (await owns(true)))) throw e;
+      return engine.start(pid, day, level, mode as AttemptMode, { slug, vault, unlimited: true });
     }
-    return engine.start(pid, intParam(body.day), intParam(body.level) as LevelNo, mode as AttemptMode, { slug, vault, unlimited });
   });
 }

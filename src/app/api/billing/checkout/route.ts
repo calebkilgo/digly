@@ -19,7 +19,8 @@ export async function POST(req: Request) {
     if (!s) throw new GameError("not_open", "Payments aren't set up yet.");
     const pid = await playerId(false);
     const store = getEngine().engine.storeRef();
-    const p = pid ? await store.getPlayer(pid) : null;
+    // fresh, so a purchase that just landed on another server is seen
+    const p = pid ? await store.getPlayer(pid, { fresh: true }) : null;
     if (!p?.username) throw new GameError("forbidden", "Make an account first so Unlimited stays with you.");
     if (p.unlimited) throw new GameError("already_played", "You already have Digly Unlimited.");
     limit(`checkout:${p.id}`, 10, 60 * 60_000);

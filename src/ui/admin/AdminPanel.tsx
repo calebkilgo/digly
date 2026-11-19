@@ -75,7 +75,9 @@ interface Rejects {
   rejects: { text: string; n: number }[];
 }
 
-const REFRESH_MS = 8000;
+// the live player count moves fast; the rest (stats, ideas, log, admins) doesn't
+const LIVE_MS = 8000;
+const REFRESH_MS = 60_000;
 const TABS: { id: Tab; label: string }[] = [
   { id: "overview", label: "Overview" },
   { id: "answers", label: "Answers" },
@@ -167,16 +169,33 @@ export function AdminPanel({ me }: { me: string }) {
     }
   }, []);
 
+  const refreshLive = useCallback(async () => {
+    try {
+      setLive(await api<LiveStats>("/api/admin/live"));
+      setSynced(Date.now());
+      setOffline(false);
+    } catch {
+      setOffline(true);
+    }
+  }, []);
+
   useEffect(() => {
     void refresh();
     api<{ categories: Category[] }>("/api/admin/rejects").then((r) => setCats(r.categories), () => undefined);
-    const id = setInterval(() => void refresh(), REFRESH_MS);
+    // nothing polls while the tab is in the background
+    const shown = () => document.visibilityState === "visible";
+    const all = setInterval(() => shown() && void refresh(), REFRESH_MS);
+    const live = setInterval(() => shown() && void refreshLive(), LIVE_MS);
     const clock = setInterval(() => tick((n) => n + 1), 1000);
+    const back = () => shown() && void refresh();
+    document.addEventListener("visibilitychange", back);
     return () => {
-      clearInterval(id);
+      clearInterval(all);
+      clearInterval(live);
       clearInterval(clock);
+      document.removeEventListener("visibilitychange", back);
     };
-  }, [refresh]);
+  }, [refresh, refreshLive]);
 
   const newIdeas = ideas.filter((i) => i.status === "new").length;
 

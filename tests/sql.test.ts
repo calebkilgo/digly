@@ -161,3 +161,35 @@ describe("migration 0007", () => {
     expect(Number((await db.query<{ n: number }>("select count(*) as n from admin_log")).rows[0].n)).toBe(1);
   });
 });
+
+const SQL11 = readFileSync(new URL("../supabase/migrations/0011_speed.sql", import.meta.url), "utf8");
+
+describe("migration 0011", () => {
+  it("records a guess in one call and refuses closed or foreign attempts", async () => {
+    const db = new PGlite();
+    await db.exec(SQL);
+    await db.exec(SQL11);
+    await db.exec(SQL11); // idempotent
+    await db.query("insert into players (id, name) values ($1, 'a'), ($2, 'b')", [P, Q]);
+    await db.query("insert into attempts (id, player_id, day, level, mode, slug, started_at, expires_at) values ($1,$2,29,1,'ranked','dog-breeds',0,60000)", [A, P]);
+    const go = async (player: string, now: number, answer: string | null, text: string, max = 400) =>
+      (await db.query<{ r: string }>("select digly_submit($1,$2,$3,1500,$4,$5,$6) as r", [A, player, now, max, answer, text])).rows[0].r;
+
+    expect(await go(P, 1000, "d:pug", "pug")).toBe("accepted");
+    expect(await go(P, 1000, "d:pug", "pugs")).toBe("duplicate");
+    expect(await go(P, 1000, null, "kooiker")).toBe("rejected");
+    expect(await go(P, 1000, null, "kooiker")).toBe("rejected"); // repeat miss is fine
+    expect(await go(Q, 1000, "d:mudi", "mudi")).toBe("closed"); // not their attempt
+    expect(await go(P, 61_500, "d:mudi", "mudi")).toBe("accepted"); // inside the grace
+    expect(await go(P, 61_501, "d:beagle", "beagle")).toBe("closed"); // past it
+    expect(await go(P, 1000, "d:beagle", "beagle", 5)).toBe("capped"); // 6th counted submission
+
+    const rows = await db.query<{ answer_id: string }>("select answer_id from attempt_answers where attempt_id = $1 order by seq", [A]);
+    expect(rows.rows.map((r) => r.answer_id)).toEqual(["d:pug", "d:mudi"]);
+    const rej = await db.query<{ text: string }>("select text from attempt_rejects where attempt_id = $1", [A]);
+    expect(rej.rows.map((r) => r.text)).toEqual(["kooiker"]);
+
+    await db.query("select digly_finish_attempt($1, 30000, 1, 1, 2)", [A]);
+    expect(await go(P, 1000, "d:beagle", "beagle")).toBe("closed"); // finished
+  });
+});

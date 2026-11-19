@@ -812,11 +812,9 @@ export class World {
     if (d) t.ellipse(d.x, d.y + d.ry * 0.82, d.rx * 0.9, d.ry * 0.14).fill({ color: CAVE.rim, alpha: 0.6 });
   }
 
-  // The old home chamber had a hanging lantern. The ledge doesn't, so this
-  // just keeps the layer empty.
-  updateLantern(_dt: number, _visible: boolean) {
-    this.lantern.clear();
-  }
+  // The old home chamber had a hanging lantern. The ledge doesn't, so the
+  // layer stays empty. (It used to be cleared every frame for nothing.)
+  updateLantern(_dt: number, _visible: boolean) {}
 
 }
 

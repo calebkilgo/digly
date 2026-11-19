@@ -35,8 +35,8 @@ export async function POST(req: Request) {
     if (!Number.isInteger(id) || id < 1 || !STATUSES.includes(status)) throw new GameError("bad_request", "Bad request");
     const store = getEngine().engine.storeRef();
     const now = Date.now();
-    if (!(await store.setSuggestionStatus(id, status, me.username, now))) throw new GameError("not_found", "No such idea");
-    const text = (await store.listSuggestions(300)).find((s) => s.id === id)?.text ?? `#${id}`;
+    const text = await store.setSuggestionStatus(id, status, me.username, now);
+    if (text === null) throw new GameError("not_found", "No such idea");
     await store.addAdminLog({ actor: me.username, action: `idea_${status}`, detail: text, at: now });
     return { ok: true };
   });

@@ -1,5 +1,5 @@
 import type { AttemptMode } from "../service/types";
-import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store, type Suggestion, type SuggestionStatus, type AdminStats, type AdminLogEntry, type AnswerEdit, type LiveAttempt } from "./store";
+import { StoreConflict, submitSteps, type Guess, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store, type Suggestion, type SuggestionStatus, type AdminStats, type AdminLogEntry, type AnswerEdit, type LiveAttempt } from "./store";
 
 export interface MemoryData {
   players: Record<string, { name: string; username?: string; passwordHash?: string; email?: string | null; isAdmin?: boolean; unlimited?: boolean }>;
@@ -192,6 +192,18 @@ export class MemoryStore implements Store {
     return [...(this.data.rejects[attemptId] ?? [])];
   }
 
+  async listAnswersMany(ids: string[]) {
+    return new Map(ids.map((id) => [id, [...(this.data.answers[id] ?? [])]]));
+  }
+
+  async listRejectsMany(ids: string[]) {
+    return new Map(ids.map((id) => [id, [...(this.data.rejects[id] ?? [])]]));
+  }
+
+  submitGuess(g: Guess) {
+    return submitSteps(this, g);
+  }
+
   async finishAttempt(id: string, f: { finishedAt: number; score: number; points: number; uniqueCount: number }) {
     const a = this.data.attempts[id];
     if (!a || a.finishedAt !== null) return false;
@@ -240,10 +252,10 @@ export class MemoryStore implements Store {
 
   async setSuggestionStatus(id: number, status: SuggestionStatus, by: string, at: number) {
     const s = this.data.suggestions?.find((x) => x.id === id);
-    if (!s) return false;
+    if (!s) return null;
     Object.assign(s, { status, updatedBy: by, updatedAt: at });
     this.changed();
-    return true;
+    return s.text;
   }
 
   async adminStats(day: number): Promise<AdminStats> {

@@ -47,7 +47,8 @@ export interface BoardTotal {
 // engine can't tell them apart.
 export interface Store {
   ensurePlayer(playerId: string): Promise<void>;
-  getPlayer(playerId: string): Promise<PlayerInfo | null>;
+  // fresh: skip any short-lived cache (admin checks, payments)
+  getPlayer(playerId: string, opts?: { fresh?: boolean }): Promise<PlayerInfo | null>;
   // turns a guest into an account; StoreConflict if the username is taken
   claimAccount(playerId: string, a: { username: string; passwordHash: string; email: string | null }): Promise<void>;
   findAccount(username: string): Promise<{ playerId: string; username: string; passwordHash: string } | null>;
@@ -78,6 +79,12 @@ export interface Store {
   listAnswers(attemptId: string): Promise<string[]>; // answer ids, submission order
   addReject(attemptId: string, text: string): Promise<void>;
   listRejects(attemptId: string): Promise<string[]>;
+  // the same two lists for several attempts in one trip, keyed by attempt id
+  listAnswersMany(attemptIds: string[]): Promise<Map<string, string[]>>;
+  listRejectsMany(attemptIds: string[]): Promise<Map<string, string[]>>;
+  // One guess in one trip: counts it and records the answer (or the miss) if
+  // the attempt is still open. "closed" means finished, out of time or not theirs.
+  submitGuess(g: Guess): Promise<GuessOutcome>;
   // Only finishes an unfinished attempt. Returns false if it was already finished.
   finishAttempt(id: string, f: { finishedAt: number; score: number; points: number; uniqueCount: number }): Promise<boolean>;
   // accounts only: guests aren't posted to the board
@@ -92,7 +99,8 @@ export interface Store {
   addSuggestion(s: Suggestion): Promise<void>;
   listSuggestions(limit: number): Promise<Suggestion[]>;
   // admin panel
-  setSuggestionStatus(id: number, status: SuggestionStatus, by: string, at: number): Promise<boolean>;
+  // returns the idea's text, or null if there's no such idea
+  setSuggestionStatus(id: number, status: SuggestionStatus, by: string, at: number): Promise<string | null>;
   adminStats(day: number): Promise<AdminStats>;
   listAdmins(): Promise<{ id: string; username: string }[]>;
   // returns the player's id, or null if there's no account with that name
@@ -156,6 +164,29 @@ export interface Suggestion {
   status?: SuggestionStatus;
   updatedBy?: string | null;
   updatedAt?: number | null;
+}
+
+export interface Guess {
+  attemptId: string;
+  playerId: string;
+  now: number;
+  graceMs: number;
+  max: number; // submissions allowed per attempt
+  answerId: string | null; // null for a miss
+  text: string;
+}
+
+export type GuessOutcome = "accepted" | "duplicate" | "rejected" | "capped" | "closed";
+
+// submitGuess built from the single-step methods, for stores without a
+// one-trip version (memory, and Supabase before migration 0011).
+export async function submitSteps(s: Store, g: Guess): Promise<GuessOutcome> {
+  const row = await s.getAttempt(g.attemptId);
+  if (!row || row.playerId !== g.playerId || row.finishedAt !== null || g.now > row.expiresAt + g.graceMs) return "closed";
+  if ((await s.bumpSubmissions(row.id)) > g.max) return "capped";
+  if (g.answerId) return (await s.addAnswer(row.id, g.answerId)) ? "accepted" : "duplicate";
+  await s.addReject(row.id, g.text);
+  return "rejected";
 }
 
 export class StoreConflict extends Error {}

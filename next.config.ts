@@ -12,6 +12,18 @@ const nextConfig: NextConfig = {
   pageExtensions: isStatic ? ["tsx"] : ["tsx", "ts"],
   env: { NEXT_PUBLIC_DIGLY_BACKEND: isStatic ? "local" : process.env.NEXT_PUBLIC_DIGLY_BACKEND || "remote" },
   assetPrefix: process.env.DIGLY_ASSET_PREFIX || undefined,
+  // fonts and icons rarely change: let browsers keep them a week instead of re-checking every visit
+  ...(isStatic
+    ? {}
+    : {
+        async headers() {
+          const week = [{ key: "cache-control", value: "public, max-age=604800, stale-while-revalidate=86400" }];
+          return [
+            { source: "/fonts/:file*", headers: week },
+            { source: "/icons/:file*", headers: week },
+          ];
+        },
+      }),
   turbopack: {
     rules: {
       "*.css": {

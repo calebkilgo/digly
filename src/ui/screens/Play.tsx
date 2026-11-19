@@ -64,6 +64,7 @@ export function PlayScreen(props: {
   const lastHit = useRef(0);
   const comboRef = useRef(0);
   const found = useRef(new Set<number>()); // answer numbers found this level
+  const missed = useRef({ id: "", texts: new Set<string>() }); // misses already sent this level
   const pending = useRef(new Set<Promise<unknown>>()); // submits still in flight
 
   const cbs = useRef(props);
@@ -265,6 +266,15 @@ export function PlayScreen(props: {
     }
     logCleared(hit ? "found" : "miss");
 
+    // the same miss again can't change anything on the server, so don't send it
+    if (!hit) {
+      const m = missed.current;
+      if (m.id !== attempt.attemptId) missed.current = { id: attempt.attemptId, texts: new Set() };
+      const k = text.trim().toLowerCase().replace(/\s+/g, " ");
+      if (missed.current.texts.has(k)) return;
+      missed.current.texts.add(k);
+    }
+
     const job = service.submit(attempt.attemptId, text).then(
       (r) => {
         if (r.status === "expired" && !ended.current) return void finish();
@@ -301,6 +311,8 @@ export function PlayScreen(props: {
       },
       () => {
         if (hit) return; // keep the instant result; finish() re-scores on the server anyway
+        // didn't reach the server: let the same miss be sent again
+        missed.current.texts.delete(text.trim().toLowerCase().replace(/\s+/g, " "));
       },
     );
     pending.current.add(job);

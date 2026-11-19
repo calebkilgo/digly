@@ -44,6 +44,7 @@ export class Miner {
   private body: Sprite;
   private arm: Sprite;
   private glow = new Graphics();
+  private glowDrawn = -1; // which lamp glow is drawn now, so it's only rebuilt when it changes
   private tex: Record<string, { cool: Texture; hot: Texture }> = {};
 
   state: MinerState = "idle";
@@ -236,6 +237,9 @@ export class Miner {
     }
     const set = this.tex[this.mood];
     this.body.texture = this.hot ? set.hot : set.cool;
+    const glow = this.hot ? 2 : this.urgent ? 0 : 1;
+    if (glow === this.glowDrawn) return;
+    this.glowDrawn = glow;
     const g = this.glow.clear();
     const { x: lx, y: ly } = this.lampPoint;
     if (this.hot) {

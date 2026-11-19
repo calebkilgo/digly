@@ -21,7 +21,7 @@ import {
   type BoardRow,
 } from "../service/types";
 import { digSlots } from "../service/slots";
-import { StoreConflict, type AnswerEdit, type AttemptRow, type Store } from "./store";
+import { StoreConflict, type AnswerEdit, type AttemptRow, type BoardTotal, type Store } from "./store";
 
 const MAX_SUBMISSIONS = 400; // anti-abuse cap per attempt
 const MAX_LEN = 60;
@@ -50,6 +50,12 @@ export class DigEngine {
   private indexes = new Map<string, Indexed>();
   private rarities = new Map<string, Map<string, LiveRarity>>();
   private edits = new Map<string, { at: number; sig: string; list: AnswerEdit[] }>();
+  private editsLoading = new Map<string, Promise<void>>();
+  // Attempts this server has seen. Everything but the finish fields is fixed
+  // once a level starts, so a guess can skip reading the row again.
+  private rows = new Map<string, AttemptRow>();
+  // a finished day's board never changes
+  private boards = new Map<number, BoardTotal[]>();
   private seq = 0;
 
   constructor(
@@ -96,10 +102,23 @@ export class DigEngine {
     return x;
   }
 
-  // Picks up answer list changes from the admin panel. Cheap when nothing changed.
+  // Picks up answer list changes from the admin panel. Once a category is
+  // loaded, a stale copy is used while the new one loads in the background, so
+  // players never wait on it.
   private async fresh(slug: string, force = false) {
     const hit = this.edits.get(slug);
-    if (!force && hit && this.now() - hit.at < EDITS_TTL_MS) return;
+    if (!force && hit) {
+      if (this.now() - hit.at >= EDITS_TTL_MS && !this.editsLoading.has(slug)) {
+        const job = this.loadEdits(slug).finally(() => this.editsLoading.delete(slug));
+        this.editsLoading.set(slug, job);
+      }
+      return;
+    }
+    await this.loadEdits(slug);
+  }
+
+  private async loadEdits(slug: string) {
+    const hit = this.edits.get(slug);
     let list: AnswerEdit[];
     try {
       list = await this.store.listAnswerEdits(slug);
@@ -179,18 +198,31 @@ export class DigEngine {
     return now > row.expiresAt + SERVER_GRACE_MS;
   }
 
+  private remember(row: AttemptRow) {
+    if (this.rows.size >= 20_000) {
+      const old = this.now() - 10 * 60_000;
+      for (const [id, r] of this.rows) if (r.expiresAt < old) this.rows.delete(id);
+      if (this.rows.size >= 20_000) this.rows.clear();
+    }
+    this.rows.set(row.id, row);
+    return row;
+  }
+
   // Ranked attempts for a day, with any that ran out of time closed off.
   private async rankedRows(playerId: string, day: number) {
     const rows = await this.store.listAttempts(playerId, day, "ranked");
-    for (const r of rows) if (r.finishedAt === null && this.expired(r)) await this.close(r);
-    return (await this.store.listAttempts(playerId, day, "ranked")).sort((a, b) => a.level - b.level);
+    const out = await Promise.all(rows.map(async (r) => (r.finishedAt === null && this.expired(r) ? (await this.close(r)).row : r)));
+    return out.sort((a, b) => a.level - b.level);
   }
 
   async status(playerId: string, day: number): Promise<DayStatus> {
     this.checkDay(day);
     const rows = await this.rankedRows(playerId, day);
     const done = rows.filter((r) => r.finishedAt !== null);
-    const ranked = await Promise.all(done.map((r) => this.result(r)));
+    // every finished level's answers and misses in two trips, not two each
+    const ids = done.map((r) => r.id);
+    const [answers, rejects] = done.length ? await Promise.all([this.store.listAnswersMany(ids), this.store.listRejectsMany(ids)]) : [new Map(), new Map()];
+    const ranked = await Promise.all(done.map((r) => this.result(r, { ids: answers.get(r.id) ?? [], rejects: rejects.get(r.id) ?? [] })));
     const finished = new Set(done.map((r) => r.level));
     const next = ([1, 2, 3] as LevelNo[]).find((l) => !finished.has(l)) ?? null;
     return {
@@ -280,7 +312,8 @@ export class DigEngine {
       }
       throw e;
     }
-    return this.startPayload(row, ch, now);
+    // brand new, so nothing found yet
+    return this.startPayload(row, ch, now, []);
   }
 
   private quickCheck(row: AttemptRow): QuickCheck {
@@ -288,10 +321,11 @@ export class DigEngine {
     return buildQuickCheck(row.id, index.answers.map((a) => [a.normalized, ...a.aliases]));
   }
 
-  private async startPayload(row: AttemptRow, ch: PublicChallenge, now: number): Promise<AttemptStart> {
+  private async startPayload(row: AttemptRow, ch: PublicChallenge, now: number, known?: string[]): Promise<AttemptStart> {
+    this.remember(row);
     await this.fresh(row.slug);
     const { byId, num } = this.indexed(row.slug);
-    const ids = await this.store.listAnswers(row.id);
+    const ids = known ?? (await this.store.listAnswers(row.id));
     return {
       check: this.quickCheck(row),
       found: ids.map((id) => num.get(id) ?? -1),
@@ -305,52 +339,68 @@ export class DigEngine {
     };
   }
 
+  // Always reads the row, for anything that depends on whether it's finished.
   private async own(playerId: string, attemptId: string) {
     const row = typeof attemptId === "string" && attemptId ? await this.store.getAttempt(attemptId) : null;
     if (!row) throw new GameError("not_found", "Unknown attempt");
     if (row.playerId !== playerId) throw new GameError("forbidden", "Not your attempt");
-    return row;
+    return this.remember(row);
   }
 
   async submit(playerId: string, attemptId: string, text: string): Promise<SubmitResult> {
-    // runs in the background behind the browser's instant check, so keep it to as few database calls as possible
-    const row = await this.own(playerId, attemptId);
+    // Runs in the background behind the browser's instant check: one trip when
+    // this server already knows the attempt. The database re-checks that it's
+    // still open and theirs, so a stale copy can't let a late guess in.
+    const known = typeof attemptId === "string" ? this.rows.get(attemptId) : undefined;
+    if (known && known.playerId !== playerId) throw new GameError("forbidden", "Not your attempt");
+    const row = known ?? (await this.own(playerId, attemptId));
     if (row.finishedAt !== null || this.expired(row)) return { status: "expired" };
     const trimmed = String(text ?? "").trim().slice(0, MAX_LEN);
     if (!trimmed) return { status: "empty" };
-    if ((await this.store.bumpSubmissions(row.id)) > MAX_SUBMISSIONS) return { status: "rejected" };
 
     await this.fresh(row.slug);
-    const match = this.indexed(row.slug).index.lookup(trimmed);
-    if (!match) {
-      await this.store.addReject(row.id, trimmed);
-      return { status: "rejected" };
+    const { index, num } = this.indexed(row.slug);
+    const match = index.lookup(trimmed);
+    const out = await this.store.submitGuess({
+      attemptId: row.id,
+      playerId,
+      now: this.now(),
+      graceMs: SERVER_GRACE_MS,
+      max: MAX_SUBMISSIONS,
+      answerId: match?.answer.id ?? null,
+      text: trimmed,
+    });
+    if (out === "closed") {
+      this.rows.delete(row.id);
+      return { status: "expired" };
     }
-    const added = await this.store.addAnswer(row.id, match.answer.id);
-    const num = this.indexed(row.slug).num.get(match.answer.id);
-    if (!added) return { status: "duplicate", canonical: match.answer.canonical, num };
-    return { status: "accepted", canonical: match.answer.canonical, num, corrected: CORRECTED.includes(match.kind) };
+    if (!match || out === "capped" || out === "rejected") return { status: "rejected" };
+    const n = num.get(match.answer.id);
+    if (out === "duplicate") return { status: "duplicate", canonical: match.answer.canonical, num: n };
+    return { status: "accepted", canonical: match.answer.canonical, num: n, corrected: CORRECTED.includes(match.kind) };
   }
 
   async finish(playerId: string, attemptId: string): Promise<AttemptResult> {
-    const row = await this.own(playerId, attemptId);
-    if (row.finishedAt === null) await this.close(row);
-    const fresh = (await this.store.getAttempt(row.id))!;
-    return this.result(fresh);
+    // the row and both lists at once; the lists are only used once the row checks out
+    const [row, ids, rejects] = await Promise.all([this.own(playerId, attemptId), this.store.listAnswers(attemptId), this.store.listRejects(attemptId)]);
+    if (row.finishedAt !== null) return this.result(row, { ids, rejects });
+    const closed = await this.close(row, ids);
+    return this.result(closed.row, { ids: closed.ids, rejects });
   }
 
-  private async close(row: AttemptRow) {
+  // Scores and locks an attempt. Hands back the finished row and the answers it
+  // was scored on, so callers don't read them again.
+  private async close(row: AttemptRow, known?: string[]): Promise<{ row: AttemptRow; ids: string[] }> {
     await this.fresh(row.slug);
     const { byId } = this.indexed(row.slug);
-    const live = await this.rarity(row.slug, row.day);
-    const accepted = (await this.store.listAnswers(row.id)).map((id) => byId.get(id)).filter((a): a is AnswerRecord => !!a);
+    const [live, ids] = await Promise.all([this.rarity(row.slug, row.day), known ?? this.store.listAnswers(row.id)]);
+    const accepted = ids.map((id) => byId.get(id)).filter((a): a is AnswerRecord => !!a);
     const s = levelScore(bestN(accepted.map((a) => this.scored(a, live))), row.level);
-    await this.store.finishAttempt(row.id, {
-      finishedAt: Math.min(this.now(), row.expiresAt),
-      score: s.raw,
-      points: s.points,
-      uniqueCount: accepted.length,
-    });
+    const f = { finishedAt: Math.min(this.now(), row.expiresAt), score: s.raw, points: s.points, uniqueCount: accepted.length };
+    if (await this.store.finishAttempt(row.id, f)) return { row: this.remember({ ...row, ...f }), ids };
+    // another request finished it first: use what it saved
+    const [done, saved] = await Promise.all([this.store.getAttempt(row.id), this.store.listAnswers(row.id)]);
+    return { row: this.remember(done!), ids: saved };
   }
 
   private scored(a: AnswerRecord, live: Map<string, LiveRarity>): Scored {
@@ -359,15 +409,19 @@ export class DigEngine {
   }
 
   // Rebuilt from the stored answers every time, so finish() is idempotent.
-  private async result(row: AttemptRow): Promise<AttemptResult> {
+  // `pre` is the answers and misses when the caller already has them.
+  private async result(row: AttemptRow, pre?: { ids: string[]; rejects: string[] }): Promise<AttemptResult> {
     await this.fresh(row.slug);
     const { index, byId } = this.indexed(row.slug);
-    const live = await this.rarity(row.slug, row.day);
+    const [live, ids, rejected] = await Promise.all([
+      this.rarity(row.slug, row.day),
+      pre ? pre.ids : this.store.listAnswers(row.id),
+      pre ? pre.rejects : this.store.listRejects(row.id),
+    ]);
     const reveal = (a: AnswerRecord) => {
       const l = live.get(a.id)!;
       return { ...this.scored(a, live), pct: l.pct, ...(l.estimated ? { est: true } : {}) };
     };
-    const ids = await this.store.listAnswers(row.id);
     const got = new Set(ids);
     const accepted = ids
       .map((id) => byId.get(id))
@@ -393,7 +447,7 @@ export class DigEngine {
       points: row.points ?? s.points,
       top,
       accepted,
-      rejected: await this.store.listRejects(row.id),
+      rejected,
       missed: pick.map(reveal),
       rarest: all.slice(0, 20).map((a) => ({ ...reveal(a), found: got.has(a.id) })),
       finishedAt: row.finishedAt ?? Math.min(this.now(), row.expiresAt),
@@ -403,16 +457,17 @@ export class DigEngine {
   // Every answer in a finished level's list, rarest first, marking the ones
   // this attempt found. Only after the level ends, so it can't be used to cheat.
   async allAnswers(playerId: string, attemptId: string): Promise<FullAnswer[]> {
-    let row = await this.own(playerId, attemptId);
+    const [first, list] = await Promise.all([this.own(playerId, attemptId), this.store.listAnswers(attemptId)]);
+    let row = first;
+    let ids = list;
     if (row.finishedAt === null) {
       if (!this.expired(row)) throw new GameError("locked", "Finish the level first");
-      await this.close(row);
-      row = (await this.store.getAttempt(attemptId))!;
+      ({ row, ids } = await this.close(row, ids));
     }
     await this.fresh(row.slug);
     const { index } = this.indexed(row.slug);
     const live = await this.rarity(row.slug, row.day);
-    const got = new Set(await this.store.listAnswers(row.id));
+    const got = new Set(ids);
     return [...index.answers]
       .sort((a, b) => live.get(b.id)!.rating - live.get(a.id)!.rating)
       .map((a) => {
@@ -436,7 +491,7 @@ export class DigEngine {
 
   async board(playerId: string | null, day: number, limit = 100): Promise<BoardRow[]> {
     this.checkDay(day);
-    const rows = await this.store.dayBoard(day, limit);
+    const rows = await this.dayBoard(day, limit);
     // never send player ids: a guest id is also that guest's login cookie
     const out: BoardRow[] = rows.map((r, i) => ({ id: `r${i}`, name: r.name, score: r.points, unique: r.unique, isYou: r.playerId === playerId, posted: true }));
     // a guest sees their own score in place, marked as not posted
@@ -455,6 +510,20 @@ export class DigEngine {
       }
     }
     return out;
+  }
+
+  // Today's board is read fresh. Once a day is over (and its last levels have
+  // had time to finish) its board is fixed, so it's read once per server.
+  private async dayBoard(day: number, limit: number) {
+    const settled = this.now() > dayStart(day + 1) + 10 * 60_000;
+    const hit = settled ? this.boards.get(day) : undefined;
+    if (hit && limit <= 100) return hit.slice(0, limit);
+    const rows = await this.store.dayBoard(day, limit);
+    if (settled && limit === 100) {
+      if (this.boards.size > 60) this.boards.clear();
+      this.boards.set(day, rows);
+    }
+    return rows;
   }
 
   answerCount(slug: string) {

@@ -482,9 +482,14 @@ export class DiglyScene {
     // the depth ruler only makes sense zoomed in
     this.world.ruler.visible = z > 0.97;
     this.world.near.position.set(0, Math.round(anchorY - this.camY * 1.35));
-    const darkA = Math.max(0, Math.min(0.5, (this.getDepthM() - 25) / 260));
-    this.dark.clear();
-    if (darkA > 0.01) this.dark.rect(0, 0, this.W, this.H).fill({ color: 0x0a0418, alpha: darkA });
+    // redrawn only when it changes; rebuilding shapes every frame costs more than drawing them
+    const darkA = Math.round(Math.max(0, Math.min(0.5, (this.getDepthM() - 25) / 260)) * 200) / 200;
+    const darkKey = `${darkA}:${this.W}:${this.H}`;
+    if (darkKey !== this.darkKey) {
+      this.darkKey = darkKey;
+      this.dark.clear();
+      if (darkA > 0.01) this.dark.rect(0, 0, this.W, this.H).fill({ color: 0x0a0418, alpha: darkA });
+    }
     this.reveal.root.position.set(sx, sy);
 
     // miner
@@ -549,13 +554,19 @@ export class DiglyScene {
     }
   }
 
+  private darkKey = "";
+  private moodKey = "";
   private drawMood(dt: number) {
     this.moodT += dt;
-    const g = this.vignette.clear();
     const deep = this.mode === "play" || this.mode === "reveal";
     const base = !deep ? 0 : this.level === 1 ? 0.12 : this.level === 2 ? 0.3 : 0.42;
     const color = this.level === 1 ? 0x3a1a08 : this.level === 2 ? 0x7a1408 : 0x1a1060;
     const pulse = this.urgent ? 0.25 + 0.2 * Math.sin(this.moodT * 9) : 0;
+    // only the low-time pulse changes frame to frame; otherwise keep what's drawn
+    const key = `${base}:${color}:${pulse}:${this.W}:${this.H}:${PX}`;
+    if (key === this.moodKey) return;
+    this.moodKey = key;
+    const g = this.vignette.clear();
     const u = PX;
     const bands = 6;
     for (let k = 0; k < bands; k++) {

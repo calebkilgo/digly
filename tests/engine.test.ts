@@ -7,6 +7,7 @@ import { digTotal } from "../src/game/rules/levels";
 import { SEEDS } from "../src/game/data/seeds";
 import { GameError } from "../src/game/service/types";
 import { SCORING, levelScore } from "../src/game/rules/scoring";
+import { parseAnswerBlock } from "../src/game/rules/answerIndex";
 
 const DAY = 29;
 let clock = dayStart(DAY) + 3_600_000;
@@ -402,9 +403,9 @@ describe("admin panel in the store", () => {
     await eng.suggest("g1", "Board games from the 80s");
     const [idea] = await store.listSuggestions(10);
     expect(idea.status).toBe("new");
-    expect(await store.setSuggestionStatus(idea.id!, "planned", "caleb", 5)).toBe(true);
+    expect(await store.setSuggestionStatus(idea.id!, "planned", "caleb", 5)).toBe(idea.text);
     expect((await store.listSuggestions(10))[0]).toMatchObject({ status: "planned", updatedBy: "caleb" });
-    expect(await store.setSuggestionStatus(999, "added", "caleb", 6)).toBe(false);
+    expect(await store.setSuggestionStatus(999, "added", "caleb", 6)).toBeNull();
     await store.ensurePlayer("p2");
     await store.claimAccount("p2", { username: "Helper", passwordHash: "x", email: null });
     expect(await store.setAdminByUsername("helper", true)).toBe("p2");
@@ -487,5 +488,34 @@ describe("admin answer edits", () => {
     expect(await code(eng.editAnswer("ann", slug, { action: "add", name: "x = 5" }))).toBe("bad_request");
     expect(await code(eng.editAnswer("ann", slug, { action: "add", name: "Fresh One", aliases: [first.name] }))).toBe("bad_request");
     expect(await code(eng.editAnswer("ann", slug, { action: "remove", name: "Not In The List Qq" }))).toBe("not_found");
+  });
+});
+
+describe("caching across servers", () => {
+  it("a guess on a server holding a stale copy is refused once another server finished the level", async () => {
+    const st = await eng.start("p", DAY, 1, "ranked");
+    const name = parseAnswerBlock(seedFor(DAY, 1).answers, "x")[0].canonical;
+    expect((await eng.submit("p", st.attemptId, name)).status).toBe("accepted");
+    const other = new DigEngine(store, { now: () => clock });
+    const res = await other.finish("p", st.attemptId);
+    expect(res.accepted).toHaveLength(1);
+    // eng still has the attempt cached as open
+    expect((await eng.submit("p", st.attemptId, "anything")).status).toBe("expired");
+    expect(await code(eng.submit("q", st.attemptId, name))).toBe("forbidden");
+  });
+
+  it("finish and status give the same results as before", async () => {
+    const st = await eng.start("p", DAY, 1, "ranked");
+    const names = parseAnswerBlock(seedFor(DAY, 1).answers, "x").slice(0, 3).map((a) => a.canonical);
+    for (const n of names) await eng.submit("p", st.attemptId, n);
+    await eng.submit("p", st.attemptId, "qqq nope");
+    const fin = await eng.finish("p", st.attemptId);
+    const again = await eng.finish("p", st.attemptId);
+    const status = await new DigEngine(store, { now: () => clock }).status("p", DAY);
+    for (const r of [again, status.ranked[0]]) {
+      expect(r.points).toBe(fin.points);
+      expect(r.accepted.map((a) => a.name)).toEqual(fin.accepted.map((a) => a.name));
+      expect(r.rejected).toEqual(["qqq nope"]);
+    }
   });
 });

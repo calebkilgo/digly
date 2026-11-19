@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { StoreConflict, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store, type Suggestion, type SuggestionStatus, type AdminStats, type AdminLogEntry, type AnswerEdit, type LiveAttempt } from "@/game/engine/store";
+import { StoreConflict, submitSteps, type Guess, type GuessOutcome, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store, type Suggestion, type SuggestionStatus, type AdminStats, type AdminLogEntry, type AnswerEdit, type LiveAttempt } from "@/game/engine/store";
 import type { AttemptMode, LevelNo } from "@/game/service/types";
 
 interface DbAttempt {
@@ -42,6 +42,36 @@ function fromDb(r: DbAttempt): AttemptRow {
   };
 }
 
+// Small per-instance cache. Vercel keeps an instance warm between requests, so
+// a player's next call usually skips the trip. Writes made here clear it, and
+// other instances catch up within the TTL.
+class Ttl<V> {
+  private m = new Map<string, { v: V; until: number }>();
+  constructor(private ms: number, private max = 20_000) {}
+  get(k: string) {
+    const hit = this.m.get(k);
+    if (!hit) return undefined;
+    if (hit.until < Date.now()) {
+      this.m.delete(k);
+      return undefined;
+    }
+    return hit.v;
+  }
+  set(k: string, v: V) {
+    if (this.m.size >= this.max) this.m.clear();
+    this.m.set(k, { v, until: Date.now() + this.ms });
+  }
+  delete(k: string) {
+    this.m.delete(k);
+  }
+  deleteWhere(f: (v: V) => boolean) {
+    for (const [k, e] of this.m) if (f(e.v)) this.m.delete(k);
+  }
+}
+
+// PostgREST and Postgres codes for "no such function"
+const missingFn = (e: { code?: string } | null) => e?.code === "PGRST202" || e?.code === "42883";
+
 function check<T>(res: { data: T; error: { code?: string; message: string } | null }): T {
   if (res.error) throw new Error(`supabase: ${res.error.message}`);
   return res.data;
@@ -49,18 +79,31 @@ function check<T>(res: { data: T; error: { code?: string; message: string } | nu
 
 export class SupabaseStore implements Store {
   private db: SupabaseClient;
+  private sessions = new Ttl<string>(60_000);
+  private players = new Ttl<PlayerInfo | null>(15_000);
+  private known = new Set<string>(); // player rows we know exist
+  private oneTripSubmit = true; // off if migration 0011 hasn't been run yet
 
   constructor(url: string, serviceKey: string) {
     this.db = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
   }
 
   async ensurePlayer(id: string) {
+    if (this.known.has(id)) return;
     check(await this.db.from("players").upsert({ id }, { onConflict: "id", ignoreDuplicates: true }));
+    if (this.known.size > 50_000) this.known.clear();
+    this.known.add(id);
+    // a cached "no such player" is wrong now
+    if (this.players.get(id) === null) this.players.delete(id);
   }
 
-  async getPlayer(id: string): Promise<PlayerInfo | null> {
+  async getPlayer(id: string, opts?: { fresh?: boolean }): Promise<PlayerInfo | null> {
+    if (!opts?.fresh) {
+      const hit = this.players.get(id);
+      if (hit !== undefined) return hit && { ...hit };
+    }
     const data = check(await this.db.from("players").select("id,username,is_admin,email,unlimited").eq("id", id).maybeSingle());
-    return data
+    const p = data
       ? {
           id: data.id as string,
           username: (data.username as string | null) ?? null,
@@ -69,6 +112,9 @@ export class SupabaseStore implements Store {
           unlimited: data.unlimited === true,
         }
       : null;
+    this.players.set(id, p);
+    if (p) this.known.add(id);
+    return p && { ...p };
   }
 
   async claimAccount(id: string, a: { username: string; passwordHash: string; email: string | null }) {
@@ -81,6 +127,7 @@ export class SupabaseStore implements Store {
     if (res.error?.code === "23505") throw new StoreConflict();
     const rows = check(res);
     if (!rows || rows.length === 0) throw new StoreConflict();
+    this.players.delete(id);
   }
 
   async findAccount(username: string) {
@@ -96,17 +143,23 @@ export class SupabaseStore implements Store {
   }
 
   async sessionPlayer(tokenHash: string, now: number) {
+    const hit = this.sessions.get(tokenHash);
+    if (hit) return hit;
     const data = check(
       await this.db.from("sessions").select("player_id").eq("token_hash", tokenHash).gt("expires_at", new Date(now).toISOString()).maybeSingle(),
     );
-    return data ? (data.player_id as string) : null;
+    if (!data) return null;
+    this.sessions.set(tokenHash, data.player_id as string);
+    return data.player_id as string;
   }
 
   async deleteSession(tokenHash: string) {
+    this.sessions.delete(tokenHash);
     check(await this.db.from("sessions").delete().eq("token_hash", tokenHash));
   }
 
   async deleteSessionsFor(playerId: string) {
+    this.sessions.deleteWhere((pid) => pid === playerId);
     check(await this.db.from("sessions").delete().eq("player_id", playerId));
   }
 
@@ -130,6 +183,7 @@ export class SupabaseStore implements Store {
       ),
     );
     check(await this.db.from("players").update({ unlimited: true, unlimited_at: new Date().toISOString() }).eq("id", p.playerId));
+    this.players.delete(p.playerId);
   }
 
   async revokeByPaymentIntent(pi: string) {
@@ -140,12 +194,16 @@ export class SupabaseStore implements Store {
     if (!pid) return null;
     const paid = check(await this.db.from("purchases").select("id").eq("player_id", pid).eq("status", "paid").limit(1)) as unknown[];
     if (!paid.length) check(await this.db.from("players").update({ unlimited: false }).eq("id", pid));
+    this.players.delete(pid);
     return pid;
   }
 
   async deletePlayer(playerId: string) {
     // attempts, answers, rejects, sessions and reset links go with it (on delete cascade)
     check(await this.db.from("players").delete().eq("id", playerId));
+    this.players.delete(playerId);
+    this.known.delete(playerId);
+    this.sessions.deleteWhere((pid) => pid === playerId);
   }
 
   async findByLogin(login: string) {
@@ -158,6 +216,7 @@ export class SupabaseStore implements Store {
 
   async setEmail(playerId: string, email: string | null) {
     check(await this.db.from("players").update({ email }).eq("id", playerId));
+    this.players.delete(playerId);
   }
 
   async setPassword(playerId: string, passwordHash: string) {
@@ -230,9 +289,9 @@ export class SupabaseStore implements Store {
         .from("prompt_suggestions")
         .update({ status, updated_by: by, updated_at: new Date(at).toISOString() })
         .eq("id", id)
-        .select("id"),
+        .select("text"),
     );
-    return (data as unknown[]).length > 0;
+    return (data as { text: string }[])[0]?.text ?? null;
   }
 
   async adminStats(day: number): Promise<AdminStats> {
@@ -262,6 +321,7 @@ export class SupabaseStore implements Store {
     const hit = check(await this.db.from("players").select("id").ilike("username", pattern).limit(1).maybeSingle());
     if (!hit) return null;
     check(await this.db.from("players").update({ is_admin: admin }).eq("id", hit.id));
+    this.players.delete(hit.id as string);
     return hit.id as string;
   }
 
@@ -382,6 +442,44 @@ export class SupabaseStore implements Store {
   async listRejects(attemptId: string) {
     const data = check(await this.db.from("attempt_rejects").select("text").eq("attempt_id", attemptId).order("seq").limit(200));
     return (data as { text: string }[]).map((r) => r.text);
+  }
+
+  async listAnswersMany(ids: string[]) {
+    const out = new Map<string, string[]>(ids.map((id) => [id, []]));
+    if (!ids.length) return out;
+    const data = check(await this.db.from("attempt_answers").select("attempt_id,answer_id").in("attempt_id", ids).order("seq"));
+    for (const r of data as { attempt_id: string; answer_id: string }[]) out.get(r.attempt_id)?.push(r.answer_id);
+    return out;
+  }
+
+  async listRejectsMany(ids: string[]) {
+    const out = new Map<string, string[]>(ids.map((id) => [id, []]));
+    if (!ids.length) return out;
+    const data = check(await this.db.from("attempt_rejects").select("attempt_id,text").in("attempt_id", ids).order("seq").limit(200 * ids.length));
+    for (const r of data as { attempt_id: string; text: string }[]) {
+      const list = out.get(r.attempt_id);
+      if (list && list.length < 200) list.push(r.text);
+    }
+    return out;
+  }
+
+  async submitGuess(g: Guess): Promise<GuessOutcome> {
+    if (this.oneTripSubmit) {
+      const res = await this.db.rpc("digly_submit", {
+        p_id: g.attemptId,
+        p_player: g.playerId,
+        p_now: g.now,
+        p_grace: g.graceMs,
+        p_max: g.max,
+        p_answer: g.answerId,
+        p_text: g.text,
+      });
+      if (!res.error) return res.data as GuessOutcome;
+      if (!missingFn(res.error)) check(res);
+      this.oneTripSubmit = false;
+      console.warn("digly: digly_submit is missing, run supabase/migrations/0011_speed.sql. Using the slower path for now.");
+    }
+    return submitSteps(this, g);
   }
 
   async finishAttempt(id: string, f: { finishedAt: number; score: number; points: number; uniqueCount: number }) {
