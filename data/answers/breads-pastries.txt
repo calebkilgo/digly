@@ -1,100 +1,668 @@
 # breads and pastries (merged with the GitHub list)
-Bagel
-Baguette
-Croissant
-Donut | doughnut
-Muffin
-Sourdough
-Brioche
-Ciabatta
-Focaccia
-Pita
-Naan
-Tortilla
-Rye | rye bread
-Pumpernickel
-Challah
-Pretzel
-English Muffin
-Biscuit
-Scone
-Danish
-Cinnamon Roll | cinnamon bun
-Eclair
-Cream Puff | profiterole
-Strudel
-Baklava
-Cannoli
-Churro
-Beignet
-Turnover
-Pain au Chocolat | chocolate croissant
-Puff Pastry
-Pie
-Tart
-Quiche
-Cornbread
-Banana Bread
-Soda Bread
-Flatbread
-Matzo | matzah
-Roti
-Chapati
-Paratha
-Lavash
-Injera
-Arepa
-Bao | steamed bun
-Brioche Bun
-Hamburger Bun
-Hot Dog Bun
-Dinner Roll
-Kaiser Roll
-Sandwich Bread | white bread
-Whole Wheat | wheat bread
-Multigrain
-Garlic Bread
-Monkey Bread
-Zucchini Bread
-Babka
-Panettone
-Stollen
-Kouign-amann | kouign amann
-Palmier
-Macaron
-Madeleine
-Cronut
-Kolache
-Empanada
-Samosa
-Pierogi
-Bear Claw
-Fritter | apple fritter
-Crumpet
-Popover
-Hushpuppy | hush puppy
-Johnnycake
-Bialy
-Grissini | breadstick
-Crispbread
-Pan Dulce | concha
-Bolillo
-Pandesal
-Melonpan
-Mantou
-Simit
-Khachapuri
-Lefse
-Hardtack
-Brown Bread
-Potato Bread
-Milk Bread
-Sweet Roll
-Galette
-Kringle
-Rugelach
-Hamantaschen
-Sfogliatella
-Mille-feuille | napoleon
-Choux
-Phyllo | filo
+Toast | toasted bread, bread toast = 1
+Bagel = 1.15
+Baguette = 1.29
+Croissant = 1.44
+Donut | doughnut = 1.59
+Muffin = 1.74
+Sourdough = 1.88
+Brioche = 2.03
+Ciabatta = 2.18
+Pita = 2.33
+Focaccia = 2.47
+Naan = 2.62
+Rye | rye bread = 2.77
+Tortilla = 2.92
+Pumpernickel = 3.06
+Pretzel = 3.21
+English Muffin = 3.36
+Challah = 3.51
+Biscuit = 3.65
+Danish | danish pastry, cheese danish = 3.8
+Scone = 3.95
+Bread roll = 4.09
+French Bread = 4.24
+Apple pie = 4.39
+Italian Bread = 4.54
+Eclair = 4.68
+Bun = 4.83
+Pumpkin pie = 4.98
+Sandwich Bread | white bread = 5.13
+Cinnamon Roll | cinnamon bun = 5.27
+Crescent Roll | crescent rolls = 5.42
+Hot cross bun = 5.57
+Cherry pie = 5.72
+Garlic Knot | garlic knots = 5.86
+Sourdough bread = 6.01
+Strudel = 6.16
+Glazed Donut | glazed doughnut = 6.31
+Baklava = 6.45
+Sliced bread | pre sliced bread = 6.6
+Cannoli = 6.75
+Jelly doughnut | jam doughnut, jelly donut, jam donut = 6.89
+Turnover = 7.04
+Churro = 7.19
+Pie = 7.34
+Beignet = 7.48
+Puff Pastry = 7.63
+Pain au Chocolat | chocolate croissant = 7.78
+Grissini | breadstick, breadsticks = 7.93
+Tart = 8.07
+Banana Bread = 8.22
+Quiche = 8.37
+Soda Bread = 8.52
+Cornbread = 8.66
+Flatbread = 8.81
+Matzo | matzah = 8.96
+Roti = 9.11
+Chapati = 9.25
+Paratha = 9.4
+Lavash = 9.55
+Bao | steamed bun = 9.69
+Injera = 9.84
+Arepa = 9.99
+Dinner Roll = 10.14
+Hamburger Bun = 10.28
+Hot Dog Bun = 10.43
+Brioche Bun = 10.58
+King Cake = 10.73
+Angel wings = 10.87
+Bread Bowl = 11.02
+Kaiser Roll = 11.17
+Meat Pie = 11.32
+Potato Roll | potato rolls = 11.46
+Pot Pie | chicken pot pie = 11.61
+Vol-au-vent = 11.76
+Elephant Ear | elephant ears = 11.91
+Texas Toast = 12.05
+Key lime pie = 12.2
+Maple Bar = 12.35
+Egg tart | egg custard tart = 12.49
+Pork Pie = 12.64
+Berliner | berliner pfannkuchen = 12.79
+Pasty | pastie, pastey, pasteija = 12.94
+Hawaiian Roll | kings hawaiian = 13.08
+Pastel de nata | pastel de belem, pasteis de nata, pasteis de belem, portuguese egg tart = 13.23
+Apple strudel = 13.38
+Unleavened bread = 13.53
+Cream Puff | profiterole, profiteroles = 13.67
+Tarte Tatin = 13.82
+Blueberry pie = 13.97
+Samsa | somsa = 14.12
+Whole Wheat | wheat bread, whole wheat bread, wholemeal = 14.26
+Strawberry pie | strawberry tart = 14.41
+Funnel Cake = 14.56
+Pop-Tart | pop tarts = 14.71
+Pecan pie = 14.85
+Semla | laskiaispulla = 15
+Kulich | kulichi = 15.15
+Lemon tart | lemon pie = 15.29
+Pączki = 15.44
+Sausage roll | sausage rolls = 15.59
+Cream pie = 15.74
+Mud pie | mississippi mud pie = 15.88
+Pumpkin bread = 16.03
+Custard tart | flans patissier = 16.18
+Rhubarb pie = 16.33
+Lemon meringue pie | lemon meringue tart = 16.47
+Frybread = 16.62
+Quiche Lorraine = 16.77
+Raisin bread | cinnamon raisin bread = 16.92
+Jamaican patty = 17.06
+Buchteln = 17.21
+Lahoh = 17.36
+Paska | pasca = 17.51
+Puri | poori = 17.65
+Runeberg's torte = 17.8
+Bap | baps = 17.95
+Cornish Pasty = 18.09
+Rusk | rusks = 18.24
+Pan Dulce | concha, conchas = 18.39
+Zeppole | zeppola = 18.54
+Char Siu Bao | pork bun, cha siu bao = 18.68
+Fritter | apple fritter = 18.83
+Calzone = 18.98
+Garlic Bread = 19.13
+Tartlet = 19.27
+Scallion Pancake | green onion pancake, cong you bing = 19.42
+Wheat tortilla | flour tortilla = 19.57
+Cruller = 19.72
+Borek | burek, boreg = 19.86
+Mooncake = 20.01
+Olive bread | olivenbrot = 20.16
+Monkey Bread = 20.31
+Knish = 20.45
+Teacake = 20.6
+Donut hole | donut hole treats, donut hole treat, doughnut hole = 20.75
+Spanakopita = 20.89
+Boston cream doughnut | boston cream, boston cream donut = 21.04
+Oatcake | oatcakes = 21.19
+Barley bread = 21.34
+Pao de Queijo | cheese bread, brazilian cheese bread = 21.48
+Chocolate tart = 21.63
+Pirozhki | pirozhok, piroshki = 21.78
+Roscón de reyes | rosca de reyes = 21.93
+Onion roll = 22.07
+Honey bun = 22.22
+Sticky bun = 22.37
+French roll | short baguette, marseille bread, french bread roll = 22.52
+Multigrain = 22.66
+Fruit bun = 22.81
+Everything bagel = 22.96
+Long John = 23.11
+Milk roll | blackpool roll = 23.25
+New York-style bagel | new york bagel = 23.4
+Irish soda bread = 23.55
+Zucchini Bread = 23.69
+Croissant aux Amandes | almond croissant = 23.84
+Sopapilla | sopaipilla = 23.99
+Babka = 24.14
+Panettone = 24.28
+Stollen = 24.43
+Madeleine = 24.58
+Macaron = 24.73
+Palmier = 24.87
+Cronut = 25.02
+Bear Claw = 25.17
+Empanada = 25.32
+Kolache = 25.46
+Samosa = 25.61
+Pierogi = 25.76
+Crumpet = 25.91
+Date Bread = 26.05
+Boston Brown Bread = 26.2
+Tiger Bread | dutch crunch, giraffe bread = 26.35
+Spoon Bread = 26.49
+Pizza Crust = 26.64
+Vienna bread = 26.79
+Rice bread = 26.94
+Popover = 27.08
+Chimney Cake | kurtoskalacs = 27.23
+Curry bread = 27.38
+Pizza Bianca = 27.53
+Graham bread = 27.67
+Fougasse = 27.82
+Gata = 27.97
+Puff Puff = 28.12
+Pupusa = 28.26
+Bannock = 28.41
+Pineapple bun | crispy bun = 28.56
+Tandoor bread | tanur bread, tandur bread = 28.71
+Farinata | socca = 28.85
+Cob | cob loaf = 29
+Financier = 29.15
+Barbari bread = 29.29
+Pain aux Raisins = 29.44
+Anpan = 29.59
+Kalach | kalacs = 29.74
+Kifli | kiflice, kifle, cornuri = 29.88
+Sel roti | shinghal = 30.03
+Pan de muerto = 30.18
+Poğaça | pogacice, pogacica = 30.33
+Bara brith | speckled bread = 30.47
+Eccles Cake = 30.62
+Aloo paratha | alu paratha = 30.77
+Makki ki roti | makki ki rotti = 30.92
+Banitsa | banitza, banica = 31.06
+Manakish | mankousheh, manaqish, manakeesh = 31.21
+Piadina = 31.36
+Damper = 31.51
+Jin deui | sesame seed ball, benne ball, zin deoi = 31.65
+Linzertorte | linz tart, linz cake = 31.8
+Pan de Agua = 31.95
+Zopf = 32.09
+Cozonac = 32.24
+Prosphora | prosphoron, panagia = 32.39
+Paris-Brest = 32.54
+Galaktoboureko = 32.68
+Tandyr nan | tonur nan, tohax, tandir non = 32.83
+Vatrushka = 32.98
+Religieuse = 33.13
+Chelsea bun = 33.27
+Pain de Mie = 33.42
+Bhatoora | bhatura = 33.57
+Matnakash = 33.72
+Palianytsia | palyanytsya, palyanitsa, palianitsa = 33.86
+Sfogliatelle = 34.01
+Sufganiyah | sufganiyot = 34.16
+Crostata = 34.31
+Tahini roll | tahinli corek, tahini bread roll = 34.45
+Guava Pastry | pastelito de guayaba = 34.6
+Canelé = 34.75
+Ftira | il ftira = 34.89
+Kattama | qatlama, katmer, katlama = 35.04
+Korovai | kravai, karavai = 35.19
+Msemmen = 35.34
+Hushpuppy | hush puppy = 35.48
+Bougatsa = 35.63
+Bublik = 35.78
+Kolach = 35.93
+Makroudh = 36.07
+Bakewell Tart = 36.22
+Sepik = 36.37
+Plăcintă = 36.52
+Sangak = 36.66
+Shoti = 36.81
+Dosa = 36.96
+Cornetto = 37.11
+Frittelle | fritule, fritole, frittole = 37.25
+Qistibi = 37.4
+Viennoiserie = 37.55
+Vlaai | vla, limburgse vlaai, flat pies = 37.69
+Broa = 37.84
+Blaa = 37.99
+Pain au Lait = 38.14
+Bazlama = 38.28
+Papanași = 38.43
+Pastizz | pastizzi = 38.58
+Sata andagi = 38.73
+Tiropita = 38.87
+Tunnbröd = 39.02
+Bakpia | hopia = 39.17
+Kisra | kissra = 39.32
+Sachima | shaqima, saqima = 39.46
+Taftan = 39.61
+Çörek = 39.76
+Bombolone = 39.91
+Briouat = 40.05
+Kerststol | krentenstol = 40.2
+Klenät | klejner, kleina, fattigmann = 40.35
+Malawach | malawah = 40.49
+Pane carasau = 40.64
+Pinca = 40.79
+Sheermal = 40.94
+Yufka bread | yufka = 41.08
+Pain de campagne | rustic loaf, rustic bread, pains de campagne = 41.23
+Cream roll | cream bun = 41.38
+Bolani | poraki, perakai = 41.53
+Borodinsky bread = 41.67
+Bungeoppang = 41.82
+Himbasha = 41.97
+Malasada | malasadas = 42.12
+Markook = 42.26
+Napoleonka | kremowka = 42.41
+Obwarzanek krakowski = 42.56
+Rumali Roti = 42.71
+Ox-tongue pastry | horse ear pastry, chinese doughnut, you tiao, youtiao = 42.85
+Bialy = 43
+Bambalouni = 43.15
+Bazeen | bazin = 43.29
+Boyoz | turkish sephardic buns = 43.44
+Flatbrød = 43.59
+Folar = 43.74
+Hefekranz = 43.88
+Jachnun = 44.03
+Mchadi = 44.18
+Batard = 44.33
+Gordita = 44.47
+Barm Cake | barm = 44.62
+Kulcha = 44.77
+Croquembouche = 44.92
+Appam = 45.06
+Colomba di Pasqua | colomba = 45.21
+Montreal-style bagel = 45.36
+Saffron bun | tea treat bun, saffron cake, revel bun = 45.51
+Chausson aux Pommes | apple turnover = 45.65
+Parker House roll = 45.8
+Pão francês = 45.95
+Crispbread = 46.09
+Johnnycake = 46.24
+Vanilla slice | custard square = 46.39
+Barmbrack = 46.54
+Bunuelo | bunuelos = 46.68
+Ensaymada = 46.83
+Gougere | gougeres = 46.98
+Gozleme = 47.13
+Hoecake = 47.27
+Khubz | khobz = 47.42
+Koulouri = 47.57
+Kugelhopf | gugelhupf, kouglof = 47.72
+Lahmacun = 47.86
+Langos = 48.01
+Medialuna | medialunas = 48.16
+Oliebol | oliebollen = 48.31
+Pandoro = 48.45
+Pastelito | pastelitos = 48.6
+Pikelet = 48.75
+Shaobing = 48.89
+Taralli = 49.04
+Telera = 49.19
+Tsoureki = 49.34
+Bolillo | bolillo roll = 49.48
+Pandesal = 49.63
+Brown Bread | irish brown bread = 49.78
+Mantou = 49.93
+Simit = 50.07
+Potato Bread = 50.22
+Milk Bread | shokupan, hokkaido milk bread = 50.37
+Melonpan = 50.52
+Khachapuri = 50.66
+Sweet Roll = 50.81
+Lefse = 50.96
+Hardtack = 51.11
+Chin Chin = 51.25
+Batch Loaf = 51.4
+Beer bread = 51.55
+Pretzel Bun | pretzel roll, laugenbrezel, laugenbrotchen = 51.69
+Galette = 51.84
+Gosh-e fil = 51.99
+Sugar pie = 52.14
+Pan loaf = 52.28
+Nun's puffs | nuns farts = 52.43
+Cuban bread = 52.58
+Bolo Rei = 52.73
+Chorley Cake = 52.87
+Taboon bread | laffa = 53.02
+Maltese bread = 53.17
+Poppy seed roll = 53.32
+Cocktail bun = 53.46
+Stromboli | garbage bread = 53.61
+Banana roll = 53.76
+Pineapple tart = 53.91
+Saint-Honore | gateau saint honore = 54.05
+Saj bread = 54.2
+St. Martin's Croissants | saint martins day croissants, saint martin croissants = 54.35
+Kringle = 54.49
+Lotus seed bun = 54.64
+Bath bun = 54.79
+Treacle tart = 54.94
+Artos = 55.08
+Cream horn = 55.23
+Mandarin roll | huajuan, hua juan = 55.38
+Limpa bread = 55.53
+Carrot bread = 55.67
+Bolo do caco = 55.82
+Lardy Cake = 55.97
+Coco bread = 56.12
+Talo = 56.26
+Cottage loaf = 56.41
+Butter tart = 56.56
+Buko pie | coconut pie = 56.71
+Nut roll = 56.85
+Boule | sourdough boule = 57
+Açma | acma food = 57.15
+Hong Kong cream bun | hong kong sweet bun = 57.29
+Black sesame roll = 57.44
+Currant bun | raisin bun, krentebol = 57.59
+Luchi = 57.74
+Bhakri = 57.88
+Casatiello = 58.03
+Cougnou = 58.18
+Harcha = 58.33
+Marraqueta = 58.47
+Pain d'épices | pain depice = 58.62
+Pastafrola = 58.77
+Pastiera = 58.92
+Pionono = 59.06
+Qottab = 59.21
+Rijstevlaai = 59.36
+Siopao | salapao = 59.51
+Norman Tart = 59.65
+Baati = 59.8
+Torpedo dessert = 59.95
+Sally Lunn bun | solet lune, soleilune, soel leme = 60.09
+Custard pie = 60.24
+Leipziger Lerche = 60.39
+Pain brié = 60.54
+Rosca | roscas = 60.68
+Tonis puri = 60.83
+Maids of honour tart | maids of honour cake, maid of honour cake = 60.98
+Karpatka = 61.13
+Shorgoghal = 61.27
+Zalabiyeh = 61.42
+Česnica = 61.57
+Pide | pide dish = 61.72
+Ramadan pide | ramazan pidesi = 61.86
+Corone | korone, coronet, cornet = 62.01
+Basler Brot | basler laibli = 62.16
+Pulla = 62.31
+Peanut butter bun = 62.45
+Conversation tart = 62.6
+Gnocco fritto | crescentina = 62.75
+Gâteau nantais = 62.89
+Hujiao bing | banh tieu = 63.04
+Jésuite = 63.19
+Kitcha = 63.34
+Michetta = 63.48
+Pasticciotto = 63.63
+Pestiños = 63.78
+Pistolet | broodje, piccolo = 63.93
+Potbrood = 64.07
+Ruisreikäleipä = 64.22
+Rupjmaize = 64.37
+Rúgbrauð = 64.52
+Shengjian mantou | shengjianbao, pan fried cabbage and pork bun = 64.66
+Smultring = 64.81
+Tarte Tropézienne = 64.96
+Teiglach = 65.11
+Xuixo = 65.25
+Zeeuwse bolus = 65.4
+Walnut pastry | chinese walnut cookie = 65.55
+Malt loaf = 65.69
+Salt-rising bread = 65.84
+Ube Pandesal | ube bread = 65.99
+Pan de yuca = 66.14
+Egg yolk pastry | danhuangsu, nng jin soo = 66.28
+Lagana = 66.43
+Birnbrot = 66.58
+Fartura = 66.73
+Fazuelos | hojuelas, hiuelas, fijuelas = 66.87
+Knieküchle = 67.02
+Rugbrød = 67.17
+Skolebrød = 67.32
+Totopo = 67.46
+Chickpea bread | nohut ekmegi = 67.61
+Pan de coco = 67.76
+Shoofly pie | montgomery pie = 67.91
+Parva = 68.05
+New York roll | cromboloni = 68.2
+Bammy | bami = 68.35
+Rugelach = 68.49
+Almojábana = 68.64
+Faluche | pain du nord, north bread = 68.79
+Flamiche = 68.94
+Matlou | matlouh, matloua el kousha, khobz el tajine = 69.08
+Nazook | nazouk, nazuk = 69.23
+Pandebono = 69.38
+Samoon = 69.53
+An-doughnut | an donatsu = 69.67
+Gypsy tart = 69.82
+Pan de cañada | canada bread = 69.97
+Brown Bobby = 70.12
+Torta della nonna | grandmas cake = 70.26
+Kitchener bun = 70.41
+Hard dough bread | hardo bread = 70.56
+Potato scone = 70.71
+Bocconotto | boconotto = 70.85
+Bremer Klaben = 71
+Cazabe | cassava bread, casabe de yuca, casabe = 71.15
+Covrigi = 71.29
+Dombolo = 71.44
+Obwarzanek | precel = 71.59
+Pan candeal = 71.74
+Soboro-ppang | soboro pastry, soboro bun, soboro bread = 71.88
+Tapalapa = 72.03
+Mealie bread = 72.18
+Piki = 72.33
+Boston bun = 72.47
+Adobe bread | oven bread = 72.62
+Flies graveyard = 72.77
+Guagua de pan = 72.92
+Tandoori roti = 73.06
+Ṣa = 73.21
+Roti bolen = 73.36
+Badambura = 73.51
+Balep korkun = 73.65
+Cruffin = 73.8
+Flaons = 73.95
+Flatkaka = 74.09
+Gogoşi = 74.24
+Hallulla = 74.39
+Heißwecke = 74.54
+Ka'ak al-Quds | kaek al quds, jerusalem bagel = 74.68
+Kandil simidi = 74.83
+Krachel | krichlat = 74.98
+Mischbrot = 75.13
+Nonnevot = 75.27
+Pane ticinese = 75.42
+Pastel de Tentúgal | pasteis de tentugal = 75.57
+Piaya = 75.72
+Punsch-roll = 75.86
+Roti gambang = 76.01
+Sylheti Handesh | handesh, guror handesh, guror fita = 76.16
+Vastedda = 76.31
+Eish fino = 76.45
+Javanese doughnut | donat jawa = 76.6
+Grands-pères = 76.75
+Scottish Morning Roll = 76.89
+ِAbbas bread = 77.04
+Veneziana = 77.19
+Heong Peng = 77.34
+Puits d'amour = 77.48
+Bánh pía | banh bao chi = 77.63
+Pâté Lorrain = 77.78
+Pâté chaud | pa te so, banh pate so = 77.93
+Aish merahrah = 78.07
+Biskotso | biscocho = 78.22
+Borlengo = 78.37
+Broyé du Poitou | broye poitevin = 78.52
+Dalieba | lieba = 78.66
+Farl = 78.81
+Guokui = 78.96
+Kkulppang | honey bread = 79.11
+Krofne = 79.25
+Pastel de feijão | queijadas de feijao = 79.4
+Sardenaira | pizzalandrea, pizza allandrea, pissalandrea = 79.55
+Schnecken | schnecke = 79.69
+Schuxen = 79.84
+Spanisch Brötli = 79.99
+Vakfıkebir ekmeği = 80.14
+Wähe = 80.28
+Buttery | rowie, aberdeen rowie, aberdeen buttery = 80.43
+Peg bread = 80.58
+Agege | agege bread = 80.73
+Belly button pastry | too tsai piann = 80.87
+Bolus | baulus = 81.02
+Veka = 81.17
+Belgian bun = 81.32
+Houska = 81.46
+Samarkand non | samarkand bread = 81.61
+Ghandi Bread = 81.76
+Rum roll = 81.91
+Haitian patty = 82.05
+New England-style hot dog bun = 82.2
+Zwieback | tweebak, russian mennonite zwieback = 82.35
+Rhubarb tart = 82.49
+Ajdov Kruh = 82.64
+Al-Maltout | maltoot bread = 82.79
+Anadama bread = 82.94
+Bakpau = 83.08
+Binangkal = 83.23
+Burebrot = 83.38
+Chapssal doughnut | glutinous rice doughnut, chapssal doneot = 83.53
+Chhilka Roti | chilka roti, chhilka pitha = 83.67
+Cocol = 83.82
+Dalpuri | dal poori = 83.97
+Gobhi paratha | gobi paratha = 84.12
+Güirila = 84.26
+Jolada Rotti | jowar roti, jonna rotte = 84.41
+Kolompeh = 84.56
+Marañuela = 84.71
+Paximathia | paximadhia, paximadia = 84.85
+Prądnik bread = 85
+Rewena bread = 85.15
+Sfinci di San Giuseppe | saint joseph doughnut, sicilian doughnut = 85.29
+Shakoy = 85.44
+Tortilla de rescoldo = 85.59
+Pinza bolognese | penza bolognese = 85.74
+Pumpkin scone = 85.88
+Pan bati = 86.03
+Baghrir = 86.18
+Brotchen = 86.33
+Chipa = 86.47
+Hamantash = 86.62
+Kanelbulle = 86.77
+Knackebrod = 86.92
+Mandazi = 87.06
+Ontbijtkoek = 87.21
+Rohlik = 87.36
+Rugbrod = 87.51
+Sfenj = 87.65
+Stottie Cake | stottie = 87.8
+Struffoli = 87.95
+Tompouce | tompoes = 88.09
+Vanocka = 88.24
+Colston bun = 88.39
+Griddle scone = 88.54
+Mille-feuille | napoleon = 88.68
+Scali bread = 88.83
+Broa de Avintes = 88.98
+Budapestbakelse | budapestrulle, budapest roll, budapest pastry = 89.13
+Butterkaka = 89.27
+Crompouce | tompouce croissant = 89.42
+Inipit = 89.57
+Kneippbrød = 89.72
+Malooga = 89.86
+Mutschel = 90.01
+Oranais = 90.16
+Panbrioche = 90.31
+Panigaccio | panigacci, panigazzo, panigazzi = 90.45
+Pashti = 90.6
+Pilipit = 90.75
+Quesito = 90.89
+Tarte à l'oignon | onion tart = 91.04
+Trenza = 91.19
+Upplandskubb = 91.34
+Vrtanek | perec = 91.48
+Wagafi bread = 91.63
+Hoggan | hogen = 91.78
+Choux = 91.93
+Alivenci = 92.07
+Bakpia pathok = 92.22
+Cachitos = 92.37
+Cochinito de Piloncillo = 92.52
+Couque suisse = 92.66
+Cuccalar = 92.81
+Dhebra = 92.96
+Faraoa 'ipo = 93.11
+Graffe napoletane | zeppole di patate = 93.25
+Hönökaka = 93.4
+Kaak = 93.55
+Katlam = 93.69
+Kolot = 93.84
+Paltbröd = 93.99
+Panfocaccia = 94.14
+Penia = 94.28
+Pihta | pihtha = 94.43
+Pyshka = 94.58
+Ruisleipä = 94.73
+Skjenning = 94.87
+Taillé aux greubons = 95.02
+Tortita negra = 95.17
+Banket = 95.32
+Gundain = 95.46
+Komaj sehen = 95.61
+Kumukunsi = 95.76
+Marquesote = 95.91
+Mjukkaka = 96.05
+Ngome = 96.2
+Pletzel | onion flat, onion board, pletzl = 96.35
+Poee | poie = 96.49
+Regañao = 96.64
+Sanchuisanda = 96.79
+Tarte à la Bouillie = 96.94
+ChaSan = 97.08
+Conejito = 97.23
+Coventry Godcakes = 97.38
+Filone = 97.53
+Khobz el-dâr = 97.67
+Phapar ko Roti = 97.82
+Roscón = 97.97
+Scovardă = 98.12
+Sloosh = 98.26
+Spuccadella = 98.41
+Yurla = 98.56
+Hamantaschen = 98.71
+Phyllo | filo = 98.85
+Sfogliatella = 99
+Kouign-amann | kouign amann = 99.99

@@ -1,0 +1,101 @@
+# title: Weather events
+# level: 1
+# domain: science
+# noun: weather
+# rule: Kinds of weather, storms and sky events.
+Rain | rainfall, raining
+Snow | snowfall, snowing
+Thunderstorm | storm, thunder storm
+Tornado | twister
+Hurricane
+Hail | hailstorm
+Lightning
+Thunder
+Fog
+Blizzard
+Sleet
+Wind
+Drizzle
+Flood
+Drought
+Heat Wave | heatwave
+Frost
+Rainbow
+Ice Storm
+Monsoon
+Cyclone
+Typhoon
+Tropical Storm
+Freezing Rain
+Mist
+Dust Storm
+Sandstorm
+Smog
+Haze
+Dew
+Snowstorm
+Flash Flood
+Downpour
+Gale
+Squall
+Waterspout
+Dust Devil
+Nor'easter | noreaster
+Polar Vortex
+El Nino
+La Nina
+Cold Snap | cold wave, cold front
+Warm Front
+Whiteout
+Black Ice
+Derecho
+Microburst
+Hoarfrost | hoar frost
+Graupel
+Virga
+Sun Shower | sunshower
+Heat Lightning
+Ball Lightning
+Aurora | northern lights, aurora borealis, southern lights
+Halo
+Sundog | sun dog
+Fog Bow
+Lake Effect Snow | lake effect
+Wind Chill
+Overcast | cloudy
+Sunshine | sunny
+Breeze
+Gust
+Freeze
+Thaw
+Rime
+Haboob
+Chinook
+Mistral
+Sirocco
+Foehn | fohn
+Bora
+Santa Ana Winds | santa ana
+Atmospheric River
+Bomb Cyclone
+Supercell
+Wall Cloud
+Funnel Cloud
+Shelf Cloud
+Mammatus Clouds | mammatus
+Hail Shaft
+Firestorm
+Fire Whirl | fire tornado
+Pyrocumulus
+Inversion | temperature inversion
+Indian Summer
+Thundersnow
+Snow Squall
+Flurries | snow flurries
+Ice Pellets
+Diamond Dust
+Freezing Fog
+Heat Burst
+Landspout
+Gustnado
+Steam Devil

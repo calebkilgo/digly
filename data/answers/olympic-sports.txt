@@ -1,124 +1,241 @@
 # olympic-sports: Name | alias = rating (1 common .. 100 rare). Blank = estimated.
-Swimming = 1
-Gymnastics = 2
-Track and Field | athletics = 3
-Basketball = 4
-Soccer | football = 5
-Volleyball = 6
-Tennis = 7
-Boxing = 8
-Wrestling = 9
-Diving = 10
-Ice Hockey | hockey = 11
-Figure Skating = 12
-Skiing = 13
-Snowboarding = 14
-Archery
-Fencing
-Judo
-Taekwondo
-Karate
-Weightlifting
-Cycling
-BMX
-Mountain Biking
-Rowing
-Canoeing
-Kayaking
-Sailing
-Surfing
-Skateboarding
-Sport Climbing | climbing, rock climbing
-Breaking | breakdancing
-Equestrian | horse riding
-Dressage
-Show Jumping
-Eventing
-Shooting
-Golf
-Rugby | rugby sevens
-Baseball
-Softball
-Handball
-Field Hockey
-Water Polo
-Table Tennis | ping pong
-Badminton
-Beach Volleyball
-Triathlon
-Modern Pentathlon | pentathlon
-Marathon
-Decathlon
-Heptathlon
-Pole Vault
-High Jump
-Long Jump
-Triple Jump
-Shot Put
-Discus
-Javelin
-Hammer Throw
-Hurdles
-Sprint | 100 meters, 100m
-Relay
-Steeplechase
-Race Walking | racewalking
-Trampoline
-Rhythmic Gymnastics
-Artistic Swimming | synchronized swimming
-Marathon Swimming
-Alpine Skiing | downhill skiing, slalom, giant slalom
-Cross-Country Skiing | cross country skiing
-Ski Jumping
-Nordic Combined
-Biathlon
-Freestyle Skiing
-Moguls
-Aerials
-Ski Cross
-Halfpipe
-Slopestyle
-Big Air
-Speed Skating
-Short Track
-Curling
-Bobsled | bobsleigh
-Luge
-Skeleton
-Ski Mountaineering
-Tug of War
-Cricket
-Polo
-Lacrosse
-Croquet
-Rackets
-Jeu de Paume
-Pelota
-Motorboating
-Roque
-Squash
-Flag Football
-Kickboxing
-Coastal Rowing
-Keirin
-Omnium
-Madison
-Pommel Horse
-Rings
-Vault
-Parallel Bars
-Balance Beam
-Uneven Bars
-Floor Exercise
-Sabre
-Epee
-Foil
-Greco-Roman Wrestling | greco roman
-Freestyle Wrestling
-Kayak Cross
-Canoe Slalom
-Sprint Canoe
-Trap Shooting | trap
-Skeet
-Air Rifle
-Air Pistol
+Track and Field | athletics, track = 1
+Soccer | football, association football = 1.41
+Swimming = 1.82
+Ice Hockey | hockey = 2.24
+Basketball = 2.65
+Gymnastics = 3.06
+Tennis = 3.47
+Boxing = 3.88
+Volleyball = 4.29
+Wrestling = 4.71
+Diving = 5.12
+Figure Skating | ice skating = 5.53
+Skiing = 5.94
+Fencing = 6.35
+Snowboarding = 6.76
+Archery = 7.18
+Cycling = 7.59
+Judo = 8
+Karate = 8.41
+Taekwondo = 8.82
+Weightlifting = 9.24
+Mountain Biking = 9.65
+Sailing = 10.06
+Rowing = 10.47
+BMX = 10.88
+Breaking | breakdancing, breakdance = 11.29
+Field Hockey = 11.71
+Surfing = 12.12
+Canoeing = 12.53
+Sport Climbing | climbing, rock climbing = 12.94
+Kayaking = 13.35
+Artistic Swimming | synchronized swimming, synchronised swimming = 13.76
+Sprint | 100 meters, 100m, 100 meter dash, 100m dash, 100 metres = 14.18
+Butterfly | butterfly stroke = 14.59
+Show Jumping = 15
+Shooting = 15.41
+Freestyle | freestyle swimming, front crawl = 15.82
+Skateboarding = 16.24
+Golf = 16.65
+Equestrian | horse riding, equestrianism = 17.06
+Baseball = 17.47
+Breaststroke = 17.88
+Backstroke = 18.29
+Bobsled | bobsleigh = 18.71
+Dressage = 19.12
+Softball = 19.53
+Table Tennis | ping pong = 19.94
+Eventing = 20.35
+Water Polo = 20.76
+Handball = 21.18
+Beach Volleyball = 21.59
+Marathon = 22
+Badminton = 22.41
+High Jump = 22.82
+Long Jump = 23.24
+Triathlon = 23.65
+Shot Put = 24.06
+Triple Jump = 24.47
+Pole Vault = 24.88
+Modern Pentathlon | pentathlon = 25.29
+Decathlon = 25.71
+Hammer Throw = 26.12
+Heptathlon = 26.53
+Short Track | short track speed skating = 26.94
+Time Trial = 27.35
+Race Walking | racewalking, racewalk, race walk = 27.76
+Super-G = 28.18
+Ice Dance | ice dancing = 28.59
+Rugby | rugby sevens, sevens = 29
+Rugby Union = 29.41
+Relay = 29.82
+Hurdles = 30.24
+Team Pursuit = 30.65
+Discus | discus throw = 31.06
+Road Cycling | road race, road racing = 31.47
+Javelin | javelin throw = 31.88
+Speed Climbing = 32.29
+Track Cycling = 32.71
+Marathon Swimming | open water swimming = 33.12
+Clean and Jerk = 33.53
+Platform Diving | platform, high diving = 33.94
+Downhill = 34.35
+Pairs Skating | pairs, pair skating = 34.76
+Artistic Gymnastics = 35.18
+200 Metres | 200m, 200 meters = 35.59
+Alpine Skiing | downhill skiing, slalom, giant slalom = 36
+Canoe Sprint = 36.41
+110 Metres Hurdles | 110m hurdles = 36.82
+Individual Medley | im, medley = 37.24
+400 Metres | 400m, 400 meters = 37.65
+Medley Relay = 38.06
+Synchronized Diving | synchronised diving = 38.47
+400 Metres Hurdles | 400m hurdles = 38.88
+Snowboard Cross | boardercross = 39.29
+Trampoline = 39.71
+BMX Racing = 40.12
+Steeplechase = 40.53
+Springboard Diving | springboard = 40.94
+800 Metres | 800m = 41.35
+BMX Freestyle = 41.76
+Rhythmic Gymnastics = 42.18
+Cross-Country Skiing | cross country skiing = 42.59
+Ski Jumping = 43
+3x3 Basketball | 3x3 = 43.41
+Windsurfing | sailboarding, iqfoil = 43.82
+Bouldering = 44.24
+1500 Metres | 1500m, metric mile = 44.65
+Single Sculls = 45.06
+Kitesurfing | kiteboarding, formula kite = 45.47
+5000 Metres | 5000m, 5k = 45.88
+10000 Metres | 10000m, 10k = 46.29
+4x100 Relay | 4x100m relay, 4 x 100 = 46.71
+4x400 Relay | 4x400m relay, 4 x 400 = 47.12
+Nordic Combined = 47.53
+Big Air = 47.94
+Ski Cross = 48.35
+Freestyle Skiing = 48.76
+Biathlon = 49.18
+Speed Skating = 49.59
+Moguls = 50
+Aerials = 50.41
+Halfpipe = 50.82
+Curling = 51.24
+Cricket = 51.65
+Slopestyle = 52.06
+Skeleton = 52.47
+Tug of War = 52.88
+Eight | eights, rowing eight = 53.29
+Points Race = 53.71
+Mass Start = 54.12
+Luge = 54.53
+Polo = 54.94
+Cross Country Running | cross country = 55.35
+Two-Man Bob = 55.76
+Four-Man Bob = 56.18
+Double Trap = 56.59
+Ski Mountaineering = 57
+Laser | ilca = 57.41
+Laser Run = 57.82
+Pursuit = 58.24
+Scratch Race = 58.65
+Lead Climbing = 59.06
+Individual Pursuit = 59.47
+Lacrosse = 59.88
+Team Sprint = 60.29
+Elimination Race = 60.71
+Team Relay = 61.12
+Mixed Relay = 61.53
+Finn | finn dinghy = 61.94
+Rapid Fire Pistol = 62.35
+Flag Football = 62.76
+Obstacle Racing = 63.18
+Alpine Combined | combined = 63.59
+Snatch = 64
+Cross-Country Mountain Biking | xco = 64.41
+Croquet = 64.82
+Mixed Doubles Curling = 65.24
+Tumbling = 65.65
+C1 | canoe single = 66.06
+Rackets = 66.47
+Park Skateboarding = 66.88
+Street Skateboarding = 67.29
+Parallel Giant Slalom = 67.71
+Squash = 68.12
+K1 | kayak single = 68.53
+Kata = 68.94
+Doubles Luge = 69.35
+Madison = 69.76
+Jeu de Paume = 70.18
+50m Rifle = 70.59
+K4 = 71
+Double Sculls = 71.41
+Quadruple Sculls | quad sculls = 71.82
+Cricket T20 | t20 = 72.24
+Kumite = 72.65
+Pelota | basque pelota = 73.06
+Coxless Four = 73.47
+Coxless Pair = 73.88
+Rings = 74.29
+Skiathlon = 74.71
+Roque = 75.12
+Monobob = 75.53
+Motorboating = 75.94
+Coastal Rowing = 76.35
+Kickboxing = 76.76
+Vault = 77.18
+Parallel Bars = 77.59
+Floor Exercise = 78
+Balance Beam = 78.41
+Keirin = 78.82
+Omnium = 79.24
+Team Event = 79.65
+Star Class | star = 80.06
+Running Target = 80.47
+Pommel Horse = 80.88
+Uneven Bars = 81.29
+Standing Long Jump = 81.71
+Standing High Jump = 82.12
+Mounted High Jump = 82.53
+Mounted Long Jump = 82.94
+Military Patrol = 83.35
+Standing Triple Jump = 83.76
+56-Pound Weight Throw | weight throw = 84.18
+Foil = 84.59
+Water Skiing = 85
+Art Competitions | art, painting, sculpture, literature, architecture = 85.41
+Speed Skiing = 85.82
+Underwater Swimming = 86.24
+Rope Climbing = 86.65
+Club Swinging | indian clubs = 87.06
+Sabre = 87.47
+Ski Ballet | acro skiing = 87.88
+Obstacle Swimming = 88.29
+Team Gymnastics = 88.71
+Sprint Skiing = 89.12
+Freestyle Wrestling = 89.53
+Live Pigeon Shooting = 89.94
+Trap Shooting | trap = 90.35
+470 | 470 dinghy = 90.76
+Gliding = 91.18
+Air Rifle = 91.59
+Greco-Roman Wrestling | greco roman = 92
+Beach Handball = 92.41
+Kayak Cross = 92.82
+Epee = 93.24
+Lacrosse Sixes = 93.65
+Sprint Canoe = 94.06
+Equestrian Vaulting | vaulting = 94.47
+Bandy = 94.88
+Air Pistol = 95.29
+Canoe Slalom = 95.71
+Lightweight Double Sculls = 96.12
+Alpinism = 96.53
+Nacra 17 = 96.94
+Korfball = 97.35
+Skijoring = 97.76
+49er = 98.18
+Kaatsen = 98.59
+Skeet = 99
+Plunge for Distance | plunge = 99.99

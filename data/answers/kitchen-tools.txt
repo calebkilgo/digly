@@ -1,128 +1,240 @@
 # kitchen-tools: Name | alias = rating (1 common .. 100 rare). Blank = estimated.
-Spatula = 1
-Whisk = 2
-Knife | chefs knife = 3
-Spoon | wooden spoon = 4
-Fork = 5
-Ladle = 6
-Tongs = 7
-Frying Pan | skillet, fry pan = 8
-Pot | saucepan, stockpot = 9
-Cutting Board | chopping board = 10
-Peeler | vegetable peeler = 11
-Grater | cheese grater = 12
-Can Opener | tin opener = 13
-Rolling Pin = 14
-Colander | strainer
-Measuring Cup | measuring cups
-Measuring Spoons
-Mixing Bowl | bowl
-Blender
-Toaster
-Microwave
-Oven
-Stove
-Kettle
-Coffee Maker | coffee machine
-Mixer | stand mixer, hand mixer
-Food Processor
-Slow Cooker | crock pot, crockpot
-Pressure Cooker | instant pot
-Air Fryer
-Rice Cooker
-Waffle Iron | waffle maker
-Baking Sheet | cookie sheet, sheet pan
-Muffin Tin | muffin pan, cupcake tin
-Cake Pan
-Pie Dish | pie pan
-Casserole Dish | baking dish
-Dutch Oven
-Wok
-Griddle
-Grill Pan
-Roasting Pan
-Sieve
-Funnel
-Garlic Press
-Pizza Cutter
-Ice Cream Scoop | scoop
-Corkscrew | wine opener
-Bottle Opener
-Mortar and Pestle | mortar, pestle
-Salad Spinner
-Zester | microplane
-Mandoline
-Kitchen Scissors | shears, kitchen shears
-Meat Thermometer | thermometer
-Kitchen Scale | scale
-Timer | kitchen timer
-Oven Mitt | oven glove, pot holder
-Apron
-Baster | turkey baster
-Pastry Brush | basting brush
-Cookie Cutter
-Piping Bag
-Sifter | flour sifter
-Rubber Scraper
-Meat Tenderizer | meat mallet
-Potato Masher | masher
-Melon Baller
-Egg Slicer
-Apple Corer
-Citrus Juicer | juicer, lemon squeezer
-Nutcracker
-Skewer
-Cleaver
-Paring Knife
-Bread Knife
-Steak Knife
-Knife Sharpener | sharpener, honing steel
-Spice Rack
-Pepper Mill | pepper grinder
-Salt Shaker
-Cheesecloth
-Parchment Paper
-Aluminum Foil | tin foil, foil
-Plastic Wrap | cling film
-Dish Rack
-Sponge
-Dish Towel | tea towel
-Trivet
-Lid
-Ramekin
-Springform Pan
-Bundt Pan
-Loaf Pan
-Tart Pan
-Cooling Rack
-Splatter Guard
-Steamer Basket | steamer
-Double Boiler
-Fondue Pot
-Crepe Pan
-Paella Pan
-Tagine
-Chopsticks
-Spider Strainer
-Fish Spatula
-Offset Spatula
-Bench Scraper | dough scraper
-Pastry Cutter | pastry blender
-Dough Hook
-Immersion Blender | stick blender, hand blender
-Toaster Oven
-Espresso Machine
-French Press
-Moka Pot
-Electric Kettle
-Deep Fryer
-Bread Machine
-Ice Cream Maker
-Popcorn Maker
-Dehydrator
-Sous Vide
-Butter Dish
-Egg Timer
-Gravy Boat
-Carving Fork
-Kitchen Torch | blowtorch
+Oven = 1
+Teaspoon = 1.41
+Microwave | microwave oven = 1.83
+Tablespoon | tbsp = 2.24
+Stove | cooktop, hob, range, stovetop = 2.65
+Freezer = 3.07
+Refrigerator | fridge = 3.48
+Kettle = 3.89
+Blender = 4.31
+Spoon | wooden spoon, mixing spoon = 4.72
+Fork = 5.14
+Dishwasher = 5.55
+Whisk | balloon whisk = 5.96
+Spatula = 6.38
+Cutting Board | chopping board = 6.79
+Frying Pan | skillet, fry pan, pan, frypan = 7.2
+Rolling Pin = 7.62
+Ladle | soup ladle = 8.03
+Tongs = 8.44
+Peeler | vegetable peeler, potato peeler = 8.86
+Grater | cheese grater = 9.27
+Colander | strainer = 9.68
+Kitchen Scale | scale, food scale = 10.1
+Knife | chefs knife, cooks knife = 10.51
+Pot | saucepan, stockpot, stock pot, sauce pan = 10.92
+French Press | coffee press, cafetiere, coffee plunger, press pot = 11.34
+Range Hood | extractor fan = 11.75
+Bread Knife = 12.16
+Coffee Maker | coffee machine = 12.58
+Measuring Cup | measuring cups = 12.99
+Plastic Wrap | cling film, cling wrap, saran wrap = 13.41
+Coffee Filter | coffee filters = 13.82
+Mixing Bowl | bowl = 14.23
+Paper Towel | paper towels, kitchen roll = 14.65
+Pepper Mill | pepper grinder = 15.06
+Garlic Press = 15.47
+Butter Knife | butter spreader = 15.89
+Dutch Oven = 16.3
+Can Opener | tin opener = 16.71
+Food Processor = 17.13
+Coffee Grinder | coffee mill, burr grinder = 17.54
+Lid = 17.95
+Baking Sheet | cookie sheet, sheet pan, baking tray, oven tray = 18.37
+Bottle Opener = 18.78
+Dish Towel | tea towel, kitchen towel = 19.19
+Dish Rack | drying rack = 19.61
+Timer | kitchen timer = 20.02
+Cake Pan = 20.43
+Pizza Cutter | pizza wheel = 20.85
+Barbecue | bbq, barbeque = 21.26
+Ice Cream Scoop | scoop = 21.68
+Sponge = 22.09
+Aluminum Foil | tin foil, foil = 22.5
+Cookie Cutter = 22.92
+Kitchen Scissors | shears, kitchen shears = 23.33
+Electric Kettle = 23.74
+Mixer | stand mixer, hand mixer, kitchenaid, electric mixer = 24.16
+Funnel = 24.57
+Espresso Machine = 24.98
+Pressure Cooker | instant pot, multicooker = 25.4
+Slow Cooker | crock pot, crockpot = 25.81
+Toaster = 26.22
+Rice Cooker = 26.64
+Waffle Iron | waffle maker = 27.05
+Muffin Tin | muffin pan, cupcake tin, cupcake pan = 27.46
+Oven Mitt | oven glove, pot holder = 27.88
+Toaster Oven = 28.29
+Measuring Spoons | measuring spoon = 28.7
+Salt Shaker = 29.12
+Meat Thermometer | thermometer, food thermometer = 29.53
+Cast Iron Skillet | cast iron pan = 29.95
+Cleaver | meat cleaver = 30.36
+Air Fryer = 30.77
+Deep Fryer = 31.19
+Chopsticks = 31.6
+Nutcracker = 32.01
+Wok = 32.43
+Tupperware | food storage container, storage container = 32.84
+Corkscrew | wine opener = 33.25
+Skewer | skewers = 33.67
+Paring Knife = 34.08
+Griddle = 34.49
+Potato Masher | masher = 34.91
+Sieve = 35.32
+Apron = 35.73
+Trash Can | garbage can, bin, trash bin, kitchen bin = 36.15
+Bread Machine | bread maker = 36.56
+Food Mill = 36.97
+Ice Cream Maker = 37.39
+Butter Dish = 37.8
+Meat Grinder | meat mincer, mincer = 38.22
+Pie Dish | pie pan, pie tin = 38.63
+Cheese Knife = 39.04
+Camp Stove | portable stove, camping stove = 39.46
+Pasta Maker | pasta machine = 39.87
+Ice Pick = 40.28
+Dough Hook = 40.7
+Grill Pan = 41.11
+Pizza Peel | peel, pizza paddle, pizza shovel = 41.52
+Mason Jar | mason jars = 41.94
+Cocktail Shaker | shaker = 42.35
+Double Boiler | bain marie = 42.76
+Kitchen Torch | blowtorch, creme brulee torch = 43.18
+Wax Paper | waxed paper = 43.59
+Cooling Rack | wire rack = 44
+Spice Rack = 44.42
+Egg Timer = 44.83
+Popcorn Maker | popcorn machine = 45.24
+Bar Spoon = 45.66
+Gravy Boat = 46.07
+Pastry Brush | basting brush = 46.49
+Loaf Pan | bread pan = 46.9
+Carving Fork = 47.31
+Piping Bag | pastry bag, icing bag = 47.73
+Smoker = 48.14
+Pizza Stone | baking stone = 48.55
+Electric Knife | electric carving knife = 48.97
+Cheese Slicer = 49.38
+Tart Pan = 49.79
+Percolator | coffee percolator = 50.21
+Bench Scraper | dough scraper, scraper, bowl scraper = 50.62
+Tea Strainer = 51.03
+Pastry Cutter | pastry blender = 51.45
+Roasting Pan | roaster = 51.86
+Tomato Knife = 52.27
+Salad Spinner = 52.69
+Steamer Basket | steamer = 53.1
+Parchment Paper | baking paper = 53.51
+Herb Grinder = 53.93
+Bamboo Steamer = 54.34
+Candy Thermometer = 54.76
+Silicone Baking Mat | silpat = 55.17
+Immersion Blender | stick blender, hand blender = 55.58
+Cherry Pitter | olive pitter = 56
+Egg Beater | rotary beater, hand beater = 56.41
+Tortilla Press = 56.82
+Rubber Scraper = 57.24
+Casserole Dish | baking dish = 57.65
+Egg Separator = 58.06
+Fish Spatula = 58.48
+Tea Infuser | infuser = 58.89
+Splatter Screen = 59.3
+Chinese Cleaver | cai dao = 59.72
+Butcher Knife = 60.13
+Fillet Knife | filleting knife = 60.54
+Melon Baller = 60.96
+Splatter Guard = 61.37
+Sous Vide | immersion circulator = 61.78
+Panini Press | sandwich press = 62.2
+Paella Pan | paellera = 62.61
+Boning Knife = 63.03
+Fondue Pot = 63.44
+Crepe Pan | crepe maker = 63.85
+Knife Sharpener | sharpener, honing steel, sharpening steel = 64.27
+Grapefruit Spoon = 64.68
+Slotted Spoon = 65.09
+Egg Slicer = 65.51
+Mortar and Pestle | mortar, pestle = 65.92
+Rotisserie = 66.33
+Milk Frother | frother = 66.75
+Grapefruit Knife = 67.16
+Citrus Juicer | juicer, lemon squeezer, citrus press = 67.57
+Whistling Kettle | stovetop kettle = 67.99
+Saute Pan | sauteuse = 68.4
+Jigger | measuring jigger = 68.81
+Whetstone | sharpening stone = 69.23
+Bundt Pan = 69.64
+Cheesecloth = 70.05
+Moka Pot | stovetop espresso maker = 70.47
+Baster | turkey baster = 70.88
+Sifter | flour sifter = 71.3
+Dehydrator | food dehydrator = 71.71
+Offset Spatula | icing spatula, frosting spatula, palette knife = 72.12
+Trivet = 72.54
+Tagine | tajine = 72.95
+Potato Ricer | ricer = 73.36
+Mandoline | mandoline slicer = 73.78
+Ramekin = 74.19
+Springform Pan = 74.6
+Apple Corer = 75.02
+Meat Tenderizer | meat mallet = 75.43
+Spiralizer | vegetable spiralizer = 75.84
+Steak Knife = 76.26
+Zester | microplane = 76.67
+Muddler | muddling spoon = 77.08
+Salt Pig = 77.5
+Kazan | qazan = 77.91
+Skimmer | skimming spoon = 78.32
+Tawa | tava, tawah = 78.74
+Cezve | ibrik, turkish coffee pot = 79.15
+Oyster Knife = 79.57
+Pastry Wheel = 79.98
+Honey Dipper | honey wand = 80.39
+Mezzaluna | herb chopper, rocking knife = 80.81
+Egg Cooker = 81.22
+Milk Watcher | pot watcher = 81.63
+Hibachi = 82.05
+Marmite = 82.46
+Karahi | kadai, kadhai, karai, korai = 82.87
+Santoku | santoku knife = 83.29
+Tamagoyaki Pan | makiyakinabe = 83.7
+Deba | deba knife, deba bocho = 84.11
+Chinois | china cap = 84.53
+Cookie Press | cookie gun = 84.94
+Thermomix = 85.35
+Pineapple Corer | pineapple cutter = 85.77
+Fish Kettle | fish poacher = 86.18
+Nakiri | nakiri knife = 86.59
+Bread Lame | lame = 87.01
+Egg Piercer = 87.42
+Chip Pan = 87.84
+Billycan = 88.25
+Steam Juicer = 88.66
+Lobster Pick | lobster fork = 89.08
+Dolsot | stone pot = 89.49
+Donabe = 89.9
+Spider Strainer | spider, skimmer basket = 90.32
+Crab Cracker | seafood cracker, lobster cracker = 90.73
+Chapati Pan = 91.14
+Butter Curler = 91.56
+Comal = 91.97
+Nutmeg Grater = 92.38
+Takoyaki Pan = 92.8
+Citrus Reamer | lemon reamer, reamer = 93.21
+Mooncake Mold = 93.62
+Gyuto | gyuto knife = 94.04
+Molcajete = 94.45
+Banneton | proofing basket, brotform = 94.86
+Jebena = 95.28
+Hangiri | sushi oke = 95.69
+Dallah | arabic coffee pot = 96.11
+Shamoji | rice paddle = 96.52
+Zaru = 96.93
+Oroshigane | japanese grater = 97.35
+Suribachi = 97.76
+Handi = 98.17
+Shichirin = 98.59
+Usuba = 99
+Spurtle | porridge stick = 99.99

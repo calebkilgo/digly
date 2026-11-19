@@ -1,0 +1,128 @@
+# kitchen-tools: Name | alias = rating (1 common .. 100 rare). Blank = estimated.
+Spatula = 1
+Whisk = 2
+Knife | chefs knife = 3
+Spoon | wooden spoon = 4
+Fork = 5
+Ladle = 6
+Tongs = 7
+Frying Pan | skillet, fry pan = 8
+Pot | saucepan, stockpot = 9
+Cutting Board | chopping board = 10
+Peeler | vegetable peeler = 11
+Grater | cheese grater = 12
+Can Opener | tin opener = 13
+Rolling Pin = 14
+Colander | strainer
+Measuring Cup | measuring cups
+Measuring Spoons
+Mixing Bowl | bowl
+Blender
+Toaster
+Microwave
+Oven
+Stove
+Kettle
+Coffee Maker | coffee machine
+Mixer | stand mixer, hand mixer
+Food Processor
+Slow Cooker | crock pot, crockpot
+Pressure Cooker | instant pot
+Air Fryer
+Rice Cooker
+Waffle Iron | waffle maker
+Baking Sheet | cookie sheet, sheet pan
+Muffin Tin | muffin pan, cupcake tin
+Cake Pan
+Pie Dish | pie pan
+Casserole Dish | baking dish
+Dutch Oven
+Wok
+Griddle
+Grill Pan
+Roasting Pan
+Sieve
+Funnel
+Garlic Press
+Pizza Cutter
+Ice Cream Scoop | scoop
+Corkscrew | wine opener
+Bottle Opener
+Mortar and Pestle | mortar, pestle
+Salad Spinner
+Zester | microplane
+Mandoline
+Kitchen Scissors | shears, kitchen shears
+Meat Thermometer | thermometer
+Kitchen Scale | scale
+Timer | kitchen timer
+Oven Mitt | oven glove, pot holder
+Apron
+Baster | turkey baster
+Pastry Brush | basting brush
+Cookie Cutter
+Piping Bag
+Sifter | flour sifter
+Rubber Scraper
+Meat Tenderizer | meat mallet
+Potato Masher | masher
+Melon Baller
+Egg Slicer
+Apple Corer
+Citrus Juicer | juicer, lemon squeezer
+Nutcracker
+Skewer
+Cleaver
+Paring Knife
+Bread Knife
+Steak Knife
+Knife Sharpener | sharpener, honing steel
+Spice Rack
+Pepper Mill | pepper grinder
+Salt Shaker
+Cheesecloth
+Parchment Paper
+Aluminum Foil | tin foil, foil
+Plastic Wrap | cling film
+Dish Rack
+Sponge
+Dish Towel | tea towel
+Trivet
+Lid
+Ramekin
+Springform Pan
+Bundt Pan
+Loaf Pan
+Tart Pan
+Cooling Rack
+Splatter Guard
+Steamer Basket | steamer
+Double Boiler
+Fondue Pot
+Crepe Pan
+Paella Pan
+Tagine
+Chopsticks
+Spider Strainer
+Fish Spatula
+Offset Spatula
+Bench Scraper | dough scraper
+Pastry Cutter | pastry blender
+Dough Hook
+Immersion Blender | stick blender, hand blender
+Toaster Oven
+Espresso Machine
+French Press
+Moka Pot
+Electric Kettle
+Deep Fryer
+Bread Machine
+Ice Cream Maker
+Popcorn Maker
+Dehydrator
+Sous Vide
+Butter Dish
+Egg Timer
+Gravy Boat
+Carving Fork
+Kitchen Torch | blowtorch

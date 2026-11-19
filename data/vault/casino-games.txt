@@ -3,112 +3,137 @@
 # domain: sports and games
 # noun: games
 # rule: Games you can play at a casino, including poker styles.
-Slot Machines | slots, slot machine, pokies, fruit machine, one armed bandit
-Blackjack | twenty one, 21, vingt et un
-Poker
-Roulette
-Craps | dice
-Baccarat | punto banco
-Texas Hold'em | texas holdem, holdem, hold em
-Keno
-Bingo
-Video Poker
-Pai Gow Poker | pai gow
-Three Card Poker
-Caribbean Stud | caribbean stud poker
-Let It Ride
-Sic Bo
-Big Six Wheel | wheel of fortune, money wheel, big wheel
-Casino War | war
-Omaha | omaha hold em
-Seven Card Stud | stud
-Five Card Draw | draw poker
-Ultimate Texas Hold'em | ultimate texas holdem
-Mississippi Stud
-Four Card Poker
-Spanish 21 | spanish twenty one
-Pontoon
-Chemin de Fer
-Red Dog | acey deucey, in between
-Faro
-Chuck-a-luck | chuck a luck, birdcage
-Fan-Tan | fan tan
-Dragon Tiger
-Andar Bahar
-Teen Patti
-Pachinko
-Mahjong
-Crazy 4 Poker
-High Card Flush
-Blackjack Switch
-Free Bet Blackjack
-Double Exposure Blackjack | double exposure
-Crapless Craps
-Boule
-Trente et Quarante
-Scratch Cards | scratchers, scratch offs, scratch tickets
-Lottery | lotto
-Sports Betting
-Horse Racing | horse betting, off track betting
-Razz
-HORSE | h o r s e
-Deuces Wild
-Jacks or Better
-Pai Gow Tiles | pai gow dominoes
-Electronic Bingo
-Progressive Slots | progressive jackpot
-Video Slots
-Mini Baccarat
-EZ Baccarat | ez bac
-Double Down Stud
-Casino Hold'em | casino holdem
-Two Up
-Crown and Anchor
-Hazard
-Chinese Poker
-Pineapple
-Short Deck | six plus holdem
-Badugi
-Stud Poker
-Live Dealer
-Penny Slots
-Video Keno
-Lightning Roulette
-French Roulette
-American Roulette
-European Roulette
-Mini Roulette
-Double Ball Roulette
-Speed Baccarat
-Squeeze Baccarat
-Dragon Bonus
-Three Card Brag
-Casino Stud Poker
-Texas Shootout
-Fortune Pai Gow
-Heads Up Hold'em | heads up holdem
-Two Card Poker
-Six Card Poker
-High Low
-Hi-Lo | hi lo
-Megabucks
-Pachislo
-Electronic Roulette
-Lightning Dice
-Crazy Time
-Monopoly Live
-Deal or No Deal Live
-Dream Catcher
-Plinko
-Crash
-Mines
-Big Red
-Domino Qiu Qiu
-Jai Alai
-Greyhound Racing
-Lotto 6/49
-Powerball
-Mega Millions
-Raffle
-Pull Tabs | pull tab
-Video Lottery Terminal | vlt
+Poker = 1
+Slot Machines | slots, slot machine, pokies, fruit machine, one armed bandit = 1.74
+Bingo = 2.48
+Roulette = 3.23
+Blackjack | twenty one, 21, vingt et un = 3.97
+Craps | dice = 4.71
+Baccarat | punto banco, baccara = 5.45
+Video Poker = 6.2
+Let It Ride = 6.94
+Three Card Poker = 7.68
+Texas Hold'em | texas holdem, holdem, hold em = 8.42
+Caribbean Stud | caribbean stud poker = 9.17
+Casino War | war = 9.91
+Pai Gow Poker | pai gow = 10.65
+Sic Bo = 11.39
+Five Card Draw | draw poker = 12.14
+Seven Card Stud | stud = 12.88
+Spanish 21 | spanish twenty one = 13.62
+Four Card Poker = 14.36
+Mississippi Stud = 15.11
+Scratch Cards | scratchers, scratch offs, scratch tickets = 15.85
+Chuck-a-luck | chuck a luck, birdcage = 16.59
+Ultimate Texas Hold'em | ultimate texas holdem = 17.33
+Fan-Tan | fan tan = 18.08
+Dragon Tiger = 18.82
+Pontoon = 19.56
+Faro = 20.3
+Chemin de Fer = 21.05
+Keno = 21.79
+Crazy 4 Poker = 22.53
+Teen Patti = 23.27
+High Card Flush = 24.02
+Andar Bahar = 24.76
+Mahjong = 25.5
+Pachinko = 26.24
+Blackjack Switch = 26.98
+Free Bet Blackjack = 27.73
+Lottery | lotto = 28.47
+Double Exposure Blackjack | double exposure = 29.21
+Horse Racing | horse betting, off track betting = 29.95
+Sports Betting = 30.7
+HORSE | h o r s e = 31.44
+Crapless Craps = 32.18
+Boule = 32.92
+Jacks or Better = 33.67
+Electronic Bingo = 34.41
+Progressive Slots | progressive jackpot = 35.15
+Big Six Wheel | wheel of fortune, money wheel, big wheel = 35.89
+Video Slots = 36.64
+Razz = 37.38
+Deuces Wild = 38.12
+Two Up = 38.86
+Pai Gow Tiles | pai gow dominoes = 39.61
+Omaha | omaha hold em, pot limit omaha, plo = 40.35
+Double Down Stud = 41.09
+Hazard = 41.83
+Video Blackjack = 42.58
+Crown and Anchor = 43.32
+Mini Baccarat = 44.06
+Chinese Poker = 44.8
+Short Deck | six plus holdem = 45.55
+EZ Baccarat | ez bac = 46.29
+Pineapple = 47.03
+Casino Hold'em | casino holdem = 47.77
+Live Dealer = 48.52
+Stud Poker = 49.26
+Penny Slots = 50
+Badugi = 50.74
+Lightning Roulette = 51.48
+French Roulette = 52.23
+American Roulette = 52.97
+Video Keno = 53.71
+European Roulette = 54.45
+Dragon Bonus = 55.2
+Mini Roulette = 55.94
+Double Ball Roulette = 56.68
+Red Dog | acey deucey, in between = 57.42
+Three Card Brag = 58.17
+Speed Baccarat = 58.91
+Casino Stud Poker = 59.65
+High Low = 60.39
+Squeeze Baccarat = 61.14
+Texas Shootout = 61.88
+Two Card Poker = 62.62
+Six Card Poker = 63.36
+Omaha Hi-Lo | omaha eight or better = 64.11
+Hi-Lo | hi lo = 64.85
+Fortune Pai Gow = 65.59
+Esports Betting = 66.33
+Bank Craps | casino craps = 67.08
+Crazy Time = 67.82
+Heads Up Hold'em | heads up holdem = 68.56
+Caribbean Hold'em = 69.3
+Texas Hold'em Bonus = 70.05
+Lowball | deuce to seven, 2 7 triple draw = 70.79
+Pari-Mutuel Betting | pari mutuel, parimutuel = 71.53
+Deal or No Deal Live = 72.27
+Lightning Dice = 73.02
+Electronic Roulette = 73.76
+Monopoly Live = 74.5
+Crash = 75.24
+Big Red = 75.98
+Mines = 76.73
+Megabucks = 77.47
+Dream Catcher = 78.21
+Pachislo = 78.95
+Over Under 7 | seven up seven down = 79.7
+Super Fun 21 = 80.44
+Russian Poker = 81.18
+Open-Face Chinese Poker | ofc = 81.92
+Five Card Omaha = 82.67
+Stud Hi-Lo | seven card stud hi lo = 83.41
+Oasis Poker = 84.15
+Plinko = 84.89
+Mega Millions = 85.64
+Auto Roulette = 86.38
+Multi-Wheel Roulette = 87.12
+Immersion Roulette = 87.86
+Greyhound Racing = 88.61
+Domino Qiu Qiu = 89.35
+Lotto 6/49 = 90.09
+Blackjack Pontoon = 90.83
+Tien Gow = 91.58
+Pai Kau = 92.32
+Baccarat Banque = 93.06
+Jai Alai = 93.8
+Video Lottery Terminal | vlt, video lottery = 94.55
+Royal Hold'em = 95.29
+Pull Tabs | pull tab = 96.03
+Powerball = 96.77
+Courchevel = 97.52
+Raffle = 98.26
+Pusoy = 99
+Trente et Quarante | rouge et noir = 99.99

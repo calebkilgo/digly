@@ -22,7 +22,7 @@ export const CORRECTED: MatchKind[] = ["typo", "sounds-like", "first-word", "reo
 // Generic words people tack on ("beagle dog", "the country of chad").
 const FILLER = new Set([
   "a", "an", "the", "of", "dog", "dogs", "breed", "bird", "birds", "country", "state", "cheese", "fruit",
-  "language", "dance", "bone", "instrument", "god", "goddess", "element", "republic of",
+  "language", "dance", "bone", "instrument", "god", "goddess", "element", "republic of", "bread", "pastry",
 ]);
 
 // How many edits a typo may contain, by length. Short words must be exact.
