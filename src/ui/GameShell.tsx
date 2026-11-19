@@ -5,14 +5,16 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { DiglyScene } from "@/scene/DiglyScene";
 import { createService, type AnyService } from "@/game/service";
 import { digSlots } from "@/game/service/slots";
-import { GameError, type AttemptMode, type AttemptResult, type DayStatus, type Dig, type DigResult } from "@/game/service/types";
+import { GameError, type Account, type AttemptMode, type AttemptResult, type DayStatus, type Dig, type DigResult } from "@/game/service/types";
 import { dayNumber } from "@/game/rules/schedule";
 import { digTotal } from "@/game/rules/levels";
 import {
   currentStreak,
   stats,
   EMPTY_PROGRESS,
+  forUser,
   loadProgress,
+  mergeHistory,
   recordPractice,
   recordVault,
   recordRanked,
@@ -31,8 +33,9 @@ import { BoardScreen } from "./screens/Board";
 import { VaultScreen } from "./screens/Vault";
 import { LogbookScreen } from "./screens/Logbook";
 import { SettingsScreen } from "./screens/Settings";
-import { AccountSheet, ResetSheet, SuggestSheet } from "./sheets";
-import { identify, track } from "@/lib/track";
+import { AccountSheet, AddEmailSheet, GooglePickSheet, ResetSheet, SuggestSheet } from "./sheets";
+import { identify, promptSlug, setScreen as trackScreen, track } from "@/lib/track";
+import { ConsentBar } from "./ConsentBar";
 
 export type Screen = "home" | "pregame" | "play" | "reveal" | "summary" | "board" | "vault" | "logbook" | "settings";
 
@@ -74,6 +77,10 @@ export function GameShell() {
   const [unlimited, setUnlimited] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [suggestOpen, setSuggestOpen] = useState(false);
+  // the rest of the account (verified email, Google, marketing) for Options
+  const [acct, setAcct] = useState<Account | null>(null);
+  const [googlePick, setGooglePick] = useState(false);
+  const [askEmail, setAskEmail] = useState(false);
 
   // arriving from a password reset email: ?reset=TOKEN
   useEffect(() => {
@@ -123,43 +130,87 @@ export function GameShell() {
     void refresh();
   }, [refresh, today]);
 
+  // Makes the device show `user`'s progress: drops another account's cache,
+  // then folds in what the server has, so a new device or a cleared browser
+  // shows the same streaks, stats and Vault.
+  const syncHistory = useCallback(
+    async (user: string | null) => {
+      const save = (p: Progress) => {
+        setProgress(p);
+        saveProgress(p);
+      };
+      const mine = forUser(loadProgress(), user);
+      if (mine !== loadProgress()) save(mine);
+      if (!service || service.kind !== "remote") return;
+      try {
+        const h = await service.history();
+        const cur = forUser(loadProgress(), user); // a dig may have finished meanwhile
+        const next = mergeHistory(cur, h);
+        if (next !== cur || cur.owner !== loadProgress().owner) save(next);
+      } catch {
+        // offline: the device's own cache still shows
+      }
+    },
+    [service],
+  );
+
+  // one place that takes in an account from the server
+  const applyAccount = useCallback(
+    (a: Account) => {
+      setUsername(a.username);
+      setAdmin(!!a.admin);
+      setEmail(a.email ?? null);
+      setUnlimited(!!a.unlimited);
+      setAcct(a);
+      identify(a.id ?? null, a.username);
+      void syncHistory(a.username);
+    },
+    [syncHistory],
+  );
+
+  const reloadAccount = useCallback(async () => {
+    if (!service) return;
+    try {
+      applyAccount(await service.account());
+    } catch {
+      // keep what's showing
+    }
+  }, [service, applyAccount]);
+
   useEffect(() => {
-    if (service)
-      void service.account().then(
-        (a) => {
-          setUsername(a.username);
-          setAdmin(!!a.admin);
-          setEmail(a.email ?? null);
-          setUnlimited(!!a.unlimited);
-          identify(a.username);
-        },
-        () => {},
-      );
-  }, [service]);
+    void reloadAccount();
+  }, [reloadAccount]);
+
+  // once a session: nudge an account to add or confirm its email
+  useEffect(() => {
+    if (!acct?.username || service?.kind !== "remote") return;
+    try {
+      if (sessionStorage.getItem("digly.emailNudge")) return;
+      sessionStorage.setItem("digly.emailNudge", "1");
+    } catch {
+      return;
+    }
+    if (!acct.email) setAskEmail(true);
+    else if (!acct.emailVerified) setToast(`Check ${acct.email} for a link to confirm your email. You can resend it from Options.`);
+  }, [acct, service]);
 
   const signUp = useCallback(
-    async (u: string, p: string, e?: string) => {
-      const a = await service!.signUp(u, p, e);
-      setUsername(a.username);
-      setEmail(e?.trim() || null);
-      identify(a.username);
-      track("account_created");
+    async (u: string, p: string, e: string, marketing: boolean) => {
+      const a = await service!.signUp(u, p, e, marketing);
+      applyAccount(a);
+      track("account_created", { method: "password" });
       await refresh();
     },
-    [service, refresh],
+    [service, refresh, applyAccount],
   );
   const logIn = useCallback(
     async (u: string, p: string) => {
       const a = await service!.logIn(u, p);
-      setUsername(a.username);
-      setAdmin(!!a.admin);
-      setUnlimited(!!a.unlimited);
-      void service!.account().then((x) => setEmail(x.email ?? null), () => {});
-      identify(a.username);
-      track("logged_in");
+      applyAccount(a);
+      track("logged_in", { method: "password" });
       await refresh();
     },
-    [service, refresh],
+    [service, refresh, applyAccount],
   );
   const logOut = useCallback(async () => {
     await service?.logOut();
@@ -167,10 +218,13 @@ export function GameShell() {
     setAdmin(false);
     setEmail(null);
     setUnlimited(false);
+    setAcct(null);
     identify(null);
     track("logged_out");
+    // a logged-out device stops showing the account's history
+    void syncHistory(null);
     await refresh();
-  }, [service, refresh]);
+  }, [service, refresh, syncHistory]);
 
   // Digly Unlimited: needs an account, then hands off to Stripe Checkout
   const buyUnlimited = useCallback(async () => {
@@ -211,6 +265,40 @@ export function GameShell() {
       }
       setToast("Payment received. Unlimited can take a minute to show up; reopen the Vault shortly.");
     })();
+  }, [service]);
+
+  // back from Google (?google=...) or a verification email (?verify=TOKEN)
+  useEffect(() => {
+    if (!service) return;
+    const q = new URLSearchParams(window.location.search);
+    const g = q.get("google");
+    const v = q.get("verify");
+    if (!g && !v) return;
+    window.history.replaceState(null, "", window.location.pathname);
+    if (g) {
+      const said: Record<string, string> = {
+        linked: "Google is connected. You can sign in with it next time.",
+        exists: "That Google email already has a Digly account. Log in with your password, then connect Google in Options.",
+        taken: "That Google account is already connected to another Digly account.",
+        noemail: "Google didn't share an email address, so we couldn't make an account.",
+        error: "Google sign-in didn't work. Try again in a moment.",
+        off: "Google sign-in isn't set up on this site yet.",
+      };
+      if (g === "pick") setGooglePick(true);
+      else if (g === "in") track("logged_in", { method: "google" });
+      else if (g === "exists") setAccountSheet({ start: "login" });
+      if (said[g]) setToast(said[g]);
+    }
+    if (v)
+      void service.verifyEmail(v).then(
+        (r) => {
+          setToast("Email confirmed. Thanks!");
+          track("email_verified");
+          if (r.mine) void reloadAccount();
+        },
+        (e) => setToast(e instanceof GameError ? e.message : "That link didn't work. Send a new one from Options."),
+      );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [service]);
 
   // a dig finished on another device (or before a cache wipe) still counts here
@@ -259,6 +347,21 @@ export function GameShell() {
     };
   }, []);
 
+  // the screen rides along on every event, including $pageleave
+  useEffect(() => trackScreen(screen), [screen]);
+
+  // closing the tab mid-level is the main way a level gets abandoned
+  const playing = screen === "play" && run ? { mode: run.mode, level: run.level + 1, vault: run.vault ?? null } : null;
+  const playingRef = useRef(playing);
+  playingRef.current = playing;
+  useEffect(() => {
+    const f = () => {
+      if (playingRef.current) track("level_quit", { ...playingRef.current, how: "closed" });
+    };
+    window.addEventListener("pagehide", f);
+    return () => window.removeEventListener("pagehide", f);
+  }, []);
+
   const todayDig = useMemo(() => digSlots(today), [today]);
 
   // keep the tab title on today's dig if the page stays open past midnight UTC
@@ -279,6 +382,7 @@ export function GameShell() {
   const go = useCallback(
     (s: Screen) => {
       setScreen(s);
+      track("screen_viewed", { screen: s });
       if (s === "board") track("board_viewed");
       if (s === "vault") track("vault_opened");
       if (MENU_SCREENS.includes(s)) scene?.setMode("home");
@@ -304,7 +408,16 @@ export function GameShell() {
       if (!run) return;
       const results = [...run.results, r];
       setRun({ ...run, results });
-      track("level_finished", { mode: run.mode, level: r.level, score: r.score, points: r.points, finds: r.accepted.length, day: run.dig.day });
+      track("level_finished", {
+        mode: run.mode,
+        level: r.level,
+        score: r.score,
+        points: r.points,
+        finds: r.accepted.length,
+        day: run.dig.day,
+        prompt: promptSlug(r.challenge.id),
+        vault: run.vault ?? null,
+      });
       if (results.length === 3) {
         const total = digTotal(results.map((x) => x.points));
         const dr: DigResult = { day: run.dig.day, mode: run.mode, levels: results, total };
@@ -473,7 +586,7 @@ export function GameShell() {
           onUnlock={buyUnlimited}
         />
       )}
-      {screen === "logbook" && <LogbookScreen progress={progress} today={today} name={username} onBack={() => go("home")} />}
+      {screen === "logbook" && <LogbookScreen progress={progress} today={today} name={username} onBack={() => go("home")} loadTopics={service ? () => service.topics() : undefined} />}
       {screen === "settings" && (
         <SettingsScreen
           settings={settings}
@@ -497,13 +610,22 @@ export function GameShell() {
             setUsername(null);
             setAdmin(false);
             setEmail(null);
+            setUnlimited(false);
+            setAcct(null);
             identify(null);
-            commit(EMPTY_PROGRESS);
+            track("account_deleted");
+            commit({ ...EMPTY_PROGRESS, owner: null });
             await refresh();
           }}
           onEmail={async (e) => {
-            const a = await service!.setEmail(e);
-            setEmail(a.email ?? null);
+            applyAccount(await service!.setEmail(e));
+          }}
+          account={acct}
+          onResend={async () => {
+            applyAccount(await service!.resendVerify());
+          }}
+          onMarketing={async (on) => {
+            applyAccount(await service!.setMarketing(on));
           }}
           username={username}
           onAccount={(start) => setAccountSheet({ start })}
@@ -517,7 +639,7 @@ export function GameShell() {
           }}
           onResetAll={async () => {
             await service!.resetAll();
-            commit(EMPTY_PROGRESS);
+            commit({ ...EMPTY_PROGRESS, owner: progress.owner });
             await refresh();
           }}
         />
@@ -530,16 +652,32 @@ export function GameShell() {
           onLogIn={logIn}
           onForgot={(login) => service.forgotPassword(login)}
           onClose={() => setAccountSheet(null)}
+          google={!!acct?.googleEnabled}
+        />
+      )}
+      {googlePick && service && (
+        <GooglePickSheet
+          onPick={async (u, marketing) => {
+            applyAccount(await service.finishGoogle(u, marketing));
+            track("account_created", { method: "google" });
+            await refresh();
+          }}
+          onClose={() => setGooglePick(false)}
+        />
+      )}
+      {askEmail && service && username && (
+        <AddEmailSheet
+          onSave={async (e) => {
+            applyAccount(await service.setEmail(e));
+            setToast(`Saved. Check ${e.trim()} for a link to confirm it.`);
+          }}
+          onClose={() => setAskEmail(false)}
         />
       )}
       {resetToken && service && (
         <ResetSheet
           onReset={async (pw) => {
-            const a = await service.resetPassword(resetToken, pw);
-            setUsername(a.username);
-            setAdmin(!!a.admin);
-            setEmail(a.email ?? null);
-            identify(a.username);
+            applyAccount(await service.resetPassword(resetToken, pw));
             await refresh();
           }}
           onClose={() => setResetToken(null)}
@@ -559,6 +697,7 @@ export function GameShell() {
           {toast}
         </div>
       )}
+      <ConsentBar hidden={!MENU_SCREENS.includes(screen)} />
       <div ref={announce} className="sr-only" aria-live="polite" />
     </div>
   );

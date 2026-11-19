@@ -1,4 +1,4 @@
-import { GameError, type Account, type CategoryInfo, type AttemptMode, type AttemptResult, type AttemptStart, type Board, type ChallengeService, type DayStatus, type LevelNo, type SubmitResult, type FullAnswer } from "./types";
+import { GameError, type Account, type CategoryInfo, type AttemptMode, type AttemptResult, type AttemptStart, type Board, type ChallengeService, type DayStatus, type LevelNo, type SubmitResult, type FullAnswer, type PlayerHistory, type PlayerTopic } from "./types";
 
 async function call<T>(path: string, init?: { method?: string; body?: unknown }): Promise<T> {
   let res: Response;
@@ -34,6 +34,14 @@ export class RemoteService implements ChallengeService {
 
   start(day: number, level: LevelNo, mode: AttemptMode, opts: { slug?: string; vault?: number } = {}) {
     return call<AttemptStart>("/api/attempts", { method: "POST", body: { day, level, mode, ...opts } });
+  }
+
+  history() {
+    return call<PlayerHistory>("/api/history");
+  }
+
+  async topics() {
+    return (await call<{ topics: PlayerTopic[] }>("/api/topics")).topics;
   }
 
   async checkout(termsVersion: string) {
@@ -77,8 +85,24 @@ export class RemoteService implements ChallengeService {
     return call<Account>("/api/account");
   }
 
-  signUp(username: string, password: string, email?: string) {
-    return call<Account>("/api/account", { method: "POST", body: { action: "signup", username, password, email } });
+  signUp(username: string, password: string, email: string, marketing = false) {
+    return call<Account>("/api/account", { method: "POST", body: { action: "signup", username, password, email, marketing } });
+  }
+
+  finishGoogle(username: string, marketing: boolean) {
+    return call<Account>("/api/account", { method: "POST", body: { action: "google_finish", username, marketing } });
+  }
+
+  verifyEmail(token: string) {
+    return call<{ verified: boolean; mine: boolean }>("/api/account", { method: "POST", body: { action: "verify", token } });
+  }
+
+  resendVerify() {
+    return call<Account>("/api/account", { method: "POST", body: { action: "resend_verify" } });
+  }
+
+  setMarketing(on: boolean) {
+    return call<Account>("/api/account", { method: "POST", body: { action: "marketing", on } });
   }
 
   logIn(username: string, password: string) {
@@ -97,8 +121,9 @@ export class RemoteService implements ChallengeService {
     return call<Account>("/api/account", { method: "POST", body: { action: "reset", token, password } });
   }
 
-  async deleteAccount(password: string) {
-    await call("/api/account", { method: "POST", body: { action: "delete", password } });
+  async deleteAccount(secret: string) {
+    // the server checks whichever one the account has
+    await call("/api/account", { method: "POST", body: { action: "delete", password: secret, confirm: secret } });
   }
 
   setEmail(email: string) {

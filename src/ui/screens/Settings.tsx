@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { CategoryInfo } from "@/game/service/types";
+import type { Account, CategoryInfo } from "@/game/service/types";
 import { sfx } from "@/audio/sfx";
 import type { MotionPref, Settings } from "../settings";
 import { ScreenFrame } from "./ScreenFrame";
+import { analyticsConfigured, analyticsOn, choose, privacySignal } from "@/lib/consent";
 
 export function SettingsScreen(props: {
   settings: Settings;
@@ -22,6 +23,9 @@ export function SettingsScreen(props: {
   email: string | null;
   onEmail: (email: string) => Promise<void>;
   onDelete: (password: string) => Promise<void>;
+  account: Account | null; // verified email, Google, marketing
+  onResend: () => Promise<void>;
+  onMarketing: (on: boolean) => Promise<void>;
   username: string | null;
   onAccount: (start: "signup" | "login") => void;
   onLogOut: () => Promise<void>;
@@ -29,6 +33,13 @@ export function SettingsScreen(props: {
   const { settings, update } = props;
   const [msg, setMsg] = useState("");
   const [acctMsg, setAcctMsg] = useState("");
+  const [mkt, setMkt] = useState<boolean | null>(null); // shows the tick before the server answers
+  const [stats, setStats] = useState<{ on: boolean; locked: boolean } | null>(null);
+  useEffect(() => {
+    if (!analyticsConfigured()) return;
+    const locked = privacySignal();
+    setStats({ on: analyticsOn(), locked });
+  }, []);
 
   const lever = (label: string, desc: string, on: boolean, set: (v: boolean) => void) => (
     <div className="setting px">
@@ -75,6 +86,20 @@ export function SettingsScreen(props: {
         </div>
       </div>
       {lever("High contrast", "Stronger contrast on panels and text.", settings.highContrast, (v) => update({ highContrast: v }))}
+      {stats &&
+        (stats.locked ? (
+          <div className="setting px">
+            <div>
+              <div className="t">Usage stats</div>
+              <div className="d">Off, because your browser asks sites not to track it (Global Privacy Control or Do Not Track).</div>
+            </div>
+          </div>
+        ) : (
+          lever("Usage stats", "Lets Digly count screens opened and levels finished, to make the game better. No ads, nothing sold.", stats.on, (v) => {
+            choose(v ? "yes" : "no");
+            setStats({ on: v, locked: false });
+          })
+        ))}
       <div className="setting px" style={{ flexDirection: "column", alignItems: "stretch" }}>
         <div>
           <div className="t">Account</div>
@@ -104,16 +129,20 @@ export function SettingsScreen(props: {
               e.preventDefault();
               const v = String(new FormData(e.currentTarget).get("email") ?? "");
               void props.onEmail(v).then(
-                () => setAcctMsg(v ? "Email saved." : "Email removed."),
+                () => setAcctMsg(v === props.email ? "That's already your email." : `Saved. Check ${v} for a link to confirm it.`),
                 (x) => setAcctMsg(x instanceof Error ? x.message : "Couldn't save that."),
               );
             }}
           >
             <label style={{ display: "flex", flexDirection: "column", gap: 4, flex: "1 1 200px" }}>
-              <span className="d">{props.email ? "Email for password resets" : "Add an email so you can reset your password"}</span>
+              <span className="d">
+                {props.email ? "Email for password resets" : "Add an email so you can reset your password"}
+                {props.email && props.account?.username && (props.account.emailVerified ? " · confirmed" : " · not confirmed yet")}
+              </span>
               <input
                 name="email"
                 type="email"
+                required
                 defaultValue={props.email ?? ""}
                 key={props.email ?? ""}
                 maxLength={200}
@@ -124,10 +153,52 @@ export function SettingsScreen(props: {
             <button className="btn btn-sm" type="submit">
               Save
             </button>
+            {props.email && props.account?.username && !props.account.emailVerified && (
+              <button
+                type="button"
+                className="btn btn-sm"
+                onClick={() =>
+                  void props.onResend().then(
+                    () => setAcctMsg(`Sent. Check ${props.email} and your spam folder.`),
+                    (x) => setAcctMsg(x instanceof Error ? x.message : "Couldn't send that."),
+                  )
+                }
+              >
+                Resend link
+              </button>
+            )}
             <span role="status" style={{ fontSize: 13, flexBasis: "100%", minHeight: 16 }}>
               {acctMsg}
             </span>
           </form>
+        )}
+        {props.username && props.account?.username && (
+          <label className="check-row">
+            <input
+              type="checkbox"
+              checked={mkt ?? !!props.account.marketing}
+              onChange={(e) => {
+                const on = e.target.checked;
+                setMkt(on);
+                void props.onMarketing(on).then(
+                  () => (setMkt(null), setAcctMsg(on ? "You'll get the occasional Digly news email." : "No more news emails.")),
+                  (x) => (setMkt(null), setAcctMsg(x instanceof Error ? x.message : "Couldn't save that.")),
+                );
+              }}
+            />
+            <span>Email me now and then about new features and Vault packs.</span>
+          </label>
+        )}
+        {props.username && props.account?.googleEnabled && (
+          <div className="d">
+            {props.account.google ? (
+              "Google sign-in is connected."
+            ) : (
+              <a className="linkish" href="/api/auth/google?intent=link">
+                Connect Google so you can sign in with it
+              </a>
+            )}
+          </div>
         )}
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           {props.username ? (
@@ -138,8 +209,10 @@ export function SettingsScreen(props: {
               <button
                 className="btn btn-sm"
                 onClick={() => {
+                  // an account made with Google has no password to type
+                  const noPw = props.account?.hasPassword === false;
                   const pw = window.prompt(
-                    `Delete ${props.username} for good? Your scores and history are removed and can't be brought back.${props.unlimited ? " Digly Unlimited is removed too. It isn't refunded and can't move to another account." : ""} Type your password to confirm.`,
+                    `Delete ${props.username} for good? Your scores and history are removed and can't be brought back.${props.unlimited ? " Digly Unlimited is removed too. It isn't refunded and can't move to another account." : ""} ${noPw ? "Type your username to confirm." : "Type your password to confirm."}`,
                   );
                   if (!pw) return;
                   void props.onDelete(pw).then(

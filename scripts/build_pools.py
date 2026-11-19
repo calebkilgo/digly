@@ -3,6 +3,13 @@
   pip install wordfreq
   python scripts/build_pools.py kitchen-tools
   python scripts/build_pools.py vault/weather-events
+  python scripts/build_pools.py cheeses --core 150
+
+A pool has two parts. The core is what a good player can reach in 45 seconds;
+only the core sets the tiers, so Bronze to Ruby mean the same thing in every
+prompt. The deep tail is everything else that is still a real answer: always
+accepted, always Ruby, plus the Deep cut bonus. --core N keeps the N easiest
+core answers and moves the rest to the tail (for long public lists).
 
 Reads the prompt's hand-written list (copied to data/sources/<slug>.list.txt the
 first time, so later runs start from it again) and data/sources/<slug>.tsv, the extra answers pulled from
@@ -12,8 +19,9 @@ Wikidata and reviewed by hand. The source file has one answer per line:
 
 sitelinks: how many Wikipedia language editions have an article on it. Blank
 if unknown. difficulty: 1 (nearly everyone says it) to 5 (experts only), a
-judgement call made while reviewing. rating: optional exact 1..100; put 100 on
-one line to make it the Platinum.
+judgement call made while reviewing, or "deep" for the tail. rating: optional
+exact 1..100; put 100 on one core line to hand-pick the Platinum. A line in the
+hand list can say "= deep" too.
 
 Then it writes data/answers/<slug>.txt (or data/vault/<slug>.txt with the vault/
 prefix) with every answer rated, easiest first.
@@ -31,7 +39,7 @@ Run build_answers.py (daily) or build_vault.py (Vault) afterwards as usual.
 import sys
 from pathlib import Path
 
-from build_answers import compact, normalize, parse, singular, zipf
+from build_answers import compact, normalize, parse, rating_text, singular, zipf
 
 ROOT = Path(__file__).resolve().parent.parent
 MAX_ALIASES = 8
@@ -48,8 +56,9 @@ def read_list(path):
         elif line.strip() and not line.startswith("#"):
             body.append(line)
     items = parse("\n".join(body))
-    for i, it in enumerate(items):
-        it["order"] = i
+    core = [it for it in items if not it["deep"]]
+    for it in items:
+        it["order"] = core.index(it) if not it["deep"] else None
         it["links"] = None
         # hand files number their first few answers 1, 2, 3...; list order already
         # says that, and mixing fixed numbers with ranked ones skews the easy end
@@ -69,9 +78,11 @@ def read_source(path):
         name = cols[0].strip()
         aliases = [a.strip() for a in cols[1].split("|") if a.strip()]
         links = int(cols[2]) if cols[2].strip().isdigit() else None
-        diff = int(cols[3]) if cols[3].strip().isdigit() else None
+        d = cols[3].strip().lower()
+        deep = d == "deep"
+        diff = int(d) if d.isdigit() else None
         rating = float(cols[4]) if cols[4].strip() else None
-        out.append({"name": name, "aliases": aliases, "links": links, "diff": diff, "rating": rating})
+        out.append({"name": name, "aliases": aliases, "links": links, "diff": diff, "rating": rating, "deep": deep})
     return out
 
 
@@ -97,9 +108,11 @@ def merge(items, extra):
                 hit["curated"] = ex["rating"]
             if ex["diff"] is not None:
                 hit["diff"] = ex["diff"]  # a reviewed difficulty beats list position
+            if ex["deep"] and hit["order"] is None:
+                hit["deep"] = True  # the hand list is always core
             cand = ex["aliases"] + ([ex["name"]] if compact(normalize(ex["name"])) != compact(normalize(hit["name"])) else [])
         else:
-            hit = {"name": ex["name"], "aliases": [], "curated": ex["rating"], "order": None, "links": ex["links"], "diff": ex["diff"]}
+            hit = {"name": ex["name"], "aliases": [], "curated": ex["rating"], "order": None, "links": ex["links"], "diff": ex["diff"], "deep": ex["deep"]}
             items.append(hit)
             for k in keys_of(ex["name"]):
                 owner.setdefault(k, hit)
@@ -131,7 +144,9 @@ def pct_rank(values):
     return {v: ((first[v] + last[v]) / 2) / max(1, n - 1) for v in s}
 
 
-def rate(items):
+def rate(items, core_cap=None):
+    deep = [it for it in items if it.get("deep")]
+    items = [it for it in items if not it.get("deep")]
     hand = [it for it in items if it["order"] is not None]
     n_hand = max(1, len(hand) - 1)
     links = pct_rank([it["links"] for it in items if it["links"] is not None])
@@ -150,10 +165,19 @@ def rate(items):
         w = sum(x for x, _ in nudge)
         fame = sum(x * v for x, v in nudge) / w
         scored.append((W_BASE * base + (1 - W_BASE) * fame, it))
+    plat = [it for it in items if (it["curated"] or 0) >= 99.99]
+    if core_cap is not None and len(items) > core_cap:
+        # the easiest core_cap answers stay core (the Platinum always does); the rest join the tail
+        keep = {id(it) for _, it in sorted(scored, key=lambda x: x[0])[:core_cap]} | {id(p) for p in plat}
+        for _, it in scored:
+            if id(it) not in keep:
+                it["deep"] = True
+                deep.append(it)
+        scored = [(sc, it) for sc, it in scored if id(it) in keep]
+        items = [it for it in items if id(it) in keep]
     free = sorted((sc, it["name"]) for sc, it in scored if it["curated"] is None)
     rank = {name: i for i, (_, name) in enumerate(free)}
     n = max(1, len(free) - 1)
-    plat = [it for it in items if (it["curated"] or 0) >= 99.99]
     if len(plat) > 1:
         raise SystemExit(f"more than one Platinum: {[p['name'] for p in plat]}")
     for _, it in scored:
@@ -165,10 +189,22 @@ def rate(items):
         it["curated"] = 99.99
     for it in items:
         it["curated"] = round(max(1, min(99.99, it["curated"])), 2)
+    if not plat:
+        print("  note: no hand-picked Platinum (rate one core line 100); the hardest core answer gets it")
+    for it in deep:
+        it["curated"] = None
+        it["deep"] = True
+    return len(items), len(deep)
 
 
 def main():
-    arg = sys.argv[1]
+    args = sys.argv[1:]
+    core_cap = None
+    if "--core" in args:
+        i = args.index("--core")
+        core_cap = int(args[i + 1])
+        del args[i : i + 2]
+    arg = args[0]
     vault = arg.startswith("vault/")
     slug = arg.split("/", 1)[1] if vault else arg
     path = ROOT / "data" / ("vault" if vault else "answers") / f"{slug}.txt"
@@ -178,11 +214,12 @@ def main():
         hand.write_text(path.read_text(encoding="utf8"), encoding="utf8")
     head, items = read_list(hand)
     added = merge(items, read_source(ROOT / "data" / "sources" / f"{slug}.tsv"))
-    rate(items)
-    items.sort(key=lambda it: (it["curated"], it["name"]))
-    lines = head + [f"{it['name']}{' | ' + ', '.join(it['aliases']) if it['aliases'] else ''} = {it['curated']:g}" for it in items]
+    n_core, n_deep = rate(items, core_cap)
+    # core easiest first, then the tail alphabetically
+    items.sort(key=lambda it: (bool(it.get("deep")), it["curated"] or 0, it["name"].lower()))
+    lines = head + [f"{it['name']}{' | ' + ', '.join(it['aliases']) if it['aliases'] else ''} = {rating_text(it)}" for it in items]
     path.write_text("\n".join(lines) + "\n", encoding="utf8")
-    print(f"{slug}: {len(items)} answers ({added} new)")
+    print(f"{slug}: {len(items)} answers ({added} new): {n_core} core, {n_deep} deep")
 
 
 if __name__ == "__main__":

@@ -11,6 +11,7 @@ export const SCORING = {
   seconds: 45,
   best: 3,
   points: { copper: 50, gold: 150, diamond: 300, ruby: 500, platinum: 750 } as Record<TierKey, number>,
+  deepCut: 100, // on top of Ruby for an answer from a prompt's deep tail
   multipliers: { 1: 1, 2: 1.25, 3: 1.5 } as Record<1 | 2 | 3, number>,
   // tier cutoffs on the z-score of an answer's difficulty within its prompt
   tierZ: { gold: -1.0, diamond: 0.3, ruby: 1.8 }, // ~16% copper, 46% gold, 35% diamond, 3.6% ruby
@@ -21,6 +22,7 @@ export interface Scored {
   rarity: number; // 1..100 shown to players (normal CDF of z); Platinum is 100
   tier?: TierKey;
   z?: number;
+  deep?: boolean; // deep tail: earns the Deep cut bonus
 }
 
 export interface Tier {
@@ -55,7 +57,7 @@ export function tierFromZ(z: number): TierKey {
 }
 
 export function pointsOf(a: Scored) {
-  return SCORING.points[tierOf(a).key];
+  return SCORING.points[tierOf(a).key] + (a.deep ? SCORING.deepCut : 0);
 }
 
 // Best n answers: most tier points first, ties to the higher z, then submission order.

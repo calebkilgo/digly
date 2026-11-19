@@ -196,13 +196,15 @@ BLOCK = {
 
 # categories that keep their hand file as-is
 for slug in ["african-countries", "bones", "dances", "elements", "european-countries", "greek-myth", "languages", "us-states",
-             "sea-creatures", "kitchen-tools", "clothing", "candy", "olympic-sports", "snakes"]:
+             "sea-creatures", "kitchen-tools", "clothing", "candy", "olympic-sports", "snakes",
+             "pro-teams", "gods"]:
     CATS[slug] = ([], None, [])
 CATS["cheeses"] = ([("foods/curds.json",)], None, [])
 CATS["birds"] = ([(birds,)], None, [])
 
 
-LINE = re.compile(r"^(.+?)(?:\|(.+?))?(?:=\s*([\d.]+))?\s*$")
+# "= deep" marks a deep-tail answer: always accepted, always Ruby, plus the Deep cut bonus
+LINE = re.compile(r"^(.+?)(?:\|(.+?))?(?:=\s*([\d.]+|deep))?\s*$")
 
 
 def parse(text):
@@ -214,8 +216,9 @@ def parse(text):
         m = LINE.match(t)
         name = m.group(1).strip()
         aliases = [a.strip() for a in (m.group(2) or "").split(",") if a.strip()]
-        cur = float(m.group(3)) if m.group(3) else None
-        out.append({"name": name, "aliases": aliases, "curated": cur})
+        deep = m.group(3) == "deep"
+        cur = float(m.group(3)) if m.group(3) and not deep else None
+        out.append({"name": name, "aliases": aliases, "curated": cur, "deep": deep})
     return out
 
 
@@ -256,6 +259,7 @@ class Bag:
                     self.keys[k] = owner
             if owner["curated"] is None and it["curated"] is not None:
                 owner["curated"] = it["curated"]
+                owner["deep"] = False
             return False
         aliases = []
         for a, f in zip(it["aliases"], fs[1:]):
@@ -277,7 +281,7 @@ def estimate(items, commons):
     common_rank = {compact(normalize(n)): i for i, n in enumerate(commons)}
     hand = [(zipf(it["name"]), it["curated"]) for it in items if it["curated"] is not None]
     hand.sort()
-    free = [it for it in items if it["curated"] is None]
+    free = [it for it in items if it["curated"] is None and not it.get("deep")]
     # most frequent first; length breaks ties (longer names are usually more obscure)
     free.sort(key=lambda it: (-zipf(it["name"]), len(it["name"]), it["name"]))
     n = max(1, len(free) - 1)
@@ -297,7 +301,12 @@ def estimate(items, commons):
             # also everyday words), so only the hand-picked commons can be copper.
             it["curated"] = 40 + 59 * (i / n)
     for it in items:
-        it["curated"] = round(max(1, min(99.99, it["curated"])), 2)
+        if not it.get("deep"):
+            it["curated"] = round(max(1, min(99.99, it["curated"])), 2)
+
+
+def rating_text(it):
+    return "deep" if it.get("deep") else f"{it['curated']:g}"
 
 
 def build(slug, misc):
@@ -318,12 +327,12 @@ def build(slug, misc):
             aliases = []
             if transform:
                 name, aliases = transform(name)
-            bag.add({"name": name, "aliases": aliases, "curated": None})
+            bag.add({"name": name, "aliases": aliases, "curated": None, "deep": False})
     estimate(bag.items, commons)
     lines = []
     for it in bag.items:
         al = f" | {', '.join(it['aliases'])}" if it["aliases"] else ""
-        lines.append(f"{it['name']}{al} = {it['curated']:g}")
+        lines.append(f"{it['name']}{al} = {rating_text(it)}")
     return lines
 
 

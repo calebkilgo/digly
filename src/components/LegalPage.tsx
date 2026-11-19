@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL || "privacy@digly.io";
-export const UPDATED = "November 17, 2026";
+export const UPDATED = "November 19, 2026";
 
 // Plain readable page for the policies. The game page locks scrolling, so this scrolls itself.
 export function LegalPage({ title, children }: { title: string; children: React.ReactNode }) {

@@ -6,7 +6,7 @@ import { GameError, type AttemptResult, type AttemptStart, type ChallengeService
 import { URGENT_MS, remainingMs } from "@/game/rules/timer";
 import { DEPTH_MAX_M, LEVELS } from "@/game/rules/levels";
 import { sfx } from "@/audio/sfx";
-import { reportError, track } from "@/lib/track";
+import { promptSlug, reportError, track } from "@/lib/track";
 import { quickMatch } from "@/game/rules/quickCheck";
 import { logCleared, markKey } from "@/lib/perf";
 import { useSceneInsets } from "../SceneHost";
@@ -89,7 +89,7 @@ export function PlayScreen(props: {
               const skew = a.serverNow - (t0 + Date.now()) / 2;
               setAttempt({ ...a, expiresAt: a.expiresAt - skew });
               setWaiting(false);
-              track("dig_started", { mode: run.mode, level: ch.level, day: run.dig.day, resumed: a.accepted.length > 0 });
+              track("dig_started", { mode: run.mode, level: ch.level, day: run.dig.day, resumed: a.accepted.length > 0, prompt: promptSlug(a.challenge.id), vault: run.vault ?? null });
               for (const n of a.found ?? []) found.current.add(n);
               if (a.accepted.length) {
                 setCount(a.accepted.length);

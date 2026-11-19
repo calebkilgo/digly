@@ -193,3 +193,74 @@ describe("migration 0011", () => {
     expect(await go(P, 1000, "d:beagle", "beagle")).toBe("closed"); // finished
   });
 });
+
+describe("migration 0012", () => {
+  it("adds Google ids, email confirmation links and the marketing opt-in", async () => {
+    const db = new PGlite();
+    await db.exec(SQL);
+    await db.exec(SQL2);
+    const SQL12 = readFileSync(new URL("../supabase/migrations/0012_accounts.sql", import.meta.url), "utf8");
+    await db.exec(SQL12);
+    await db.exec(SQL12); // idempotent
+    await db.query("insert into players (id, username, email) values ($1, 'Rocky', 'r@x.io'), ($2, 'Gem', 'g@x.io')", [P, Q]);
+    const p = await db.query<{ marketing_opt_in: boolean; email_verified_at: string | null; google_sub: string | null }>(
+      "select marketing_opt_in, email_verified_at, google_sub from players where id = $1",
+      [P],
+    );
+    expect(p.rows[0]).toEqual({ marketing_opt_in: false, email_verified_at: null, google_sub: null });
+
+    // one Digly account per Google account, any number without one
+    await db.query("update players set google_sub = 's1' where id = $1", [P]);
+    await expect(db.query("update players set google_sub = 's1' where id = $1", [Q])).rejects.toMatchObject({ code: "23505" });
+
+    await db.query("insert into email_verifications (token_hash, player_id, email, expires_at) values ('t', $1, 'r@x.io', now() + interval '1 day')", [P]);
+    const used = await db.query<{ player_id: string; email: string }>("delete from email_verifications where token_hash = 't' returning player_id, email");
+    expect(used.rows).toEqual([{ player_id: P, email: "r@x.io" }]);
+    await db.query("insert into email_verifications (token_hash, player_id, email, expires_at) values ('u', $1, 'r@x.io', now())", [P]);
+    await db.query("delete from players where id = $1", [P]);
+    const left = await db.query<{ n: number }>("select count(*) as n from email_verifications");
+    expect(Number(left.rows[0].n)).toBe(0);
+  });
+});
+
+describe("migration 0013", () => {
+  it("reports growth, prompt averages and topic segments", async () => {
+    const db = new PGlite();
+    await db.exec(SQL);
+    await db.exec(SQL2);
+    const SQL13 = readFileSync(new URL("../supabase/migrations/0013_growth_topics.sql", import.meta.url), "utf8");
+    await db.exec(SQL13);
+    await db.exec(SQL13);
+    const L = Date.UTC(2026, 9, 20);
+    const at = (d: number) => L + (d - 1) * 86_400_000 + 3_600_000;
+    await db.query("insert into players (id) values ($1), ($2)", [P, Q]);
+    const ins = "insert into attempts (id, player_id, day, level, mode, slug, started_at, expires_at, finished_at, points) values ($1,$2,$3,$4,'practice',$5,$6,$6,$6,$7)";
+    let n = 0;
+    const id = () => `00000000-0000-4000-8000-${String(++n).padStart(12, "0")}`;
+    for (let i = 0; i < 3; i++) {
+      await db.query(ins, [id(), P, 1, 1, "fruits", at(1), 300]);
+      await db.query(ins, [id(), Q, 1, 1, "fruits", at(1), 100]);
+      await db.query(ins, [id(), P, 1, 3, "rivers", at(1), 100]);
+      await db.query(ins, [id(), Q, 1, 3, "rivers", at(1), 300]);
+    }
+    await db.query(ins, [id(), P, 2, 1, "fruits", at(2), 200]);
+
+    const g = await db.query<Record<string, number>>("select * from digly_growth($1, 1, 3)", [L]);
+    expect(g.rows.map((r) => [r.day, r.players, r.new_players, r.back_d1])).toEqual([
+      [1, 2, 2, 1],
+      [2, 1, 0, 0],
+      [3, 0, 0, 0],
+    ]);
+
+    const b = await db.query<{ slug: string; level: number; avg_points: number; plays: number }>("select * from digly_prompt_baselines() order by slug");
+    expect(b.rows[0]).toMatchObject({ slug: "fruits", level: 1, plays: 7 });
+
+    const seg = await db.query<{ topic: string; players: number; plays: number }>("select * from digly_topic_segments($1, 3)", [
+      JSON.stringify({ fruits: "food", rivers: "geography" }),
+    ]);
+    expect(seg.rows).toEqual([
+      { topic: "food", players: 1, plays: 7 },
+      { topic: "geography", players: 1, plays: 6 },
+    ]);
+  });
+});

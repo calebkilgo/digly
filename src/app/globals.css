@@ -466,7 +466,7 @@ input {
   .home-layer {
     display: grid;
     grid-template-columns: 1fr minmax(360px, 430px);
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: auto minmax(0, 1fr) auto;
     column-gap: 4vw;
     padding-right: 5vw;
   }
@@ -478,7 +478,8 @@ input {
   }
   .home-col {
     grid-column: 2;
-    grid-row: 2;
+    /* spans the rail's row too, so a tall card can't push the rail off a laptop screen */
+    grid-row: 2 / 4;
     align-self: center;
   }
   .home-col .home-panel {
@@ -1039,6 +1040,11 @@ input {
   width: 124px;
   text-align: center;
   pointer-events: none;
+  visibility: hidden; /* laid out from the start so its height is known */
+}
+
+.rock-label.on {
+  visibility: visible;
   animation: label-in 240ms steps(4);
 }
 
@@ -2211,6 +2217,52 @@ input {
   .home-panel .btn-big { padding-top: 8px; padding-bottom: 8px; }
 }
 
+/* laptops (and desktops with display scaling): about 600 to 820px of height
+   isn't enough for the full card, so it takes the phone's tighter layout */
+@media (min-width: 900px) and (min-height: 560px) and (max-height: 820px) {
+  .home-top { padding-top: 12px; }
+  .home-brand { gap: 8px; --logo-size: clamp(44px, 9vh, 72px); }
+  .home-panel { gap: 8px; padding: 12px 16px 14px; }
+  .home-panel .card-title { font-size: 30px; }
+  .home-panel .chip-lv { padding: 5px 4px 6px; gap: 0; flex-direction: row; justify-content: center; align-items: baseline; }
+  .home-panel .chip-lv .lv-line { display: none; }
+  .home-panel .chip-lv .lv-n { font-size: 15px; white-space: nowrap; }
+  .home-panel .chip-lv .lv-x { font-size: 15px; margin-left: 4px; white-space: nowrap; }
+  .home-panel .facts { font-size: 15px; gap: 2px; }
+  .home-panel .btn-big { padding-top: 8px; padding-bottom: 8px; }
+  .suggest-btn { margin-bottom: 8px; padding: 8px 18px; }
+  .rail { padding-bottom: 18px; }
+}
+
+/* small windows that aren't wide enough for the two-column layout */
+@media (min-width: 521px) and (max-width: 899px) and (max-height: 760px) {
+  .home-top { padding-top: 12px; }
+  .home-brand { gap: 8px; --logo-size: clamp(44px, 9vh, 72px); }
+  .home-panel { gap: 8px; padding: 12px 16px 14px; }
+  .home-panel .chip-lv { padding: 5px 4px 6px; gap: 0; flex-direction: row; justify-content: center; align-items: baseline; }
+  .home-panel .chip-lv .lv-line { display: none; }
+  .home-panel .chip-lv .lv-n, .home-panel .chip-lv .lv-x { font-size: 15px; white-space: nowrap; }
+  .home-panel .chip-lv .lv-x { margin-left: 4px; }
+  .home-panel .facts { font-size: 15px; gap: 2px; }
+  .home-panel .btn-big { padding-top: 8px; padding-bottom: 8px; }
+  .suggest-btn { margin-bottom: 8px; padding: 8px 18px; }
+  .rail { padding-bottom: 12px; }
+}
+
+/* very short narrow windows: smaller tool buttons, no tagline */
+@media (max-width: 899px) and (max-height: 640px) {
+  .home-brand .tagline { display: none; }
+  .tool { min-height: 54px; padding: 4px 2px; font-size: 13px; }
+  .rail { gap: 8px; }
+}
+
+/* short phones (iPhone SE and similar) */
+@media (max-width: 520px) and (max-height: 700px) {
+  .home-top { padding-top: 12px; }
+  .suggest-btn { margin-bottom: 8px; }
+  .rail { padding-bottom: 12px; }
+}
+
 /* search box over the full answer list */
 .all-search {
   width: 100%;
@@ -2359,4 +2411,71 @@ input {
   .banner .big-num {
     font-size: clamp(34px, 10vw, 60px);
   }
+}
+
+/* ---- account sheet extras ----------------------------------------------------- */
+.google-btn {
+  text-decoration: none;
+}
+.or-line {
+  text-align: center;
+}
+.check-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 14px;
+  line-height: 1.35;
+  cursor: pointer;
+}
+.check-row input {
+  width: 20px;
+  height: 20px;
+  margin: 1px 0 0;
+  flex: none;
+  accent-color: var(--plum);
+}
+/* keeps "Create account" on one line in a phone-width sheet */
+.sheet-body .btn-big {
+  font-size: clamp(24px, 7vw, 42px);
+  min-height: 60px;
+  padding: 0 16px;
+}
+
+/* analytics question for EU/UK players */
+.consent-bar {
+  position: fixed;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+  transform: translateX(-50%);
+  z-index: 55;
+  width: min(94vw, 560px);
+  padding: 12px 14px;
+  background: #fff4dc;
+  color: #1b1030;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.35;
+}
+.consent-bar p {
+  margin: 0;
+}
+.consent-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Logbook: best topics */
+.topics ol {
+  margin: 8px 0 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.topics li b {
+  display: block;
 }

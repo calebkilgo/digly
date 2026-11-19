@@ -4,10 +4,11 @@ import { liveRarity, type LiveRarity } from "../rules/rarity";
 import { buildQuickCheck, type QuickCheck } from "../rules/quickCheck";
 import { dayNumber, dayStart, formatChallengeNumber } from "../rules/schedule";
 import { LEVELS } from "../rules/levels";
-import { SEEDS, type ChallengeSeed } from "../data/seeds";
+import { SEEDS, topicOfSeed, type ChallengeSeed } from "../data/seeds";
 import { slugFor } from "../data/rotation";
 import { vaultGameOpen, vaultOpen } from "../rules/plans";
-import { VAULT_CHALLENGES, vaultSlug } from "../data/vault";
+import { VAULT_CHALLENGES, vaultGameOf, vaultSlug } from "../data/vault";
+import { digTotal } from "../rules/levels";
 import {
   GameError,
   type AttemptMode,
@@ -19,9 +20,11 @@ import {
   type SubmitResult,
   type FullAnswer,
   type BoardRow,
+  type PlayerHistory,
+  type PlayerTopic,
 } from "../service/types";
 import { digSlots } from "../service/slots";
-import { StoreConflict, type AnswerEdit, type AttemptRow, type BoardTotal, type Store } from "./store";
+import { StoreConflict, type AnswerEdit, type AttemptRow, type BoardTotal, type PromptBaseline, type Store } from "./store";
 
 const MAX_SUBMISSIONS = 400; // anti-abuse cap per attempt
 const MAX_LEN = 60;
@@ -405,7 +408,7 @@ export class DigEngine {
 
   private scored(a: AnswerRecord, live: Map<string, LiveRarity>): Scored {
     const l = live.get(a.id)!;
-    return { name: a.canonical, rarity: l.rarity, tier: l.tier, z: Math.round(l.z * 1000) / 1000 };
+    return { name: a.canonical, rarity: l.rarity, tier: l.tier, z: Math.round(l.z * 1000) / 1000, ...(l.deep ? { deep: true } : {}) };
   }
 
   // Rebuilt from the stored answers every time, so finish() is idempotent.
@@ -428,7 +431,8 @@ export class DigEngine {
       .filter((a): a is AnswerRecord => !!a)
       .map(reveal);
     const info = LEVELS[row.level - 1];
-    const all = [...index.answers].sort((a, b) => live.get(b.id)!.rating - live.get(a.id)!.rating);
+    // the rarest list and the near misses come from the core; the deep tail is a bonus, not a target
+    const all = index.answers.filter((a) => !a.deep).sort((a, b) => live.get(b.id)!.rating - live.get(a.id)!.rating);
     const niche = new Set(["diamond", "ruby", "platinum"]);
     const missed = all.filter((a) => !got.has(a.id) && niche.has(live.get(a.id)!.tier)).slice(0, 12);
     // rotate through the rare pool so it isn't always the same few
@@ -468,8 +472,9 @@ export class DigEngine {
     const { index } = this.indexed(row.slug);
     const live = await this.rarity(row.slug, row.day);
     const got = new Set(ids);
+    // core rarest first, then the deep tail A to Z
     return [...index.answers]
-      .sort((a, b) => live.get(b.id)!.rating - live.get(a.id)!.rating)
+      .sort((a, b) => Number(!!a.deep) - Number(!!b.deep) || (a.deep ? a.canonical.localeCompare(b.canonical) : live.get(b.id)!.rating - live.get(a.id)!.rating))
       .map((a) => {
         const l = live.get(a.id)!;
         return { ...this.scored(a, live), pct: l.pct, ...(l.estimated ? { est: true } : {}), found: got.has(a.id) };
@@ -487,6 +492,94 @@ export class DigEngine {
 
   async topRejects(slug: string, limit = 100) {
     return this.store.topRejects(slug, limit);
+  }
+
+  // Everything a player has finished, in one read, shaped like the device's own
+  // progress cache. Only whole digs count, the same as on the device: three
+  // ranked levels for a day, or a practice or Vault run of levels 1, 2 and 3.
+  // slug -> topic for every prompt, daily and Vault
+  topicMap(): Record<string, string> {
+    const out: Record<string, string> = {};
+    for (const s of [...this.seeds(), ...VAULT_CHALLENGES]) out[s.slug] = topicOfSeed(s);
+    return out;
+  }
+
+  private baselines: { at: number; map: Map<string, PromptBaseline> } | null = null;
+
+  // Which topics this player beats the average in. Needs a few plays per topic,
+  // and enough plays from everyone on a prompt for its average to mean something.
+  async topics(playerId: string, minPlays = 3): Promise<PlayerTopic[]> {
+    const mine = (await this.store.listFinishedAttempts(playerId)).filter((a) => a.points !== null);
+    if (mine.length < minPlays) return [];
+    if (!this.baselines || this.now() - this.baselines.at > 10 * 60_000) {
+      const rows = await this.store.promptBaselines();
+      this.baselines = { at: this.now(), map: new Map(rows.map((b) => [`${b.slug}|${b.level}`, b])) };
+    }
+    const topicOf = this.topicMap();
+    const per = new Map<string, { n: number; sum: number }>();
+    for (const a of mine) {
+      const b = this.baselines.map.get(`${a.slug}|${a.level}`);
+      if (!b || b.plays < 5 || b.avgPoints <= 0) continue;
+      const t = topicOf[a.slug] ?? "other";
+      const x = per.get(t) ?? { n: 0, sum: 0 };
+      x.n++;
+      x.sum += a.points! / b.avgPoints;
+      per.set(t, x);
+    }
+    return [...per]
+      .filter(([, x]) => x.n >= minPlays)
+      .map(([topic, x]) => ({ topic, plays: x.n, strength: Math.round((x.sum / x.n) * 100) }))
+      .sort((a, b) => b.strength - a.strength || b.plays - a.plays);
+  }
+
+  async history(playerId: string): Promise<PlayerHistory> {
+    const rows = await this.store.listFinishedAttempts(playerId);
+    const ranked = new Map<number, AttemptRow[]>();
+    const practice = new Map<number, { best: number; titles: string[] }>();
+    const vault = new Map<number, { best: number; titles: string[] }>();
+    let run: AttemptRow[] = [];
+    let runKey = "";
+    const title = (slug: string) => this.findSeed(slug)?.title ?? slug;
+    const closeRun = () => {
+      if (run.length !== 3) return;
+      const best = digTotal(run.map((r) => r.points ?? 0));
+      const titles = run.map((r) => title(r.slug));
+      const game = vaultGameOf(run[0].slug);
+      const into = game !== null ? vault : practice;
+      const key = game ?? run[0].day;
+      const prev = into.get(key);
+      if (!prev || best > prev.best) into.set(key, { best, titles });
+    };
+    for (const r of rows) {
+      if (r.mode === "ranked") {
+        const list = ranked.get(r.day) ?? [];
+        if (!list.some((x) => x.level === r.level)) list.push(r);
+        ranked.set(r.day, list);
+        continue;
+      }
+      const game = vaultGameOf(r.slug);
+      const key = game !== null ? `v${game}` : `d${r.day}`;
+      if (r.level === 1) {
+        run = [r];
+        runKey = key;
+      } else if (key === runKey && run.length === r.level - 1) {
+        run.push(r);
+        if (run.length === 3) closeRun();
+      } else run = [];
+    }
+    return {
+      ranked: [...ranked.entries()]
+        .filter(([, l]) => l.length === 3)
+        .map(([day, l]) => ({
+          day,
+          score: digTotal(l.map((r) => r.points ?? 0)),
+          unique: l.reduce((s, r) => s + r.uniqueCount, 0),
+          finishedAt: Math.max(...l.map((r) => r.finishedAt ?? 0)),
+        }))
+        .sort((a, b) => a.day - b.day),
+      practice: [...practice.entries()].map(([day, v]) => ({ day, ...v })),
+      vault: [...vault.entries()].map(([game, v]) => ({ game, ...v })),
+    };
   }
 
   async board(playerId: string | null, day: number, limit = 100): Promise<BoardRow[]> {

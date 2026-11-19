@@ -1,8 +1,23 @@
 import type { AttemptMode } from "../service/types";
-import { StoreConflict, submitSteps, type Guess, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store, type Suggestion, type SuggestionStatus, type AdminStats, type AdminLogEntry, type AnswerEdit, type LiveAttempt } from "./store";
+import { StoreConflict, submitSteps, type Guess, type NewAccount, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store, type Suggestion, type SuggestionStatus, type AdminStats, type AdminLogEntry, type AnswerEdit, type LiveAttempt, type GrowthRow, type PromptBaseline, type TopicSegment } from "./store";
 
 export interface MemoryData {
-  players: Record<string, { name: string; username?: string; passwordHash?: string; email?: string | null; isAdmin?: boolean; unlimited?: boolean }>;
+  players: Record<
+    string,
+    {
+      name: string;
+      username?: string;
+      passwordHash?: string | null;
+      email?: string | null;
+      isAdmin?: boolean;
+      unlimited?: boolean;
+      googleSub?: string | null;
+      emailVerified?: boolean;
+      marketing?: boolean;
+      accountCreatedAt?: number;
+    }
+  >;
+  verifications?: Record<string, { playerId: string; email: string; expiresAt: number }>;
   purchases?: Record<string, Purchase & { status: "paid" | "refunded" }>;
   sessions?: Record<string, { playerId: string; expiresAt: number }>;
   resets?: Record<string, { playerId: string; expiresAt: number }>;
@@ -41,23 +56,88 @@ export class MemoryStore implements Store {
 
   async getPlayer(id: string): Promise<PlayerInfo | null> {
     const p = this.data.players[id];
-    return p ? { id, username: p.username ?? null, isAdmin: !!p.isAdmin, email: p.email ?? null, unlimited: !!p.unlimited } : null;
+    return p
+      ? {
+          id,
+          username: p.username ?? null,
+          isAdmin: !!p.isAdmin,
+          email: p.email ?? null,
+          unlimited: !!p.unlimited,
+          emailVerified: !!p.email && !!p.emailVerified,
+          google: !!p.googleSub,
+          hasPassword: !!p.passwordHash,
+          marketing: !!p.marketing,
+        }
+      : null;
   }
 
-  async claimAccount(id: string, a: { username: string; passwordHash: string; email: string | null }) {
+  async claimAccount(id: string, a: NewAccount) {
     const lower = a.username.toLowerCase();
     if (Object.values(this.data.players).some((p) => p.username?.toLowerCase() === lower)) throw new StoreConflict();
+    if (a.googleSub && Object.values(this.data.players).some((p) => p.googleSub === a.googleSub)) throw new StoreConflict();
     const p = (this.data.players[id] ??= { name: "" });
     if (p.username) throw new StoreConflict();
-    Object.assign(p, { username: a.username, passwordHash: a.passwordHash, email: a.email });
+    Object.assign(p, {
+      username: a.username,
+      passwordHash: a.passwordHash,
+      email: a.email,
+      googleSub: a.googleSub ?? null,
+      emailVerified: !!a.email && !!a.emailVerified,
+      marketing: !!a.marketing,
+      accountCreatedAt: Date.now(),
+    });
     if (this.devAdmins.includes(lower)) p.isAdmin = true;
+    this.changed();
+  }
+
+  async findByGoogle(sub: string) {
+    const hit = Object.entries(this.data.players).find(([, p]) => p.googleSub === sub && p.username);
+    return hit ? { playerId: hit[0], username: hit[1].username! } : null;
+  }
+
+  async linkGoogle(playerId: string, sub: string) {
+    if (Object.entries(this.data.players).some(([id, p]) => p.googleSub === sub && id !== playerId)) throw new StoreConflict();
+    const p = this.data.players[playerId];
+    if (p) p.googleSub = sub;
+    this.changed();
+  }
+
+  async emailInUse(email: string, exceptPlayerId?: string) {
+    const e = email.toLowerCase();
+    return Object.entries(this.data.players).some(([id, p]) => id !== exceptPlayerId && !!p.username && (p.email ?? "").toLowerCase() === e);
+  }
+
+  async createEmailVerification(tokenHash: string, playerId: string, email: string, expiresAt: number) {
+    (this.data.verifications ??= {})[tokenHash] = { playerId, email, expiresAt };
+    this.changed();
+  }
+
+  async useEmailVerification(tokenHash: string, now: number) {
+    const v = this.data.verifications?.[tokenHash];
+    if (!v) return null;
+    delete this.data.verifications![tokenHash];
+    this.changed();
+    return v.expiresAt > now ? { playerId: v.playerId, email: v.email } : null;
+  }
+
+  async markEmailVerified(playerId: string, email: string) {
+    const p = this.data.players[playerId];
+    if (!p || (p.email ?? "").toLowerCase() !== email.toLowerCase()) return false;
+    p.emailVerified = true;
+    this.changed();
+    return true;
+  }
+
+  async setMarketing(playerId: string, on: boolean) {
+    const p = this.data.players[playerId];
+    if (p) p.marketing = on;
     this.changed();
   }
 
   async findAccount(username: string) {
     const lower = username.toLowerCase();
     const hit = Object.entries(this.data.players).find(([, p]) => p.username?.toLowerCase() === lower);
-    return hit && hit[1].passwordHash ? { playerId: hit[0], username: hit[1].username!, passwordHash: hit[1].passwordHash } : null;
+    return hit && hit[1].passwordHash ? { playerId: hit[0], username: hit[1].username!, passwordHash: hit[1].passwordHash as string } : null;
   }
 
   async createSession(tokenHash: string, playerId: string, expiresAt: number) {
@@ -103,6 +183,7 @@ export class MemoryStore implements Store {
     await this.deleteAttempts(playerId, null);
     await this.deleteSessionsFor(playerId);
     for (const [k, v] of Object.entries(this.data.resets ?? {})) if (v.playerId === playerId) delete this.data.resets![k];
+    for (const [k, v] of Object.entries(this.data.verifications ?? {})) if (v.playerId === playerId) delete this.data.verifications![k];
     delete this.data.players[playerId];
     this.changed();
   }
@@ -113,9 +194,12 @@ export class MemoryStore implements Store {
     return hit ? { playerId: hit[0], username: hit[1].username!, email: hit[1].email ?? null } : null;
   }
 
-  async setEmail(playerId: string, email: string | null) {
+  async setEmail(playerId: string, email: string | null, verified = false) {
     const p = this.data.players[playerId];
-    if (p) p.email = email;
+    if (p) {
+      if ((p.email ?? null) !== email || verified) p.emailVerified = !!email && verified;
+      p.email = email;
+    }
     this.changed();
   }
 
@@ -157,6 +241,13 @@ export class MemoryStore implements Store {
   async listAttempts(playerId: string, day: number, mode: AttemptMode) {
     return Object.values(this.data.attempts)
       .filter((a) => a.playerId === playerId && a.day === day && a.mode === mode)
+      .map((a) => ({ ...a }));
+  }
+
+  async listFinishedAttempts(playerId: string) {
+    return Object.values(this.data.attempts)
+      .filter((a) => a.playerId === playerId && a.finishedAt !== null)
+      .sort((a, b) => a.startedAt - b.startedAt)
       .map((a) => ({ ...a }));
   }
 
@@ -268,6 +359,76 @@ export class MemoryStore implements Store {
       diggersToday: ranked.filter((a) => a.level === 1).length,
       finishedToday: ranked.filter((a) => a.level === 3 && a.finishedAt !== null).length,
     };
+  }
+
+  async growth(launchMs: number, fromDay: number, toDay: number): Promise<GrowthRow[]> {
+    const dayOf = (t: number) => Math.floor((t - launchMs) / 86_400_000) + 1;
+    const act = new Map<string, Set<number>>();
+    for (const a of Object.values(this.data.attempts)) {
+      const set = act.get(a.playerId) ?? new Set<number>();
+      set.add(dayOf(a.startedAt));
+      act.set(a.playerId, set);
+    }
+    const first = new Map([...act].map(([pid, ds]) => [pid, Math.min(...ds)]));
+    const attempts = Object.values(this.data.attempts);
+    const rows: GrowthRow[] = [];
+    for (let day = fromDay; day <= toDay; day++) {
+      const cohort = [...first].filter(([, d0]) => d0 === day).map(([pid]) => pid);
+      rows.push({
+        day,
+        players: [...act.values()].filter((ds) => ds.has(day)).length,
+        newPlayers: cohort.length,
+        accounts: Object.values(this.data.players).filter((p) => p.accountCreatedAt !== undefined && dayOf(p.accountCreatedAt) === day).length,
+        rankedStarted: attempts.filter((a) => a.day === day && a.mode === "ranked" && a.level === 1).length,
+        rankedFinished: attempts.filter((a) => a.day === day && a.mode === "ranked" && a.level === 3 && a.finishedAt !== null).length,
+        backD1: cohort.filter((pid) => act.get(pid)!.has(day + 1)).length,
+        backD7: cohort.filter((pid) => act.get(pid)!.has(day + 7)).length,
+      });
+    }
+    return rows;
+  }
+
+  async promptBaselines(): Promise<PromptBaseline[]> {
+    const by = new Map<string, PromptBaseline>();
+    for (const a of Object.values(this.data.attempts)) {
+      if (a.finishedAt === null || a.points === null) continue;
+      const k = `${a.slug}|${a.level}`;
+      const b = by.get(k) ?? { slug: a.slug, level: a.level, avgPoints: 0, plays: 0 };
+      b.avgPoints = (b.avgPoints * b.plays + a.points) / (b.plays + 1);
+      b.plays++;
+      by.set(k, b);
+    }
+    return [...by.values()];
+  }
+
+  async topicSegments(topics: Record<string, string>, minPlays: number): Promise<TopicSegment[]> {
+    const base = new Map((await this.promptBaselines()).filter((b) => b.avgPoints > 0).map((b) => [`${b.slug}|${b.level}`, b.avgPoints]));
+    const per = new Map<string, Map<string, { n: number; sum: number }>>();
+    for (const a of Object.values(this.data.attempts)) {
+      const avg = a.finishedAt !== null && a.points !== null ? base.get(`${a.slug}|${a.level}`) : undefined;
+      if (avg === undefined) continue;
+      const t = topics[a.slug] ?? "other";
+      const m = per.get(a.playerId) ?? new Map();
+      const x = m.get(t) ?? { n: 0, sum: 0 };
+      x.n++;
+      x.sum += a.points! / avg;
+      m.set(t, x);
+      per.set(a.playerId, m);
+    }
+    const plays = new Map<string, number>();
+    const players = new Map<string, number>();
+    for (const m of per.values()) {
+      let best: [string, number] | null = null;
+      for (const [t, x] of m) {
+        plays.set(t, (plays.get(t) ?? 0) + x.n);
+        const r = x.sum / x.n;
+        if (x.n >= minPlays && (!best || r > best[1] || (r === best[1] && t < best[0]))) best = [t, r];
+      }
+      if (best) players.set(best[0], (players.get(best[0]) ?? 0) + 1);
+    }
+    return [...plays]
+      .map(([topic, n]) => ({ topic, plays: n, players: players.get(topic) ?? 0 }))
+      .sort((a, b) => b.plays - a.plays || a.topic.localeCompare(b.topic));
   }
 
   async listAdmins() {

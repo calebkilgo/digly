@@ -1,7 +1,7 @@
 import "server-only";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { StoreConflict, submitSteps, type Guess, type GuessOutcome, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store, type Suggestion, type SuggestionStatus, type AdminStats, type AdminLogEntry, type AnswerEdit, type LiveAttempt } from "@/game/engine/store";
-import type { AttemptMode, LevelNo } from "@/game/service/types";
+import { StoreConflict, submitSteps, type Guess, type GuessOutcome, type NewAccount, type AttemptRow, type BoardTotal, type PlayerInfo, type Purchase, type Store, type Suggestion, type SuggestionStatus, type AdminStats, type AdminLogEntry, type AnswerEdit, type LiveAttempt, type GrowthRow, type PromptBaseline, type TopicSegment } from "@/game/engine/store";
+import { GameError, type AttemptMode, type LevelNo } from "@/game/service/types";
 
 interface DbAttempt {
   id: string;
@@ -71,6 +71,10 @@ class Ttl<V> {
 
 // PostgREST and Postgres codes for "no such function"
 const missingFn = (e: { code?: string } | null) => e?.code === "PGRST202" || e?.code === "42883";
+// "no such column" or table: a migration hasn't been run yet
+const missingCol = (e: { code?: string } | null) => e?.code === "42703" || e?.code === "PGRST204" || e?.code === "42P01" || e?.code === "PGRST205";
+const LEGACY_PLAYER = "id,username,is_admin,email,unlimited";
+const PLAYER_COLS = `${LEGACY_PLAYER},password_hash,google_sub,email_verified_at,marketing_opt_in`;
 
 function check<T>(res: { data: T; error: { code?: string; message: string } | null }): T {
   if (res.error) throw new Error(`supabase: ${res.error.message}`);
@@ -83,6 +87,16 @@ export class SupabaseStore implements Store {
   private players = new Ttl<PlayerInfo | null>(15_000);
   private known = new Set<string>(); // player rows we know exist
   private oneTripSubmit = true; // off if migration 0011 hasn't been run yet
+  private accounts12 = true; // off until migration 0012 (Google, verified email) is run
+
+  private noMigration12(e: unknown) {
+    this.accounts12 = false;
+    console.warn("digly: run supabase/migrations/0012_accounts.sql for Google sign-in and email verification.", e);
+  }
+
+  private need12() {
+    if (!this.accounts12) throw new GameError("not_open", "This needs a database update first (migration 0012).");
+  }
 
   constructor(url: string, serviceKey: string) {
     this.db = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
@@ -102,7 +116,12 @@ export class SupabaseStore implements Store {
       const hit = this.players.get(id);
       if (hit !== undefined) return hit && { ...hit };
     }
-    const data = check(await this.db.from("players").select("id,username,is_admin,email,unlimited").eq("id", id).maybeSingle());
+    let res = await this.db.from("players").select(this.accounts12 ? PLAYER_COLS : LEGACY_PLAYER).eq("id", id).maybeSingle();
+    if (res.error && missingCol(res.error) && this.accounts12) {
+      this.noMigration12(res.error);
+      res = await this.db.from("players").select(LEGACY_PLAYER).eq("id", id).maybeSingle();
+    }
+    const data = check(res) as Record<string, unknown> | null;
     const p = data
       ? {
           id: data.id as string,
@@ -110,6 +129,11 @@ export class SupabaseStore implements Store {
           isAdmin: data.is_admin === true,
           email: (data.email as string | null) ?? null,
           unlimited: data.unlimited === true,
+          emailVerified: !!data.email && !!data.email_verified_at,
+          google: !!data.google_sub,
+          // only whether one is set; the hash itself never leaves this method
+          hasPassword: this.accounts12 ? !!data.password_hash : true,
+          marketing: data.marketing_opt_in === true,
         }
       : null;
     this.players.set(id, p);
@@ -117,13 +141,25 @@ export class SupabaseStore implements Store {
     return p && { ...p };
   }
 
-  async claimAccount(id: string, a: { username: string; passwordHash: string; email: string | null }) {
-    const res = await this.db
-      .from("players")
-      .update({ username: a.username, password_hash: a.passwordHash, email: a.email, account_created_at: new Date().toISOString() })
-      .eq("id", id)
-      .is("username", null)
-      .select("id");
+  async claimAccount(id: string, a: NewAccount) {
+    const now = new Date().toISOString();
+    const base: Record<string, unknown> = { username: a.username, password_hash: a.passwordHash, email: a.email, account_created_at: now };
+    // a Google account can't exist without 0012; the opt-in and verified flag just wait for it
+    if (a.googleSub) this.need12();
+    const full = () => ({
+      ...base,
+      google_sub: a.googleSub ?? null,
+      email_verified_at: a.email && a.emailVerified ? now : null,
+      marketing_opt_in: !!a.marketing,
+      marketing_opt_in_at: a.marketing ? now : null,
+    });
+    const claim = (row: Record<string, unknown>) => this.db.from("players").update(row).eq("id", id).is("username", null).select("id");
+    let res = await claim(this.accounts12 ? full() : base);
+    if (res.error && missingCol(res.error) && this.accounts12) {
+      this.noMigration12(res.error);
+      if (a.googleSub) this.need12();
+      res = await claim(base);
+    }
     if (res.error?.code === "23505") throw new StoreConflict();
     const rows = check(res);
     if (!rows || rows.length === 0) throw new StoreConflict();
@@ -214,8 +250,68 @@ export class SupabaseStore implements Store {
     return data ? { playerId: data.id as string, username: data.username as string, email: (data.email as string | null) ?? null } : null;
   }
 
-  async setEmail(playerId: string, email: string | null) {
-    check(await this.db.from("players").update({ email }).eq("id", playerId));
+  async setEmail(playerId: string, email: string | null, verified = false) {
+    const row: Record<string, unknown> = { email };
+    if (this.accounts12) {
+      // a changed address starts unverified; the same address keeps its state
+      const cur = await this.getPlayer(playerId, { fresh: true });
+      if (verified || (cur?.email ?? null) !== email) row.email_verified_at = email && verified ? new Date().toISOString() : null;
+    }
+    check(await this.db.from("players").update(row).eq("id", playerId));
+    this.players.delete(playerId);
+  }
+
+  async findByGoogle(sub: string) {
+    if (!this.accounts12) return null;
+    const res = await this.db.from("players").select("id,username").eq("google_sub", sub).not("username", "is", null).limit(1).maybeSingle();
+    if (res.error && missingCol(res.error)) {
+      this.noMigration12(res.error);
+      return null;
+    }
+    const data = check(res);
+    return data ? { playerId: data.id as string, username: data.username as string } : null;
+  }
+
+  async linkGoogle(playerId: string, sub: string) {
+    this.need12();
+    const res = await this.db.from("players").update({ google_sub: sub }).eq("id", playerId);
+    if (res.error?.code === "23505") throw new StoreConflict();
+    check(res);
+    this.players.delete(playerId);
+  }
+
+  async emailInUse(email: string, exceptPlayerId?: string) {
+    let q = this.db.from("players").select("id").ilike("email", email.replace(/[\\%_]/g, "\\$&")).not("username", "is", null).limit(1);
+    if (exceptPlayerId) q = q.neq("id", exceptPlayerId);
+    const data = check(await q);
+    return (data as unknown[]).length > 0;
+  }
+
+  async createEmailVerification(tokenHash: string, playerId: string, email: string, expiresAt: number) {
+    this.need12();
+    check(await this.db.from("email_verifications").insert({ token_hash: tokenHash, player_id: playerId, email, expires_at: new Date(expiresAt).toISOString() }));
+  }
+
+  async useEmailVerification(tokenHash: string, now: number) {
+    this.need12();
+    const data = check(await this.db.from("email_verifications").delete().eq("token_hash", tokenHash).select("player_id,email,expires_at"));
+    const row = (data as { player_id: string; email: string; expires_at: string }[] | null)?.[0];
+    if (!row) return null;
+    return new Date(row.expires_at).getTime() > now ? { playerId: row.player_id, email: row.email } : null;
+  }
+
+  async markEmailVerified(playerId: string, email: string) {
+    this.need12();
+    const data = check(
+      await this.db.from("players").update({ email_verified_at: new Date().toISOString() }).eq("id", playerId).ilike("email", email.replace(/[\\%_]/g, "\\$&")).select("id"),
+    );
+    this.players.delete(playerId);
+    return (data as unknown[]).length > 0;
+  }
+
+  async setMarketing(playerId: string, on: boolean) {
+    this.need12();
+    check(await this.db.from("players").update({ marketing_opt_in: on, marketing_opt_in_at: on ? new Date().toISOString() : null }).eq("id", playerId));
     this.players.delete(playerId);
   }
 
@@ -309,6 +405,37 @@ export class SupabaseStore implements Store {
       count(this.db.from("attempts").select("id", head).eq("day", day).eq("mode", "ranked").eq("level", 3).not("finished_at", "is", null)),
     ]);
     return { players, accounts, unlimited, diggersToday, finishedToday };
+  }
+
+  // the 0013 functions; a clear message instead of a 500 until it's run
+  private async rpc0013<T>(fn: string, args: Record<string, unknown>) {
+    const res = await this.db.rpc(fn, args);
+    if (res.error && (res.error.code === "PGRST202" || res.error.code === "42883"))
+      throw new GameError("not_open", "Run supabase/migrations/0013_growth_topics.sql to see these numbers.");
+    return (check(res) ?? []) as T[];
+  }
+
+  async growth(launchMs: number, fromDay: number, toDay: number): Promise<GrowthRow[]> {
+    const rows = await this.rpc0013<Record<string, number>>("digly_growth", { p_launch_ms: launchMs, p_from: fromDay, p_to: toDay });
+    return rows.map((r) => ({
+      day: r.day,
+      players: r.players,
+      newPlayers: r.new_players,
+      accounts: r.accounts,
+      rankedStarted: r.ranked_started,
+      rankedFinished: r.ranked_finished,
+      backD1: r.back_d1,
+      backD7: r.back_d7,
+    }));
+  }
+
+  async promptBaselines(): Promise<PromptBaseline[]> {
+    const rows = await this.rpc0013<{ slug: string; level: number; avg_points: number; plays: number }>("digly_prompt_baselines", {});
+    return rows.map((r) => ({ slug: r.slug, level: r.level, avgPoints: Number(r.avg_points), plays: r.plays }));
+  }
+
+  async topicSegments(topics: Record<string, string>, minPlays: number): Promise<TopicSegment[]> {
+    return this.rpc0013<TopicSegment>("digly_topic_segments", { p_topics: topics, p_min_plays: minPlays });
   }
 
   async listAdmins() {
@@ -414,6 +541,13 @@ export class SupabaseStore implements Store {
 
   async listAttempts(playerId: string, day: number, mode: AttemptMode) {
     const data = check(await this.db.from("attempts").select(COLS).eq("player_id", playerId).eq("day", day).eq("mode", mode));
+    return (data as DbAttempt[]).map(fromDb);
+  }
+
+  async listFinishedAttempts(playerId: string) {
+    const data = check(
+      await this.db.from("attempts").select(COLS).eq("player_id", playerId).not("finished_at", "is", null).order("started_at").limit(5000),
+    );
     return (data as DbAttempt[]).map(fromDb);
   }
 

@@ -22,6 +22,19 @@ export interface PlayerInfo {
   isAdmin?: boolean;
   email?: string | null;
   unlimited?: boolean;
+  emailVerified?: boolean;
+  google?: boolean; // signs in with Google
+  hasPassword?: boolean;
+  marketing?: boolean; // opted in to marketing emails
+}
+
+export interface NewAccount {
+  username: string;
+  passwordHash: string | null; // null for a Google-only account
+  email: string | null;
+  googleSub?: string | null;
+  emailVerified?: boolean;
+  marketing?: boolean;
 }
 
 export interface Purchase {
@@ -50,7 +63,19 @@ export interface Store {
   // fresh: skip any short-lived cache (admin checks, payments)
   getPlayer(playerId: string, opts?: { fresh?: boolean }): Promise<PlayerInfo | null>;
   // turns a guest into an account; StoreConflict if the username is taken
-  claimAccount(playerId: string, a: { username: string; passwordHash: string; email: string | null }): Promise<void>;
+  claimAccount(playerId: string, a: NewAccount): Promise<void>;
+  // Google's stable id for the person, linked to at most one account
+  findByGoogle(sub: string): Promise<{ playerId: string; username: string } | null>;
+  // StoreConflict if that Google account is already linked elsewhere
+  linkGoogle(playerId: string, sub: string): Promise<void>;
+  // another account already has this email
+  emailInUse(email: string, exceptPlayerId?: string): Promise<boolean>;
+  createEmailVerification(tokenHash: string, playerId: string, email: string, expiresAt: number): Promise<void>;
+  // single use; null when unknown or expired
+  useEmailVerification(tokenHash: string, now: number): Promise<{ playerId: string; email: string } | null>;
+  // marks the email verified only if it's still the account's email
+  markEmailVerified(playerId: string, email: string): Promise<boolean>;
+  setMarketing(playerId: string, on: boolean): Promise<void>;
   findAccount(username: string): Promise<{ playerId: string; username: string; passwordHash: string } | null>;
   createSession(tokenHash: string, playerId: string, expiresAt: number): Promise<void>;
   sessionPlayer(tokenHash: string, now: number): Promise<string | null>;
@@ -60,7 +85,8 @@ export interface Store {
   deletePlayer(playerId: string): Promise<void>;
   // password reset
   findByLogin(usernameOrEmail: string): Promise<{ playerId: string; username: string; email: string | null } | null>;
-  setEmail(playerId: string, email: string | null): Promise<void>;
+  // a new address starts unverified unless `verified` (Google already checked it)
+  setEmail(playerId: string, email: string | null, verified?: boolean): Promise<void>;
   setPassword(playerId: string, passwordHash: string): Promise<void>;
   createReset(tokenHash: string, playerId: string, expiresAt: number): Promise<void>;
   // one use: returns the player and deletes the token, or null if unknown or expired
@@ -73,6 +99,8 @@ export interface Store {
   insertAttempt(row: AttemptRow): Promise<void>;
   getAttempt(id: string): Promise<AttemptRow | null>;
   listAttempts(playerId: string, day: number, mode: AttemptMode): Promise<AttemptRow[]>;
+  // every finished attempt of a player, oldest first (their history on any device)
+  listFinishedAttempts(playerId: string): Promise<AttemptRow[]>;
   bumpSubmissions(id: string): Promise<number>;
   // false if this answer is already on the attempt
   addAnswer(attemptId: string, answerId: string): Promise<boolean>;
@@ -102,6 +130,12 @@ export interface Store {
   // returns the idea's text, or null if there's no such idea
   setSuggestionStatus(id: number, status: SuggestionStatus, by: string, at: number): Promise<string | null>;
   adminStats(day: number): Promise<AdminStats>;
+  // players per game day, new players and how many came back (migration 0013)
+  growth(launchMs: number, fromDay: number, toDay: number): Promise<GrowthRow[]>;
+  // average points per prompt and level across every finished attempt
+  promptBaselines(): Promise<PromptBaseline[]>;
+  // plays per topic and how many players are strongest in each (topics: slug -> topic)
+  topicSegments(topics: Record<string, string>, minPlays: number): Promise<TopicSegment[]>;
   listAdmins(): Promise<{ id: string; username: string }[]>;
   // returns the player's id, or null if there's no account with that name
   setAdminByUsername(username: string, admin: boolean): Promise<string | null>;
@@ -136,6 +170,30 @@ export interface AdminStats {
   unlimited: number;
   diggersToday: number; // started today's ranked dig
   finishedToday: number; // finished all three levels today
+}
+
+export interface GrowthRow {
+  day: number;
+  players: number; // started at least one attempt that day
+  newPlayers: number; // ...and never before
+  accounts: number; // accounts made that day
+  rankedStarted: number;
+  rankedFinished: number;
+  backD1: number; // of that day's new players, how many played the next day
+  backD7: number; // ...and seven days later
+}
+
+export interface PromptBaseline {
+  slug: string;
+  level: number;
+  avgPoints: number;
+  plays: number;
+}
+
+export interface TopicSegment {
+  topic: string;
+  players: number; // players whose strongest topic this is
+  plays: number;
 }
 
 export interface LiveAttempt {

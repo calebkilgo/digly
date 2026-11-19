@@ -5,8 +5,10 @@ export interface AnswerRecord {
   canonical: string;
   normalized: string;
   aliases: string[]; // normalized
-  curated: number; // hand-estimated rarity from the seed file
+  curated: number; // hand-estimated rarity from the seed file (100 for the deep tail)
   rarity: number; // calibrated score 1..100; exactly one answer per category is 100
+  deep?: boolean; // deep tail ("= deep"): always accepted, always Ruby, plus the Deep cut bonus
+  plat?: boolean; // the hand-picked Platinum (the one core line rated 99.99 or more)
 }
 
 export type MatchKind = "exact" | "alias" | "plural" | "filler" | "reordered" | "typo" | "sounds-like" | "first-word";
@@ -68,7 +70,10 @@ export function soundKey(s: string): string {
 // score low, rare ones climb fast, and the single rarest answer is 100.
 // Ties in the curated value share a score. If two answers tie for rarest,
 // the one listed last in the seed file is the Platinum.
-export function calibrate(records: AnswerRecord[]) {
+// Only the core sets the tiers; the deep tail sits just under the Platinum.
+export function calibrate(all: AnswerRecord[]) {
+  for (const r of all) if (r.deep) r.rarity = 99;
+  const records = all.filter((r) => !r.deep);
   const n = records.length;
   if (!n) return;
   const sorted = records.map((r, i) => ({ r, i })).sort((a, b) => a.r.curated - b.r.curated || a.i - b.i);
@@ -260,18 +265,22 @@ export function parseAnswerBlock(block: string, prefix: string): AnswerRecord[] 
   for (const line of block.split("\n")) {
     const t = line.trim();
     if (!t || t.startsWith("#")) continue;
-    const m = t.match(/^(.+?)(?:\|(.+?))?=\s*(\d+(?:\.\d+)?)\s*$/);
+    const m = t.match(/^(.+?)(?:\|(.+?))?=\s*(\d+(?:\.\d+)?|deep)\s*$/);
     if (!m) throw new Error(`Bad answer line: ${t}`);
+    const deep = m[3] === "deep";
     const canonical = m[1].trim();
     const aliases = (m[2] ?? "")
       .split(",")
       .map((s) => normalize(s))
       .filter(Boolean);
-    const curated = Number(m[3]);
+    const curated = deep ? 100 : Number(m[3]);
     if (curated < 1 || curated > 100) throw new Error(`Rarity out of range: ${t}`);
     const normalized = normalize(canonical);
-    out.push({ id: `${prefix}:${compact(normalized)}`, canonical, normalized, aliases, curated, rarity: curated });
+    out.push({ id: `${prefix}:${compact(normalized)}`, canonical, normalized, aliases, curated, rarity: curated, ...(deep ? { deep: true } : {}) });
   }
+  // a hand-picked Platinum counts only when exactly one core line is marked
+  const plats = out.filter((r) => !r.deep && r.curated >= 99.99);
+  if (plats.length === 1) plats[0].plat = true;
   calibrate(out);
   return out;
 }

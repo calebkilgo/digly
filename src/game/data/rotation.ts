@@ -12,6 +12,11 @@ import { SEEDS } from "./seeds";
 const LEGACY_LAST_DAY = 29;
 const AUTO_FROM = 30; // 2026-11-18
 
+// Days on which every level starts a fresh cycle, so prompts added (since) or
+// taken out (retiredFrom) on that day show up right away instead of waiting
+// for the running cycle to end. Must be a day nobody has played yet when it ships.
+export const RESETS = [34]; // 2026-11-22: pro teams and gods merged
+
 const LEGACY: Record<1 | 2 | 3, string[]> = {
   1: ["dog-breeds", "fruits", "us-states", "birds"],
   2: ["african-countries", "instruments", "cheeses", "european-countries", "dances"],
@@ -20,7 +25,9 @@ const LEGACY: Record<1 | 2 | 3, string[]> = {
 const STRIDE = { 1: [1, 0], 2: [3, 1], 3: [5, 2] } as const;
 
 function pool(level: 1 | 2 | 3, cycleStart: number) {
-  return SEEDS.filter((s) => s.level === level && !s.retired && (s.since ?? 0) <= cycleStart).map((s) => s.slug);
+  return SEEDS.filter(
+    (s) => s.level === level && !s.retired && (s.since ?? 0) <= cycleStart && (s.retiredFrom === undefined || cycleStart < s.retiredFrom),
+  ).map((s) => s.slug);
 }
 
 // Days whose category changed after people had started playing them.
@@ -65,8 +72,10 @@ function compute(day: number, level: 1 | 2 | 3): string {
     const cyc = order(pool(level, start), level, start);
     // don't repeat a category across a cycle boundary
     if (prevLast && cyc[0] === prevLast && cyc.length > 1) [cyc[0], cyc[1]] = [cyc[1], cyc[0]];
-    if (day < start + cyc.length) return cyc[day - start];
-    prevLast = cyc[cyc.length - 1];
-    start += cyc.length;
+    // a reset day cuts this cycle short
+    const end = Math.min(start + cyc.length, ...RESETS.filter((r) => r > start));
+    if (day < end) return cyc[day - start];
+    prevLast = cyc[end - start - 1];
+    start = end;
   }
 }

@@ -172,7 +172,8 @@ describe("rarity tiers", () => {
       const recs = parseAnswerBlock(sd.answers, sd.slug);
       const m = liveRarity(recs, null);
       expect([...m.values()].filter((v) => v.tier === "platinum"), sd.slug).toHaveLength(1);
-      const sorted = [...recs].sort((a, b) => m.get(a.id)!.rating - m.get(b.id)!.rating);
+      // the deep tail sits outside the order (always Ruby); the core never flips
+      const sorted = recs.filter((r) => !r.deep).sort((a, b) => m.get(a.id)!.rating - m.get(b.id)!.rating);
       for (let i = 1; i < sorted.length; i++) expect(m.get(sorted[i].id)!.rarity).toBeGreaterThanOrEqual(m.get(sorted[i - 1].id)!.rarity);
     }
   });

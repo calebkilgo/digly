@@ -32,7 +32,7 @@ import json
 import re
 from pathlib import Path
 
-from build_answers import compact, normalize, parse, singular, zipf
+from build_answers import compact, normalize, parse, rating_text, singular, zipf
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "data" / "vault"
@@ -136,13 +136,14 @@ def rate(items):
     by_freq = sorted(range(len(items)), key=lambda i: (-zipf(items[i]["name"]), i))
     freq_rank = {i: r for r, i in enumerate(by_freq)}
     for i, it in enumerate(items):
-        if it["curated"] is not None:
+        if it["curated"] is not None or it.get("deep"):
             continue
         order = 1 + 98 * i / n
         freq = 1 + 98 * freq_rank[i] / n
         it["curated"] = ORDER_WEIGHT * order + (1 - ORDER_WEIGHT) * freq + i * 1e-4
     for it in items:
-        it["curated"] = round(max(1, min(99.99, it["curated"])), 2)
+        if not it.get("deep"):
+            it["curated"] = round(max(1, min(99.99, it["curated"])), 2)
 
 
 def games():
@@ -165,7 +166,7 @@ def main():
         lines = []
         for it in items:
             al = f" | {', '.join(it['aliases'])}" if it["aliases"] else ""
-            lines.append(f"{it['name']}{al} = {it['curated']:g}")
+            lines.append(f"{it['name']}{al} = {rating_text(it)}")
         seeds.append((slug, meta, lines))
         print(f"{slug:32} L{meta['level']} {len(lines):4}")
     out = [

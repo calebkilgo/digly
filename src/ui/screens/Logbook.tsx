@@ -3,8 +3,23 @@
 import { currentStreak, longestStreak, stats, type Progress } from "@/game/progress";
 import { formatChallengeNumber } from "@/game/rules/schedule";
 import { ScreenFrame } from "./ScreenFrame";
+import { useEffect, useState } from "react";
+import type { PlayerTopic } from "@/game/service/types";
+import { TOPIC_LABEL, isTopic } from "@/game/data/topics";
 
-export function LogbookScreen(props: { progress: Progress; today: number; name: string | null; onBack: () => void }) {
+export function LogbookScreen(props: { progress: Progress; today: number; name: string | null; onBack: () => void; loadTopics?: () => Promise<PlayerTopic[]> }) {
+  const [topics, setTopics] = useState<PlayerTopic[] | null>(null);
+  useEffect(() => {
+    let live = true;
+    props.loadTopics?.().then(
+      (t) => live && setTopics(t),
+      () => live && setTopics([]),
+    );
+    return () => {
+      live = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const s = stats(props.progress);
   const hist = s.history.slice(-14);
   const cells: [string, number | string][] = [
@@ -57,6 +72,21 @@ export function LogbookScreen(props: { progress: Progress; today: number; name: 
           </p>
         )}
       </div>
+      {topics && topics.length >= 2 && (
+        <div className="history px topics">
+          <span className="label">Your best topics</span>
+          <ol>
+            {topics.slice(0, 3).map((t) => (
+              <li key={t.topic}>
+                <b>{isTopic(t.topic) ? TOPIC_LABEL[t.topic] : t.topic}</b>
+                <span className="fine">
+                  {t.strength === 100 ? "Right at the average digger" : t.strength > 100 ? `${t.strength - 100}% above the average digger` : `${100 - t.strength}% below the average digger`} · {t.plays} levels
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
     </ScreenFrame>
   );
 }

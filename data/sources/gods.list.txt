@@ -1,0 +1,231 @@
+# gods: gods and goddesses of ancient Egypt, Greece and Rome. A name two pantheons share (Apollo) counts once.
+# Titans and primordial gods count. Heroes, monsters and mortals don't.
+Zeus
+Poseidon
+Hades
+Athena | athene
+Apollo
+Ra | re
+Anubis
+Aphrodite
+Jupiter | jove
+Ares
+Osiris
+Hermes
+Isis
+Mars
+Venus
+Neptune
+Horus
+Artemis
+Hera
+Pluto
+Mercury
+Dionysus | dionysos
+Juno
+Minerva
+Set | seth, sutekh
+Thoth | djehuti
+Bastet | bast
+Cupid | amor
+Eros
+Demeter
+Diana
+Hephaestus | hephaistos
+Persephone | kore
+Saturn
+Vulcan
+Kronos | cronus
+Gaia | gaea, ge
+Pan
+Nike
+Bacchus
+Hathor
+Amun | amon, amun ra, amon ra
+Sobek | sebek
+Janus
+Uranus | ouranos
+Helios
+Hestia
+Vesta
+Ceres
+Sekhmet | sakhmet
+Atlas
+Prometheus
+Hecate | hekate
+Nemesis
+Selene
+Ptah
+Nut
+Geb
+Aurora
+Rhea
+Hypnos
+Thanatos
+Proserpina
+Fortuna
+Eos
+Iris
+Morpheus
+Nephthys | nebet het
+Maat | ma at
+Shu
+Tefnut
+Atum
+Khonsu | khons
+Mut
+Aten | aton
+Apophis | apep
+Bes
+Taweret | taueret
+Khepri
+Asclepius | asklepios, aesculapius
+Hebe
+Tyche
+Nyx
+Chaos
+Oceanus
+Hyperion
+Themis
+Leto
+Mnemosyne
+Triton
+Faunus
+Sol
+Luna
+Bellona
+Victoria
+Flora
+Terra | tellus
+Somnus
+Mors
+Nox
+Discordia
+Eris
+Boreas
+Zephyrus
+Aeolus
+Khnum
+Neith | neit
+Hapi | hapy
+Heka
+Nun | nu
+Serqet | selket, serket
+Wadjet
+Nekhbet
+Montu
+Min
+Imhotep
+Ammit
+Serapis
+Wepwawet | upuaut
+Heqet | heket
+Erebus
+Tethys
+Phobos
+Deimos
+Harmonia
+Amphitrite
+Thetis
+Nereus
+Proteus
+Metis
+Plutus
+Priapus
+Pomona
+Quirinus
+Liber
+Ops
+Orcus
+Pax
+Spes
+Fides
+Concordia
+Libertas
+Vertumnus
+Portunus
+Silvanus
+Terminus
+Lares
+Penates
+Juventas
+Lucina
+Caelus
+Invidia
+Trivia
+Bona Dea
+Seshat = 100
+Chronos = deep
+Ananke = deep
+Aether = deep
+Hemera = deep
+Pontus = deep
+Tartarus = deep
+Coeus = deep
+Phoebe = deep
+Crius = deep
+Iapetus = deep
+Epimetheus = deep
+Hymenaeus | hymen = deep
+Kratos = deep
+Bia = deep
+Zelus = deep
+Momus = deep
+Geras = deep
+Hesperus = deep
+Phosphorus = deep
+Achelous = deep
+Notus = deep
+Eurus = deep
+Libera = deep
+Fauna = deep
+Carmenta = deep
+Egeria = deep
+Sancus = deep
+Volturnus = deep
+Pales = deep
+Feronia = deep
+Robigus = deep
+Consus = deep
+Mafdet = deep
+Meskhenet = deep
+Anuket = deep
+Satet | satis = deep
+Meretseger = deep
+Renenutet = deep
+Nehebkau = deep
+Babi = deep
+Shezmu = deep
+Andjety = deep
+Banebdjedet = deep
+Imsety = deep
+Duamutef = deep
+Qebehsenuef = deep
+Sopdet = deep
+Sah = deep
+Werethekau = deep
+Wosret = deep
+Unut = deep
+Shai = deep
+Renpet = deep
+Iah = deep
+Kek = deep
+Amunet = deep
+Hu = deep
+Sia = deep
+Aker = deep
+Khenti-Amentiu = deep
+Mehet-Weret = deep
+Menhit = deep
+Pakhet = deep
+Reshep = deep
+Anat = deep
+Astarte = deep
+Hedetet = deep
+Sopdu = deep
+Hemsut = deep
+Tatenen = deep
+Seker | sokar = deep
+Tutu = deep
+Mandulis = deep
+Arensnuphis = deep

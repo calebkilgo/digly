@@ -5,6 +5,7 @@
 // Server only: never import this from client code.
 
 import { ANSWERS } from "./answers.generated";
+import type { Topic } from "./topics";
 
 export type Theme = "geography" | "biology" | "culture" | "science" | "food" | "sports";
 
@@ -13,6 +14,7 @@ export interface ChallengeSeed {
   title: string;
   level: 1 | 2 | 3; // which depth this category is dug at: deeper = harder
   theme: Theme;
+  topic?: Topic; // for players' best topics; falls back to the theme
   prompt: string;
   noun: string;
   rules: string[];
@@ -20,6 +22,7 @@ export interface ChallengeSeed {
   answers: string;
   since?: number; // first day number this category can be dug (default: any)
   retired?: boolean; // out of the rotation; kept so days already played still load
+  retiredFrom?: number; // out of cycles that start on or after this day (see RESETS in rotation.ts)
 }
 
 export const SEEDS: ChallengeSeed[] = [
@@ -189,21 +192,21 @@ SEEDS.push(
   more("cat-breeds", 2, "biology", "Cat breeds", "cat breeds", ["Recognized and well-known breeds."]),
   more("gemstones", 2, "science", "Gemstones & minerals", "gemstones and minerals", ["Gems and named minerals."]),
   more("cocktails", 2, "food", "Cocktails", "cocktails", ["Named mixed drinks.", "Plain spirits like vodka don't count."]),
-  more("nfl-teams", 2, "sports", "NFL teams", "NFL teams", ["Current NFL teams. The nickname alone is enough."]),
+  { ...more("nfl-teams", 2, "sports", "NFL teams", "NFL teams", ["Current NFL teams. The nickname alone is enough."]), retiredFrom: 34 },
   more("state-capitals", 2, "geography", "US state capitals", "US state capitals", ["Capitals of the 50 states.", "Washington, D.C. isn't a state capital."]),
   more("programming-languages", 2, "science", "Programming languages", "programming languages", ["Languages you can write programs in.", "Markup like HTML doesn't count."]),
   more("dinosaurs", 3, "biology", "Dinosaurs", "dinosaurs", ["Dinosaur genera.", "Pterosaurs and sea reptiles don't count."]),
   more("horse-breeds", 3, "biology", "Horse breeds", "horse breeds", ["Breeds and well-known types, ponies included."]),
   more("snakes", 3, "biology", "Snakes", "snakes", ["Kinds of snake by common name.", "Lizards and eels don\'t count."]),
   more("constellations", 3, "science", "Constellations", "constellations", ["The 88 official constellations.", "Asterisms like the Big Dipper don't count."]),
-  more("egyptian-gods", 3, "culture", "Egyptian gods", "Egyptian gods", ["Gods and goddesses of ancient Egypt."]),
+  { ...more("egyptian-gods", 3, "culture", "Egyptian gods", "Egyptian gods", ["Gods and goddesses of ancient Egypt."]), retiredFrom: 34 },
   more("sea-creatures", 1, "biology", "Sea creatures", "sea creatures", ["Animals that live in the ocean.", "Seabirds don\'t count."]),
   more("kitchen-tools", 1, "culture", "Kitchen tools", "kitchen tools", ["Utensils, cookware and appliances used for cooking."]),
   more("clothing", 1, "culture", "Clothing", "pieces of clothing", ["Things people wear, including shoes and hats."], "Name as many pieces of clothing as you can."),
   more("candy", 1, "food", "Candy", "candies", ["Candy bars, sweets and chocolates by name or kind."], "Name as many kinds of candy as you can."),
   more("world-capitals", 2, "geography", "World capitals", "capital cities", ["Capitals of the world's countries."], "Name as many capital cities as you can."),
-  more("nba-teams", 2, "sports", "NBA teams", "NBA teams", ["Current NBA teams. The nickname alone is enough."]),
-  more("mlb-teams", 2, "sports", "MLB teams", "MLB teams", ["Current MLB teams. The nickname alone is enough."]),
+  { ...more("nba-teams", 2, "sports", "NBA teams", "NBA teams", ["Current NBA teams. The nickname alone is enough."]), retiredFrom: 34 },
+  { ...more("mlb-teams", 2, "sports", "MLB teams", "MLB teams", ["Current MLB teams. The nickname alone is enough."]), retiredFrom: 34 },
   more("us-presidents", 2, "culture", "US presidents", "US presidents", ["Presidents of the United States. Last names work when only one president had it."]),
   more("music-genres", 2, "culture", "Music genres", "music genres", ["Genres and styles of music."]),
   more("board-games", 2, "culture", "Board games", "board games", ["Board games and tabletop classics, old or new."]),
@@ -212,7 +215,67 @@ SEEDS.push(
   more("scientists", 3, "science", "Scientists", "scientists", ["Scientists, inventors and mathematicians. Last names work when unique."]),
   more("norse-myth", 3, "culture", "Norse mythology", "figures, places and things from Norse mythology", ["Gods, giants, creatures, realms and treasures."], "Name as much from Norse mythology as you can."),
   more("art-movements", 3, "culture", "Art movements", "art movements", ["Movements, schools and styles of art."]),
-  more("roman-gods", 3, "culture", "Roman gods", "Roman gods", ["Gods and goddesses of ancient Rome."]),
+  { ...more("roman-gods", 3, "culture", "Roman gods", "Roman gods", ["Gods and goddesses of ancient Rome."]), retiredFrom: 34 },
+  // Merged prompts that replace the single-league teams and the Egyptian and Roman gods (RESETS in rotation.ts)
+  {
+    ...more(
+      "pro-teams",
+      2,
+      "sports",
+      "Pro sports teams",
+      "teams",
+      ["Current MLB, NBA, NHL and NFL teams. The nickname alone is enough.", "A name two leagues share, like Rangers or Giants, counts once.", "Past team names count as deep cuts."],
+      "Name as many MLB, NBA, NHL or NFL teams as you can.",
+    ),
+    since: 34,
+  },
+  {
+    ...more(
+      "gods",
+      3,
+      "culture",
+      "Egyptian, Greek or Roman gods",
+      "gods and goddesses",
+      ["Gods and goddesses of ancient Egypt, Greece or Rome. Titans count.", "A name two pantheons share, like Apollo, counts once.", "Heroes and monsters don't count."],
+      "Name as many Egyptian, Greek or Roman gods as you can.",
+    ),
+    topic: "history",
+    since: 34,
+  },
   // Retired 2026-11-18 for being too broad. Day 30 had already started with it.
   { ...more("jobs", 1, "culture", "Jobs", "jobs", ["Real jobs and professions, past or present."]), retired: true },
 );
+
+// Daily prompts whose theme doesn't say enough about the topic
+const TOPIC_OF: Record<string, Topic> = {
+  instruments: "music and art",
+  dances: "music and art",
+  "music-genres": "music and art",
+  "art-movements": "music and art",
+  languages: "language",
+  bones: "science",
+  "programming-languages": "science",
+  "greek-myth": "history",
+  "norse-myth": "history",
+  "roman-gods": "history",
+  "egyptian-gods": "history",
+  "us-presidents": "history",
+  "board-games": "sports and games",
+  "car-brands": "pop culture",
+  "kitchen-tools": "everyday objects",
+  clothing: "everyday objects",
+  jobs: "everyday objects",
+};
+
+const THEME_TOPIC: Record<Theme, Topic> = {
+  geography: "geography",
+  biology: "nature",
+  culture: "pop culture",
+  science: "science",
+  food: "food",
+  sports: "sports and games",
+};
+
+export function topicOfSeed(s: ChallengeSeed): Topic {
+  return s.topic ?? TOPIC_OF[s.slug] ?? THEME_TOPIC[s.theme];
+}

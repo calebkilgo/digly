@@ -27,6 +27,7 @@ export interface LiveRarity {
   rating: number; // difficulty 1..100
   pct: number; // share of players who find it, 0..100
   estimated: boolean; // true until enough real players have dug this category
+  deep?: boolean; // deep tail: Ruby plus the Deep cut bonus, outside the tier mix
 }
 
 // The curated estimate counts as this many imaginary players.
@@ -70,10 +71,21 @@ export function normInv(p: number) {
   return ((((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q) / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
 }
 
-export function liveRarity(records: AnswerRecord[], stats: AnswerStats | null): Map<string, LiveRarity> {
+// z given to every deep-tail answer: above the Ruby cutoff, below any core Platinum
+const DEEP_Z = 2.4;
+
+export function liveRarity(all: AnswerRecord[], stats: AnswerStats | null): Map<string, LiveRarity> {
   const plays = stats?.plays ?? 0;
   const counts = stats?.counts ?? {};
   const estimated = plays < MIN_PLAYS_FOR_PCT;
+  const out = new Map<string, LiveRarity>();
+  // the deep tail stays out of the tier mix: always Ruby, however often it's found
+  for (const r of all) {
+    if (!r.deep) continue;
+    const p = ((counts[r.id] ?? 0) + PRIOR_WEIGHT * priorRate(r.curated)) / (plays + PRIOR_WEIGHT);
+    out.set(r.id, { rarity: 99, tier: "ruby", z: DEEP_Z, rating: 100, pct: Math.round(p * 1000) / 10, estimated, deep: true });
+  }
+  const records = all.filter((r) => !r.deep);
   const rated = records.map((r) => {
     const p = ((counts[r.id] ?? 0) + PRIOR_WEIGHT * priorRate(r.curated)) / (plays + PRIOR_WEIGHT);
     // with no plays this gives back the curated rating exactly
@@ -83,9 +95,8 @@ export function liveRarity(records: AnswerRecord[], stats: AnswerStats | null): 
   // easiest to hardest; equal ratings keep list order (later-listed counts as harder)
   const order = rated.map((x, i) => ({ x, i })).sort((u, v) => u.x.rating - v.x.rating || u.i - v.i);
   const zOf = new Map(order.map((o, k) => [o.x, normInv((k + 0.5) / n)]));
-  // exactly one Platinum: the hardest
-  const plat = order[n - 1]?.x;
-  const out = new Map<string, LiveRarity>();
+  // exactly one Platinum: the hand-picked one, else the hardest
+  const plat = rated.find((x) => x.r.plat) ?? order[n - 1]?.x;
   for (const x of rated) {
     const z = zOf.get(x)!;
     const isPlat = x === plat;

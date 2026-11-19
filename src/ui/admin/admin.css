@@ -602,3 +602,11 @@ select.adm-input {
   text-decoration: line-through;
   color: var(--faint);
 }
+.adm-meter {
+  height: 4px;
+  background: #0f0f0f;
+}
+.adm-meter > div {
+  height: 100%;
+  background: var(--text);
+}

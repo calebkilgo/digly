@@ -6,7 +6,7 @@ import { dayStart } from "../src/game/rules/schedule";
 import { digTotal } from "../src/game/rules/levels";
 import { SEEDS } from "../src/game/data/seeds";
 import { GameError } from "../src/game/service/types";
-import { SCORING, levelScore } from "../src/game/rules/scoring";
+import { SCORING, levelScore, pointsOf } from "../src/game/rules/scoring";
 import { parseAnswerBlock } from "../src/game/rules/answerIndex";
 
 const DAY = 29;
@@ -517,5 +517,81 @@ describe("caching across servers", () => {
       expect(r.accepted.map((a) => a.name)).toEqual(fin.accepted.map((a) => a.name));
       expect(r.rejected).toEqual(["qqq nope"]);
     }
+  });
+});
+
+describe("history for other devices", () => {
+  it("returns whole digs only: three ranked levels, or a full practice or Vault run", async () => {
+    const names = (lvl: 1 | 2 | 3) => parseAnswerBlock(seedFor(DAY, lvl).answers, "x").slice(0, 2).map((a) => a.canonical);
+    const r1 = await play("p", 1, names(1));
+    const r2 = await play("p", 2, names(2));
+    const r3 = await play("p", 3, names(3));
+    // a full Vault run of game 1, and only level 1 of game 2
+    let vaultTotal = 0;
+    for (const level of [1, 2, 3] as const) {
+      const st = await eng.start("p", DAY, level, "practice", { vault: 1 });
+      vaultTotal += (await eng.finish("p", st.attemptId)).points;
+    }
+    const lone = await eng.start("p", DAY, 1, "practice", { vault: 2 });
+    await eng.finish("p", lone.attemptId);
+
+    const h = await eng.history("p");
+    expect(h.ranked).toEqual([{ day: DAY, score: r1.points + r2.points + r3.points, unique: 6, finishedAt: expect.any(Number) }]);
+    expect(h.vault).toHaveLength(1);
+    expect(h.vault[0]).toMatchObject({ game: 1, best: vaultTotal });
+    expect(h.vault[0].titles).toHaveLength(3);
+    expect(h.practice).toEqual([]);
+    expect(await eng.history("someone-else")).toEqual({ ranked: [], practice: [], vault: [] });
+  });
+
+  it("leaves out a ranked day that isn't finished", async () => {
+    await play("p", 1, []);
+    await play("p", 2, []);
+    expect((await eng.history("p")).ranked).toEqual([]);
+  });
+});
+
+describe("best topics", () => {
+  it("needs a few plays per topic and reports strength against the average", async () => {
+    const at = clock;
+    const add = (id: string, pid: string, slug: string, level: 1 | 2 | 3, pts: number) =>
+      store.insertAttempt({ id, playerId: pid, day: DAY, level, mode: "practice", slug, startedAt: at, expiresAt: at + 1, finishedAt: at + 1, score: pts, points: pts, uniqueCount: 1, submissions: 1 });
+    let n = 0;
+    for (let i = 0; i < 5; i++) {
+      await add(`x${++n}`, "me", "fruits", 1, 150);
+      await add(`x${++n}`, "you", "fruits", 1, 50);
+      await add(`x${++n}`, "me", "rivers", 3, 50);
+      await add(`x${++n}`, "you", "rivers", 3, 150);
+    }
+    const t = await eng.topics("me");
+    expect(t.map((x) => [x.topic, x.strength, x.plays])).toEqual([
+      ["food", 150, 5],
+      ["geography", 50, 5],
+    ]);
+    expect(await eng.topics("nobody")).toEqual([]);
+    expect(eng.topicMap()["greek-myth"]).toBe("history");
+    expect(eng.topicMap()["dog-breeds"]).toBe("nature");
+  });
+});
+
+describe("deep cuts", () => {
+  it("a past team name scores Ruby plus the bonus and leads the best three", async () => {
+    // day 43 level 2 is the merged teams prompt
+    const day = 43;
+    clock = dayStart(day) + 3_600_000;
+    for (const l of [1] as const) {
+      const st = await eng.start("p", day, l, "ranked");
+      await eng.finish("p", st.attemptId);
+    }
+    const st = await eng.start("p", day, 2, "ranked");
+    expect(st.challenge.title).toBe("Pro sports teams");
+    for (const a of ["Texas Rangers", "Rangers", "Yankees", "Hartford Whalers"]) await eng.submit("p", st.attemptId, a);
+    const r = await eng.finish("p", st.attemptId);
+    expect(r.accepted.map((a) => a.name)).toEqual(["Rangers", "Yankees", "Whalers"]);
+    const whalers = r.accepted.find((a) => a.name === "Whalers")!;
+    expect(whalers).toMatchObject({ tier: "ruby", deep: true });
+    expect(r.top[0].name).toBe("Whalers");
+    expect(r.rarest.some((a) => a.deep)).toBe(false);
+    expect(r.score).toBe(r.top.reduce((s, a) => s + pointsOf(a), 0));
   });
 });

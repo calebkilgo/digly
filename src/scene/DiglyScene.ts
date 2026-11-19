@@ -197,14 +197,23 @@ export class DiglyScene {
   }
 
   private rockCount = 3;
+  // room under the rocks for the gem labels, measured by the Reveal screen
+  private labelSpace = 140;
+
+  setLabelSpace(px: number) {
+    if (Math.abs(px - this.labelSpace) < 2) return;
+    this.labelSpace = px;
+    if (this.app?.renderer) this.layoutReveal();
+  }
 
   private layoutReveal() {
     const { top, h } = this.freeBand();
     const n = this.rockCount;
     const spacing = n === 1 ? 0 : Math.min((this.W * 0.92) / n, 200);
-    const size = n === 1 ? clamp(this.W * 0.3, 80, 130) : clamp(spacing * 0.62, 44, 104);
-    // leave room under the rocks for the gem labels (number, name, rank, %)
-    const y = Math.round(Math.min(top + h * 0.62, top + h - size * 0.5 - 132));
+    const want = n === 1 ? clamp(this.W * 0.3, 80, 130) : clamp(spacing * 0.62, 44, 104);
+    // on short screens the rocks shrink so they and their labels fit between the HUD and the box
+    const size = Math.max(36, Math.min(want, h - this.labelSpace - 16));
+    const y = Math.round(Math.min(top + h * 0.62, top + h - size * 0.5 - this.labelSpace));
     this.rocksY = y;
     this.rockSize = size;
     this.anchors = Array.from({ length: n }, (_, i) => ({ x: this.W / 2 + (i - (n - 1) / 2) * spacing, y, size }));
@@ -479,8 +488,9 @@ export class DiglyScene {
     // phones: the sky is a thin strip during a dig, so the moon would fill it
     this.world.moon.visible = !(this.narrow() && this.mode !== "home");
     place(this.world.back, sx, Math.round(anchorY - this.camY * 0.5) + sy);
-    // the depth ruler only makes sense zoomed in
-    this.world.ruler.visible = z > 0.97;
+    // the depth ruler only makes sense zoomed in; on phones it hides behind the
+    // gem labels and the score once the reveal starts
+    this.world.ruler.visible = z > 0.97 && !(this.narrow() && this.mode === "reveal");
     this.world.near.position.set(0, Math.round(anchorY - this.camY * 1.35));
     // redrawn only when it changes; rebuilding shapes every frame costs more than drawing them
     const darkA = Math.round(Math.max(0, Math.min(0.5, (this.getDepthM() - 25) / 260)) * 200) / 200;

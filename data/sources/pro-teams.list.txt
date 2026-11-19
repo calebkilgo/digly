@@ -1,0 +1,148 @@
+# pro-teams: MLB, NBA, NHL and NFL teams. One answer per nickname, so a name two leagues share counts once.
+# Current teams are the core, most named first; past nicknames are the deep tail.
+Yankees | New York Yankees, NY Yankees
+Lakers | Los Angeles Lakers, LA Lakers, Minneapolis Lakers
+Cowboys | Dallas Cowboys
+Red Sox | Boston Red Sox
+Celtics | Boston Celtics
+Bulls | Chicago Bulls
+Patriots | New England Patriots, Pats, Boston Patriots
+Dodgers | Los Angeles Dodgers, LA Dodgers, Brooklyn Dodgers
+Packers | Green Bay Packers
+Steelers | Pittsburgh Steelers
+Giants | New York Giants, NY Giants, San Francisco Giants, SF Giants
+Warriors | Golden State Warriors, Dubs, Philadelphia Warriors, San Francisco Warriors
+Knicks | New York Knicks, Knickerbockers
+Cubs | Chicago Cubs
+Eagles | Philadelphia Eagles
+49ers | San Francisco 49ers, Niners, Forty Niners
+Bears | Chicago Bears
+Heat | Miami Heat
+Rangers | New York Rangers, NY Rangers, Texas Rangers
+Mets | New York Mets
+Chiefs | Kansas City Chiefs
+Raiders | Las Vegas Raiders, Oakland Raiders, Los Angeles Raiders
+Broncos | Denver Broncos
+Dolphins | Miami Dolphins
+Jets | New York Jets, NY Jets, Winnipeg Jets
+Cardinals | Arizona Cardinals, St. Louis Cardinals, Phoenix Cardinals, Chicago Cardinals
+Bruins | Boston Bruins
+Maple Leafs | Toronto Maple Leafs, Leafs
+Canadiens | Montreal Canadiens, Habs
+Blackhawks | Chicago Blackhawks, Chicago Black Hawks, Tri-Cities Blackhawks
+Red Wings | Detroit Red Wings
+Penguins | Pittsburgh Penguins, Pens
+Spurs | San Antonio Spurs
+Rockets | Houston Rockets, San Diego Rockets
+Clippers | Los Angeles Clippers, LA Clippers, San Diego Clippers
+Nets | Brooklyn Nets, New Jersey Nets
+Seahawks | Seattle Seahawks
+Ravens | Baltimore Ravens
+Saints | New Orleans Saints
+Vikings | Minnesota Vikings
+Lions | Detroit Lions
+Rams | Los Angeles Rams, LA Rams, St. Louis Rams
+Chargers | Los Angeles Chargers, LA Chargers, San Diego Chargers
+Bills | Buffalo Bills
+Bengals | Cincinnati Bengals
+Browns | Cleveland Browns, St. Louis Browns
+Colts | Indianapolis Colts, Baltimore Colts
+Texans | Houston Texans, Dallas Texans
+Titans | Tennessee Titans
+Falcons | Atlanta Falcons
+Buccaneers | Tampa Bay Buccaneers, Bucs
+Jaguars | Jacksonville Jaguars, Jags
+Panthers | Carolina Panthers, Florida Panthers
+Commanders | Washington Commanders, Washington Football Team
+Astros | Houston Astros
+Braves | Atlanta Braves, Milwaukee Braves, Boston Braves, Buffalo Braves
+Phillies | Philadelphia Phillies
+Mariners | Seattle Mariners
+White Sox | Chicago White Sox
+Tigers | Detroit Tigers
+Twins | Minnesota Twins
+Royals | Kansas City Royals, Cincinnati Royals, Rochester Royals
+Orioles | Baltimore Orioles
+Padres | San Diego Padres
+Pirates | Pittsburgh Pirates
+Reds | Cincinnati Reds
+Brewers | Milwaukee Brewers
+Rockies | Colorado Rockies
+Marlins | Miami Marlins, Florida Marlins
+Rays | Tampa Bay Rays, Tampa Bay Devil Rays, Devil Rays
+Blue Jays | Toronto Blue Jays, Jays
+Nationals | Washington Nationals, Nats, Syracuse Nationals
+Angels | Los Angeles Angels, LA Angels, Anaheim Angels, California Angels
+Diamondbacks | Arizona Diamondbacks, D-backs, Dbacks
+Guardians | Cleveland Guardians
+Athletics | A's, Oakland Athletics, Oakland A's, Philadelphia Athletics, Kansas City Athletics, Sacramento Athletics, Las Vegas Athletics
+Mavericks | Dallas Mavericks, Mavs
+Suns | Phoenix Suns
+Bucks | Milwaukee Bucks
+Thunder | Oklahoma City Thunder, OKC Thunder
+76ers | Philadelphia 76ers, Sixers, Seventy Sixers
+Kings | Sacramento Kings, Los Angeles Kings, LA Kings, Kansas City Kings
+Jazz | Utah Jazz, New Orleans Jazz
+Nuggets | Denver Nuggets
+Magic | Orlando Magic
+Raptors | Toronto Raptors
+Pistons | Detroit Pistons, Fort Wayne Pistons
+Pacers | Indiana Pacers
+Hawks | Atlanta Hawks, St. Louis Hawks
+Hornets | Charlotte Hornets, New Orleans Hornets
+Cavaliers | Cleveland Cavaliers, Cavs
+Timberwolves | Minnesota Timberwolves, T-Wolves, Wolves
+Grizzlies | Memphis Grizzlies, Vancouver Grizzlies
+Pelicans | New Orleans Pelicans
+Trail Blazers | Portland Trail Blazers, Blazers, Trailblazers
+Wizards | Washington Wizards
+Flyers | Philadelphia Flyers
+Capitals | Washington Capitals, Caps
+Oilers | Edmonton Oilers, Houston Oilers, Tennessee Oilers
+Islanders | New York Islanders, NY Islanders
+Devils | New Jersey Devils
+Lightning | Tampa Bay Lightning, Bolts
+Avalanche | Colorado Avalanche, Avs
+Stars | Dallas Stars
+Sharks | San Jose Sharks
+Blues | St. Louis Blues
+Ducks | Anaheim Ducks, Mighty Ducks, Mighty Ducks of Anaheim
+Flames | Calgary Flames, Atlanta Flames
+Canucks | Vancouver Canucks
+Senators | Ottawa Senators, Sens, Washington Senators
+Sabres | Buffalo Sabres
+Wild | Minnesota Wild
+Hurricanes | Carolina Hurricanes, Canes
+Predators | Nashville Predators, Preds
+Golden Knights | Vegas Golden Knights
+Kraken | Seattle Kraken
+Mammoth | Utah Mammoth, Utah Hockey Club, Utah HC
+Blue Jackets | Columbus Blue Jackets = 100
+Expos | Montreal Expos = deep
+Pilots | Seattle Pilots = deep
+Colt .45s | Houston Colt .45s, Colt 45s = deep
+Highlanders | New York Highlanders = deep
+Robins | Brooklyn Robins = deep
+Beaneaters | Boston Beaneaters = deep
+Spiders | Cleveland Spiders = deep
+Whalers | Hartford Whalers = deep
+Nordiques | Quebec Nordiques = deep
+North Stars | Minnesota North Stars = deep
+Thrashers | Atlanta Thrashers = deep
+Scouts | Kansas City Scouts = deep
+Golden Seals | California Golden Seals, Oakland Seals, Seals = deep
+Barons | Cleveland Barons = deep
+Coyotes | Arizona Coyotes, Phoenix Coyotes = deep
+Maroons | Montreal Maroons, Pottsville Maroons = deep
+Americans | New York Americans, Brooklyn Americans = deep
+Quakers | Philadelphia Quakers = deep
+Wanderers | Montreal Wanderers = deep
+SuperSonics | Seattle SuperSonics, Sonics = deep
+Bobcats | Charlotte Bobcats = deep
+Bullets | Washington Bullets, Baltimore Bullets = deep
+Stags | Chicago Stags = deep
+Steam Roller | Providence Steam Roller = deep
+Yellow Jackets | Frankford Yellow Jackets = deep
+Staleys | Decatur Staleys, Chicago Staleys = deep
+Bulldogs | Canton Bulldogs = deep
+Yanks | Boston Yanks = deep

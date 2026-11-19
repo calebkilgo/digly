@@ -66,6 +66,7 @@ export interface RevealedAnswer {
   z?: number;
   pct?: number; // share of players who find it, 0..100
   est?: boolean; // pct is still an estimate (too few players so far)
+  deep?: boolean; // from the deep tail: Ruby plus the Deep cut bonus
 }
 
 export interface AttemptResult {
@@ -92,6 +93,21 @@ export interface DigResult {
   mode: AttemptMode;
   levels: AttemptResult[];
   total: number;
+}
+
+// What a player has finished, from the server, so a new device or a cleared
+// browser shows the same streaks, stats and Vault as the old one.
+export interface PlayerHistory {
+  ranked: { day: number; score: number; unique: number; finishedAt: number }[];
+  practice: { day: number; best: number; titles: string[] }[];
+  vault: { game: number; best: number; titles: string[] }[];
+}
+
+// A topic the player has played enough of. strength 100 = an average digger.
+export interface PlayerTopic {
+  topic: string;
+  plays: number;
+  strength: number;
 }
 
 // Where this player stands on a day's ranked dig.
@@ -127,14 +143,20 @@ export interface ChallengeService {
   finish(attemptId: string): Promise<AttemptResult>;
   allAnswers(attemptId: string): Promise<FullAnswer[]>; // every answer for a finished level, rarest first
   board(day: number): Promise<Board>;
+  history(): Promise<PlayerHistory>;
+  topics(): Promise<PlayerTopic[]>; // best topics, strongest first
   account(): Promise<Account>;
-  signUp(username: string, password: string, email?: string): Promise<Account>;
+  signUp(username: string, password: string, email: string, marketing?: boolean): Promise<Account>;
+  finishGoogle(username: string, marketing: boolean): Promise<Account>; // a new Google user picks a username
+  verifyEmail(token: string): Promise<{ verified: boolean; mine: boolean }>;
+  resendVerify(): Promise<Account>;
+  setMarketing(on: boolean): Promise<Account>;
   logIn(username: string, password: string): Promise<Account>;
   logOut(): Promise<void>;
   forgotPassword(login: string): Promise<void>;
   resetPassword(token: string, password: string): Promise<Account>;
   setEmail(email: string): Promise<Account>;
-  deleteAccount(password: string): Promise<void>;
+  deleteAccount(secret: string): Promise<void>; // the password, or the username for a Google-only account
   categories(): Promise<CategoryInfo[]>; // admin demo dig
   suggest(text: string): Promise<void>; // a prompt idea, guests too
   suggestions(): Promise<{ text: string; day: number; createdAt: number }[]>; // admin only
@@ -150,9 +172,15 @@ export interface CategoryInfo {
 
 export interface Account {
   username: string | null; // null while playing as a guest
+  id?: string | null; // the account's player id, for analytics; null for guests
   admin?: boolean; // can use the testing tools
   email?: string | null; // for password resets; only shown to the account itself
   unlimited?: boolean; // owns Digly Unlimited
+  emailVerified?: boolean;
+  google?: boolean; // signs in with Google
+  hasPassword?: boolean; // false for a Google-only account
+  marketing?: boolean; // opted in to marketing emails
+  googleEnabled?: boolean; // the site offers Sign in with Google
 }
 
 export class GameError extends Error {

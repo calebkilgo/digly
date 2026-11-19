@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import "./admin.css";
+import { TOPIC_LABEL } from "@/game/data/topics";
 
 // class names in admin.css are prefixed so they can't clash with the game's
 const s = new Proxy({} as Record<string, string>, { get: (_, k) => `adm-${String(k)}` });
@@ -11,7 +12,7 @@ const s = new Proxy({} as Record<string, string>, { get: (_, k) => `adm-${String
 // seconds and right after any change.
 
 type Status = "new" | "planned" | "added" | "dismissed";
-type Tab = "overview" | "answers" | "ideas" | "team";
+type Tab = "overview" | "growth" | "answers" | "ideas" | "team";
 
 interface Idea {
   id: number;
@@ -80,11 +81,13 @@ const LIVE_MS = 8000;
 const REFRESH_MS = 60_000;
 const TABS: { id: Tab; label: string }[] = [
   { id: "overview", label: "Overview" },
+  { id: "growth", label: "Growth" },
   { id: "answers", label: "Answers" },
   { id: "ideas", label: "Ideas" },
   { id: "team", label: "Team" },
 ];
 const STATUSES: Status[] = ["new", "planned", "added", "dismissed"];
+const TOPIC_NAMES: Record<string, string> = TOPIC_LABEL;
 const TIER_NAMES: Record<string, string> = { copper: "Bronze", gold: "Gold", diamond: "Diamond", ruby: "Ruby", platinum: "Platinum" };
 const ACTIONS: Record<string, string> = {
   admin_added: "made an admin:",
@@ -229,11 +232,15 @@ export function AdminPanel({ me }: { me: string }) {
 
       <main className={s.wrap}>
         {tab === "overview" && <OverviewTab overview={overview} live={live} log={log} onMore={() => go("team")} />}
+        {tab === "growth" && <GrowthTab />}
         {tab === "answers" && <AnswersTab cats={cats} synced={synced} onChange={refresh} />}
         {tab === "ideas" && <Ideas ideas={ideas} onChange={refresh} />}
         {tab === "team" && (
           <div className={s.split}>
-            <Admins me={me} admins={admins} onChange={refresh} />
+            <div>
+              <Admins me={me} admins={admins} onChange={refresh} />
+              <EmailCheck />
+            </div>
             <Log log={log} />
           </div>
         )}
@@ -714,6 +721,154 @@ function Ideas({ ideas, onChange }: { ideas: Idea[]; onChange: () => Promise<voi
   );
 }
 
+// ---- growth ----------------------------------------------------------------
+
+interface GrowthDay {
+  day: number;
+  players: number;
+  newPlayers: number;
+  accounts: number;
+  rankedStarted: number;
+  rankedFinished: number;
+  backD1: number;
+  backD7: number;
+}
+interface Segment {
+  topic: string;
+  players: number;
+  plays: number;
+}
+
+const pct = (n: number, d: number) => (d > 0 ? `${Math.round((n / d) * 100)}%` : "—");
+
+// Loaded when the tab opens (and on Refresh), not on the panel's timer: these
+// queries read every attempt.
+function GrowthTab() {
+  const [data, setData] = useState<{ today: number; days: GrowthDay[]; segments: Segment[]; error: string | null } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const load = useCallback(async () => {
+    setBusy(true);
+    setErr("");
+    try {
+      setData(await api("/api/admin/growth"));
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Couldn't load.");
+    } finally {
+      setBusy(false);
+    }
+  }, []);
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const days = [...(data?.days ?? [])].reverse();
+  const week = (data?.days ?? []).slice(-7);
+  const sum = (k: keyof GrowthDay, rows: GrowthDay[]) => rows.reduce((a, r) => a + r[k], 0);
+  // returns only count once the day they're measured on has passed
+  const d1Rows = (data?.days ?? []).filter((r) => r.day + 1 < (data?.today ?? 0));
+  const d7Rows = (data?.days ?? []).filter((r) => r.day + 7 < (data?.today ?? 0));
+  const segMax = Math.max(1, ...(data?.segments ?? []).map((x) => x.plays));
+
+  return (
+    <>
+      <section className={`${s.panel} ${s.flush}`}>
+        <div className={s.strip}>
+          {(
+            [
+              ["Players, last 7 days", fmt(data ? sum("players", week) : undefined)],
+              ["New players, last 7 days", fmt(data ? sum("newPlayers", week) : undefined)],
+              ["Accounts, last 7 days", fmt(data ? sum("accounts", week) : undefined)],
+              ["Came back next day", data ? pct(sum("backD1", d1Rows), sum("newPlayers", d1Rows)) : "—"],
+              ["Came back a week later", data ? pct(sum("backD7", d7Rows), sum("newPlayers", d7Rows)) : "—"],
+            ] as const
+          ).map(([label, v]) => (
+            <div className={s.cell} key={label}>
+              <div className={s.label}>{label}</div>
+              <div className={s.num}>{v}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+      {(err || data?.error) && <div className={s.error}>{err || data?.error}</div>}
+      <div className={s.split}>
+        <section className={s.panel}>
+          <div className={s.head}>
+            <h2>Last 30 days</h2>
+            <button className={s.textBtn} disabled={busy} onClick={() => void load()}>
+              {busy ? "Loading…" : "Refresh"}
+            </button>
+          </div>
+          {days.length === 0 ? (
+            <div className={s.empty}>{busy ? "Loading…" : "No plays yet."}</div>
+          ) : (
+            <table className={s.table}>
+              <thead>
+                <tr>
+                  <th>Day</th>
+                  <th className={s.r}>Players</th>
+                  <th className={s.r}>New</th>
+                  <th className={s.r}>Accounts</th>
+                  <th className={s.r}>Daily done</th>
+                  <th className={s.r}>Back D1</th>
+                  <th className={s.r}>Back D7</th>
+                </tr>
+              </thead>
+              <tbody>
+                {days.map((r) => (
+                  <tr key={r.day}>
+                    <td>
+                      #{r.day}
+                      {r.day === data?.today && <span className={s.dim}> · today</span>}
+                    </td>
+                    <td className={s.r}>{fmt(r.players)}</td>
+                    <td className={s.r}>{fmt(r.newPlayers)}</td>
+                    <td className={s.r}>{fmt(r.accounts)}</td>
+                    <td className={s.r} title={`${r.rankedFinished} of ${r.rankedStarted} who started the daily dig finished all 3 levels`}>
+                      {pct(r.rankedFinished, r.rankedStarted)}
+                    </td>
+                    <td className={s.r}>{r.day + 1 < (data?.today ?? 0) ? pct(r.backD1, r.newPlayers) : "—"}</td>
+                    <td className={s.r}>{r.day + 7 < (data?.today ?? 0) ? pct(r.backD7, r.newPlayers) : "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+          <p className={s.dim}>
+            Players means anyone who started a level that day, guests included. Back D1 and D7 are the share of that day&apos;s new players who played again
+            one and seven days later.
+          </p>
+        </section>
+        <section className={s.panel}>
+          <div className={s.head}>
+            <h2>Topics</h2>
+          </div>
+          {(data?.segments ?? []).length === 0 ? (
+            <div className={s.empty}>{busy ? "Loading…" : "Not enough plays yet."}</div>
+          ) : (
+            <ul className={s.rows}>
+              {data!.segments.map((x) => (
+                <li className={s.rowItem} key={x.topic} style={{ flexDirection: "column", alignItems: "stretch", gap: 6 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                    <span>{TOPIC_NAMES[x.topic] ?? x.topic}</span>
+                    <span className={s.dim}>
+                      {fmt(x.plays)} plays · strongest topic for {fmt(x.players)}
+                    </span>
+                  </div>
+                  <div className={s.meter}>
+                    <div style={{ width: `${(x.plays / segMax) * 100}%` }} />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className={s.dim}>A player&apos;s strongest topic is the one where they beat the average score by the most, counting topics with 3 or more plays.</p>
+        </section>
+      </div>
+    </>
+  );
+}
+
 // ---- team ------------------------------------------------------------------
 
 function Admins({ me, admins, onChange }: { me: string; admins: { id: string; username: string }[]; onChange: () => Promise<void> }) {
@@ -773,6 +928,42 @@ function Admins({ me, admins, onChange }: { me: string; admins: { id: string; us
         </button>
       </form>
       {err && <div className={s.error}>{err}</div>}
+    </section>
+  );
+}
+
+// Sends a real email to your own address and shows what Resend answered.
+function EmailCheck() {
+  const [busy, setBusy] = useState(false);
+  const [out, setOut] = useState<{ ok: boolean; text: string } | null>(null);
+  const send = async () => {
+    setBusy(true);
+    setOut(null);
+    try {
+      const r = await api<{ ok: boolean; to: string; detail: string }>("/api/admin/test-email", {});
+      setOut({ ok: r.ok, text: r.ok ? `Sent to ${r.to}. ${r.detail}` : `Not sent to ${r.to}: ${r.detail}` });
+    } catch (e) {
+      setOut({ ok: false, text: e instanceof Error ? e.message : "Couldn't send that." });
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <section className={s.panel}>
+      <div className={s.head}>
+        <h2>Email</h2>
+      </div>
+      <p className={s.dim} style={{ marginTop: 0 }}>
+        Sends a test email to the address on your account, so you can check resets and confirmation links are getting through.
+      </p>
+      <button className={`${s.btn} ${s.primary}`} disabled={busy} onClick={() => void send()}>
+        {busy ? "Sending…" : "Send test email"}
+      </button>
+      {out && (
+        <div className={out.ok ? s.dim : s.error} role="status" style={{ marginTop: 10 }}>
+          {out.text}
+        </div>
+      )}
     </section>
   );
 }

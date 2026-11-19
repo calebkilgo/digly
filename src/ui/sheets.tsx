@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { AttemptResult, DigResult, FullAnswer, PublicChallenge, RevealedAnswer } from "@/game/service/types";
-import { foundLabel, pointsOf, tierOf } from "@/game/rules/scoring";
+import { SCORING, foundLabel, pointsOf, tierOf } from "@/game/rules/scoring";
 import { sfx } from "@/audio/sfx";
 import { GemIcon } from "./art";
 import { GemLadder } from "./GemLadder";
@@ -40,7 +40,7 @@ function Row({ a, cls }: { a: RevealedAnswer; cls?: string }) {
       <span>
         {a.name}
         <br />
-        <span className="p">{foundLabel(a)}</span>
+        <span className="p">{a.deep ? `Deep cut +${SCORING.deepCut} · ${foundLabel(a)}` : foundLabel(a)}</span>
       </span>
       <span className="r">{pointsOf(a)}</span>
     </li>
@@ -260,10 +260,11 @@ export function ShareSheet({ number, result, beat, onClose }: { number: string; 
 export function AccountSheet(props: {
   reason?: string;
   start?: "signup" | "login";
-  onSignUp: (u: string, p: string, e?: string) => Promise<unknown>;
+  onSignUp: (u: string, p: string, e: string, marketing: boolean) => Promise<unknown>;
   onLogIn: (u: string, p: string) => Promise<unknown>;
   onForgot: (login: string) => Promise<unknown>;
   onClose: () => void;
+  google?: boolean; // offer Continue with Google
 }) {
   const [mode, setMode] = useState<"signup" | "login" | "forgot">(props.start ?? "signup");
   const [sent, setSent] = useState(false);
@@ -284,7 +285,7 @@ export function AccountSheet(props: {
         setSent(true);
         return;
       }
-      if (mode === "signup") await props.onSignUp(u, p, String(f.get("email") ?? "") || undefined);
+      if (mode === "signup") await props.onSignUp(u, p, String(f.get("email") ?? ""), f.get("marketing") === "on");
       else await props.onLogIn(u, p);
       sfx.stamp();
       props.onClose();
@@ -332,6 +333,15 @@ export function AccountSheet(props: {
           </form>
         )
       ) : (
+      <>
+      {props.google && (
+        <>
+          <a className="btn btn-dark google-btn" href="/api/auth/google">
+            Continue with Google
+          </a>
+          <p className="fine or-line" style={{ margin: 0 }}>or {mode === "signup" ? "make one with a password" : "use your password"}</p>
+        </>
+      )}
       <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 10 }} autoComplete="on">
         <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
           <span className="label">Username</span>
@@ -343,10 +353,11 @@ export function AccountSheet(props: {
         </label>
         {mode === "signup" && (
           <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <span className="label">Email (optional, needed to reset your password)</span>
-            <input name="email" type="email" maxLength={200} autoComplete="email" style={field} />
+            <span className="label">Email (for password resets)</span>
+            <input name="email" type="email" required maxLength={200} autoComplete="email" style={field} />
           </label>
         )}
+        {mode === "signup" && <MarketingBox />}
         {err && (
           <p role="alert" style={{ margin: 0, color: "#b3261e", fontWeight: 700 }}>
             {err}
@@ -367,7 +378,113 @@ export function AccountSheet(props: {
           </p>
         )}
       </form>
+      </>
       )}
+    </Sheet>
+  );
+}
+
+// Unchecked unless the player ticks it; only for news emails, never game emails.
+function MarketingBox({ defaultOn = false }: { defaultOn?: boolean }) {
+  return (
+    <label className="check-row">
+      <input type="checkbox" name="marketing" defaultChecked={defaultOn} />
+      <span>Email me now and then about new features and Vault packs. Optional, and you can turn it off any time.</span>
+    </label>
+  );
+}
+
+// After Continue with Google, a new player picks a username (?google=pick).
+export function GooglePickSheet(props: { onPick: (username: string, marketing: boolean) => Promise<unknown>; onClose: () => void }) {
+  const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
+  const field = { fontSize: 16, padding: "10px 12px", border: "3px solid #24160f", borderRadius: 6, fontFamily: "inherit", fontWeight: 700, width: "100%" } as const;
+  return (
+    <Sheet title="Pick a username" onClose={props.onClose}>
+      <form
+        style={{ display: "flex", flexDirection: "column", gap: 10 }}
+        onSubmit={async (e) => {
+          e.preventDefault();
+          const f = new FormData(e.currentTarget);
+          setBusy(true);
+          setErr("");
+          try {
+            await props.onPick(String(f.get("username") ?? ""), f.get("marketing") === "on");
+            sfx.stamp();
+            props.onClose();
+          } catch (x) {
+            setErr(x instanceof Error && x.message !== "offline" ? x.message : "Couldn't reach the mine. Try again.");
+            sfx.invalid();
+          } finally {
+            setBusy(false);
+          }
+        }}
+      >
+        <p className="fine" style={{ margin: 0 }}>Google is ready. This name shows on the board.</p>
+        <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          <span className="label">Username</span>
+          <input name="username" required minLength={3} maxLength={16} pattern="[A-Za-z0-9_]+" autoComplete="username" autoCapitalize="off" spellCheck={false} style={field} />
+        </label>
+        <MarketingBox />
+        {err && (
+          <p role="alert" style={{ margin: 0, color: "#b3261e", fontWeight: 700 }}>
+            {err}
+          </p>
+        )}
+        <button className="btn btn-big btn-y" type="submit" disabled={busy}>
+          {busy ? "…" : "Create account"}
+        </button>
+        <p className="fine" style={{ margin: 0 }}>
+          Today&apos;s dig from this device comes with you. By signing up you agree to the <a href="/terms" target="_blank">terms</a> and{" "}
+          <a href="/privacy" target="_blank">privacy policy</a>.
+        </p>
+      </form>
+    </Sheet>
+  );
+}
+
+// For older accounts made before email was required.
+export function AddEmailSheet(props: { onSave: (email: string) => Promise<unknown>; onClose: () => void }) {
+  const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
+  const field = { fontSize: 16, padding: "10px 12px", border: "3px solid #24160f", borderRadius: 6, fontFamily: "inherit", fontWeight: 700, width: "100%" } as const;
+  return (
+    <Sheet title="Add your email" onClose={props.onClose}>
+      <form
+        style={{ display: "flex", flexDirection: "column", gap: 10 }}
+        onSubmit={async (e) => {
+          e.preventDefault();
+          setBusy(true);
+          setErr("");
+          try {
+            await props.onSave(String(new FormData(e.currentTarget).get("email") ?? ""));
+            sfx.stamp();
+            props.onClose();
+          } catch (x) {
+            setErr(x instanceof Error && x.message !== "offline" ? x.message : "Couldn't reach the mine. Try again.");
+            sfx.invalid();
+          } finally {
+            setBusy(false);
+          }
+        }}
+      >
+        <p className="fine" style={{ margin: 0 }}>Your account has no email yet. Without one, a forgotten password can&apos;t be reset.</p>
+        <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          <span className="label">Email</span>
+          <input name="email" type="email" required maxLength={200} autoComplete="email" style={field} />
+        </label>
+        {err && (
+          <p role="alert" style={{ margin: 0, color: "#b3261e", fontWeight: 700 }}>
+            {err}
+          </p>
+        )}
+        <button className="btn btn-big btn-y" type="submit" disabled={busy}>
+          {busy ? "…" : "Save email"}
+        </button>
+        <button type="button" className="linkish" onClick={props.onClose}>
+          Later
+        </button>
+      </form>
     </Sheet>
   );
 }

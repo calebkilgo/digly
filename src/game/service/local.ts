@@ -1,7 +1,7 @@
 import { DigEngine } from "../engine/engine";
 import { BrowserStore } from "../engine/memoryStore";
 import { demoBoard } from "../demoBoard";
-import { GameError, type Account, type CategoryInfo, type AttemptMode, type Board, type ChallengeService, type LevelNo } from "./types";
+import { GameError, type Account, type CategoryInfo, type AttemptMode, type Board, type ChallengeService, type LevelNo, type PlayerHistory, type PlayerTopic } from "./types";
 
 const ME = "local";
 
@@ -19,6 +19,13 @@ export class LocalService implements ChallengeService {
   start(day: number, level: LevelNo, mode: AttemptMode, opts: { slug?: string; vault?: number } = {}) {
     // the offline preview has everything open
     return this.engine.start(ME, day, level, mode, { ...opts, unlimited: true });
+  }
+  // the offline preview's progress never leaves this browser anyway
+  async history(): Promise<PlayerHistory> {
+    return { ranked: [], practice: [], vault: [] };
+  }
+  async topics(): Promise<PlayerTopic[]> {
+    return [];
   }
   async checkout(_termsVersion: string): Promise<string> {
     throw new GameError("bad_request", "Purchases need the live site.");
@@ -79,6 +86,18 @@ export class LocalService implements ChallengeService {
     return { username: a.username };
   }
   async logOut() {}
+  async finishGoogle(): Promise<Account> {
+    throw new GameError("bad_request", "Google sign-in needs the live site.");
+  }
+  async verifyEmail(): Promise<{ verified: boolean; mine: boolean }> {
+    throw new GameError("bad_request", "Email needs the live site.");
+  }
+  async resendVerify(): Promise<Account> {
+    throw new GameError("bad_request", "Email needs the live site.");
+  }
+  async setMarketing(): Promise<Account> {
+    throw new GameError("bad_request", "Email needs the live site.");
+  }
   async forgotPassword() {
     throw new GameError("bad_request", "Password reset needs the live site.");
   }

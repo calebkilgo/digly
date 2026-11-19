@@ -1,7 +1,7 @@
 // A cache of player progress on this device, for streaks and stats. The
 // server is the source of truth for ranked digs; this fills in from it.
 
-import type { DigResult, RevealedAnswer } from "./service/types";
+import type { DigResult, PlayerHistory, RevealedAnswer } from "./service/types";
 
 export interface DayRecord {
   day: number;
@@ -20,6 +20,17 @@ export interface Progress {
   practiceTitles?: Record<string, string[]>; // categories dug in practice, keyed by day
   vaultBest?: Record<string, number>; // keyed by Vault game number
   vaultTitles?: Record<string, string[]>; // prompts dug in each Vault game
+  owner?: string | null; // account this cache belongs to (null: a guest); missing on old caches
+}
+
+// Whose progress the device should show for `user`. A cache from another
+// account (or from an account after logging out) starts over; a guest's cache
+// carries into the account they sign up or log in with, and an old cache with
+// no owner is taken to be the current user's.
+export function forUser(p: Progress, user: string | null): Progress {
+  if (p.owner === user) return p;
+  if (p.owner === undefined || p.owner === null) return { ...p, owner: user };
+  return { ...EMPTY_PROGRESS, owner: user };
 }
 
 export const EMPTY_PROGRESS: Progress = { version: 1, ranked: {}, practiceBest: {} };
@@ -33,6 +44,44 @@ export function recordPractice(p: Progress, day: number, score: number, titles?:
   const best = Math.max(score, p.practiceBest[day] ?? 0);
   const practiceTitles = titles ? { ...p.practiceTitles, [day]: titles } : p.practiceTitles;
   return { ...p, practiceBest: { ...p.practiceBest, [day]: best }, practiceTitles };
+}
+
+// Folds in what the server has for this account. Records already on this
+// device win, best scores take the higher of the two, and the same object comes
+// back when nothing changed (so nothing re-renders or saves for no reason).
+export function mergeHistory(p: Progress, h: PlayerHistory): Progress {
+  let changed = false;
+  const ranked = { ...p.ranked };
+  for (const r of h.ranked) {
+    if (ranked[r.day]) continue;
+    ranked[r.day] = { day: r.day, challengeId: String(r.day), score: r.score, unique: r.unique, top: [], finishedAt: r.finishedAt };
+    changed = true;
+  }
+  const practiceBest = { ...p.practiceBest };
+  const practiceTitles = { ...p.practiceTitles };
+  for (const r of h.practice) {
+    if (r.best > (practiceBest[r.day] ?? 0)) {
+      practiceBest[r.day] = r.best;
+      changed = true;
+    }
+    if (!practiceTitles[r.day]?.length && r.titles.length) {
+      practiceTitles[r.day] = r.titles;
+      changed = true;
+    }
+  }
+  const vaultBest = { ...p.vaultBest };
+  const vaultTitles = { ...p.vaultTitles };
+  for (const r of h.vault) {
+    if (r.best > (vaultBest[r.game] ?? 0)) {
+      vaultBest[r.game] = r.best;
+      changed = true;
+    }
+    if (!vaultTitles[r.game]?.length && r.titles.length) {
+      vaultTitles[r.game] = r.titles;
+      changed = true;
+    }
+  }
+  return changed ? { ...p, ranked, practiceBest, practiceTitles, vaultBest, vaultTitles } : p;
 }
 
 // Current streak counts back from today, or from yesterday if today isn't

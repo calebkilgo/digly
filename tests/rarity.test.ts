@@ -66,3 +66,33 @@ describe("rarity tiers from z-scores", () => {
     expect(foundLabel({ rarity: 40, pct: 6.25 })).toBe("6.3% found it");
   });
 });
+
+describe("deep tail and hand-picked Platinum", () => {
+  const block = ["Apple = 1", "Pear = 20", "Quince = 60", "Medlar = 99.99", "Kiwano = 80", "Salak = deep", "Jabuticaba | jaboticaba = deep"].join("\n");
+
+  it("parses the deep tail and keeps it out of the tier mix", async () => {
+    const { parseAnswerBlock } = await import("../src/game/rules/answerIndex");
+    const { liveRarity } = await import("../src/game/rules/rarity");
+    const { pointsOf, SCORING } = await import("../src/game/rules/scoring");
+    const recs = parseAnswerBlock(block, "t");
+    expect(recs.filter((r) => r.deep).map((r) => r.canonical)).toEqual(["Salak", "Jabuticaba"]);
+    expect(recs.find((r) => r.canonical === "Medlar")!.plat).toBe(true);
+    const live = liveRarity(recs, null);
+    const salak = live.get("t:salak")!;
+    expect(salak).toMatchObject({ tier: "ruby", deep: true, rarity: 99 });
+    // the hand-picked one is the Platinum even after play says another is harder
+    const played = liveRarity(recs, { plays: 1000, counts: { "t:medlar": 500, "t:kiwano": 0 } });
+    expect(played.get("t:medlar")!.tier).toBe("platinum");
+    expect([...played.values()].filter((l) => l.tier === "platinum")).toHaveLength(1);
+    // found by lots of players, still a deep cut
+    expect(liveRarity(recs, { plays: 100, counts: { "t:salak": 90 } }).get("t:salak")!.tier).toBe("ruby");
+    expect(pointsOf({ name: "Salak", rarity: 99, tier: "ruby", deep: true })).toBe(SCORING.points.ruby + SCORING.deepCut);
+    expect(pointsOf({ name: "Medlar", rarity: 100, tier: "platinum" })).toBeGreaterThan(SCORING.points.ruby + SCORING.deepCut);
+  });
+
+  it("ignores Platinum marks when more than one core line has one", async () => {
+    const { parseAnswerBlock } = await import("../src/game/rules/answerIndex");
+    const recs = parseAnswerBlock("A = 1\nB = 100\nC = 100", "t");
+    expect(recs.some((r) => r.plat)).toBe(false);
+  });
+});

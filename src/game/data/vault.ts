@@ -2,6 +2,7 @@
 // scripts/build_vault.py. Server only (answers live in the generated file).
 
 import type { ChallengeSeed, Theme } from "./seeds";
+import { isTopic } from "./topics";
 import { VAULT_GAMES, VAULT_SEEDS } from "./vault.generated";
 
 export interface VaultGame {
@@ -33,12 +34,19 @@ export const VAULT_CHALLENGES: ChallengeSeed[] = VAULT_SEEDS.map((v) => ({
   title: v.title,
   level: v.level,
   theme: THEME[v.domain] ?? "culture",
+  topic: isTopic(v.domain) ? v.domain : undefined,
   prompt: v.prompt,
   noun: v.noun,
   rules: v.rules,
   scoringVersion: 1,
   answers: v.answers,
 }));
+
+// Which Vault game a prompt belongs to, or null for a daily prompt.
+const GAME_OF = new Map(VAULT_GAMES.flatMap((g) => g.slugs.map((s) => [s, g.n] as const)));
+export function vaultGameOf(slug: string): number | null {
+  return GAME_OF.get(slug) ?? null;
+}
 
 export function vaultSlug(game: number, level: 1 | 2 | 3): string | null {
   return VAULT_GAMES.find((g) => g.n === game)?.slugs[level - 1] ?? null;

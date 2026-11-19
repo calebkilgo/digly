@@ -53,6 +53,13 @@ export function checkPassword8(raw: unknown) {
   return p;
 }
 
+// sign-ups need an email: it's how password resets reach them
+export function requireEmail(raw: unknown) {
+  const e = checkEmail(raw);
+  if (!e) throw new GameError("bad_request", "Add your email. It's how you reset your password.");
+  return e;
+}
+
 export function checkEmail(raw: unknown) {
   const e = String(raw ?? "").trim();
   if (!e) return null;

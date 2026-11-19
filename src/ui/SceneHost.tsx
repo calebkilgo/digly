@@ -61,9 +61,13 @@ export function useSceneInsets(
     const ro = new ResizeObserver(measure);
     if (topRef.current) ro.observe(topRef.current);
     if (bottomRef.current) ro.observe(bottomRef.current);
+    // the docks slide in, and a box measured mid-slide reads up to 30px low
+    const els = [topRef.current, bottomRef.current].filter((e): e is HTMLElement => !!e);
+    for (const el of els) el.addEventListener("animationend", measure);
     window.addEventListener("resize", measure);
     window.visualViewport?.addEventListener("resize", measure);
     return () => {
+      for (const el of els) el.removeEventListener("animationend", measure);
       ro.disconnect();
       window.removeEventListener("resize", measure);
       window.visualViewport?.removeEventListener("resize", measure);

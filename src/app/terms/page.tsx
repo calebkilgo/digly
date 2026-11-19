@@ -25,8 +25,9 @@ export default function Terms() {
 
       <h2>Accounts</h2>
       <ul>
-        <li>You need to be at least 13 to make an account.</li>
-        <li>Each account is for one person. Keep your password private. You&apos;re responsible for what happens on your account.</li>
+        <li>Digly is not for children under 13. You need to be at least 13 to make an account, and we delete accounts we learn belong to someone younger.</li>
+        <li>Each account is for one person and needs a working email address. Keep your password private. You&apos;re responsible for what happens on your account.</li>
+        <li>If you sign in with Google, Google&apos;s own terms also apply to your Google account.</li>
         <li>
           Usernames are public. Don&apos;t pick one that is offensive, hateful, sexual, impersonates someone, or includes someone else&apos;s personal
           information. We may rename or remove accounts that break this rule.

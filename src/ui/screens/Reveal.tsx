@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { DiglyScene, RockAnchor } from "@/scene/DiglyScene";
 import type { AttemptResult, FullAnswer, RevealedAnswer } from "@/game/service/types";
 import { SCORING, foundLabel, pointsOf, tierOf } from "@/game/rules/scoring";
@@ -55,6 +55,16 @@ export function RevealScreen(props: {
 
   useEffect(() => (scene ? scene.onAnchors(setAnchors) : undefined), [scene]);
 
+  // Every label is in the page from the start (hidden until its gem cracks), so
+  // the scene can leave room for the tallest one under the rocks and none of
+  // them run into the box below.
+  const labelEls = useRef<(HTMLDivElement | null)[]>([]);
+  useLayoutEffect(() => {
+    if (!scene) return;
+    const tallest = Math.max(0, ...labelEls.current.map((el) => el?.offsetHeight ?? 0));
+    if (tallest) scene.setLabelSpace(tallest + 8);
+  }, [scene, anchors]);
+
   useEffect(() => {
     if (started.current) return;
     started.current = true;
@@ -105,7 +115,7 @@ export function RevealScreen(props: {
         setTimeout(() => sfx.fanfare(), 250);
         setTimeout(() => setPlat(false), 1700);
       }
-      say(a ? `${a.name}: ${a.rarity}, ${tierOf(a).label}.` : "Empty rock.");
+      say(a ? `${a.name}: ${a.rarity}, ${tierOf(a).label}${a.deep ? ", deep cut bonus" : ""}.` : "Empty rock.");
     };
 
     if (scene) {
@@ -155,14 +165,17 @@ export function RevealScreen(props: {
 
       {slots.map((a, i) => {
         const an = anchors[i];
-        if (!shown[i]) return null;
+        const on = shown[i] ? " on" : "";
+        const keep = (el: HTMLDivElement | null) => {
+          labelEls.current[i] = el;
+        };
         const spacing = anchors.length > 1 ? Math.abs(anchors[1].x - anchors[0].x) : 160;
         const pos = an
           ? { left: an.x, top: an.y + an.size * 0.5, width: Math.min(124, spacing - 4) }
           : { left: `${((i + 1) * 100) / (slots.length + 1)}%`, top: "55%" };
         if (!a)
           return (
-            <div className="rock-label" style={pos} key={i}>
+            <div className={`rock-label${on}`} style={pos} key={i} ref={keep} aria-hidden={!shown[i]}>
               <div className="big-num pts" style={{ color: "#c8ccd8" }}>
                 0
               </div>
@@ -171,14 +184,14 @@ export function RevealScreen(props: {
           );
         const t = tierOf(a);
         return (
-          <div className={`rock-label ${t.key === "platinum" ? "platinum" : ""}`} style={pos} key={i}>
+          <div className={`rock-label${t.key === "platinum" ? " platinum" : ""}${on}`} style={pos} key={i} ref={keep} aria-hidden={!shown[i]}>
             <div className="big-num pts" style={{ color: GEM_FILL[t.key].base }}>
               {pointsOf(a)}
             </div>
             <div className="name px">{a.name}</div>
             <div>
               <span className="tier" style={{ background: GEM_FILL[t.key].base }}>
-                {t.label}
+                {a.deep ? "Deep cut" : t.label}
               </span>
             </div>
             {spacing >= 100 && <span className="pct">{foundLabel(a)}</span>}
